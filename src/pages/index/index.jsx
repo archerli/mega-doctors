@@ -110,8 +110,8 @@ class Index extends Component {
 
   config = {
     navigationBarTitleText: '咨询',
-    disableScroll: true,
-    // enablePullDownRefresh: true
+    // disableScroll: false,
+    enablePullDownRefresh: true
   }
 
   constructor() {
@@ -119,6 +119,16 @@ class Index extends Component {
     this.state = {
       current: 0
     }
+  }
+
+  onPullDownRefresh() {
+    Taro.showNavigationBarLoading() //在标题栏中显示加载
+    setTimeout(() => {
+      // complete
+      // this.load();
+      Taro.hideNavigationBarLoading() //完成停止加载
+      Taro.stopPullDownRefresh() //停止下拉刷新
+    }, 800);
   }
 
   handleClick(value) {
@@ -156,15 +166,15 @@ class Index extends Component {
       <View className='index'>
         <View className='tab'>
           <View
-            className={`${current === 0 ? 'selected' : ''}`}
+            className={current === 0 ? 'selected' : ''}
             onClick={this.handleClick.bind(this, 0)}
           >新咨询</View>
           <View
-            className={`${current === 1 ? 'selected' : ''}`}
+            className={current === 1 ? 'selected' : ''}
             onClick={this.handleClick.bind(this, 1)}
           >回复中</View>
           <View
-            className={`${current === 2 ? 'selected' : ''}`}
+            className={current === 2 ? 'selected' : ''}
             onClick={this.handleClick.bind(this, 2)}
           >已结束</View>
         </View>
