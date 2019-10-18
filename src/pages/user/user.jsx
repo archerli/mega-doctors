@@ -25,7 +25,7 @@ import './user.scss'
 class User extends Component {
 
   config = {
-    navigationBarTitleText: '用户'
+    navigationBarTitleText: '患者'
   }
 
   constructor () {

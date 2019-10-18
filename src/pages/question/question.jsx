@@ -1,6 +1,7 @@
 import Taro, { Component } from '@tarojs/taro'
 import { View, Button, Text } from '@tarojs/components'
 import { connect } from '@tarojs/redux'
+import { AtTimeline, AtTextarea } from 'taro-ui'
 
 import { add, minus, asyncAdd } from '../../actions/counter'
 
@@ -39,8 +40,43 @@ class Questions extends Component {
 
   render () {
     return (
-      <View className='index'>
-        回复
+      <View className='question'>
+        <View className='card'>
+          <View className='card-1'>
+            <Image
+              style='width: 52px; height: 52px; border-radius: 52px;'
+              src='https://jdc.jd.com/img/200'
+            />
+          </View>
+          <View className='card-2'>
+            <View>小明</View>
+          </View>
+          <View className='card-3'>
+            <Image
+              style='width: 52px; height: 52px; border-radius: 52px;'
+              src='https://jdc.jd.com/img/200'
+            />
+          </View>
+        </View>
+        <View className='timeline'>
+          <AtTimeline 
+            items={[
+              { title: '问题描述（10/09 08:00）', content: ['医生您好医生您好医生您好医生您好医生您好医生您好医生您好医生您好'] },
+              { title: '问题描述（10/09 08:00）', content: ['医生您好医生您好医生您好医生您好医生您好医生您好医生您好医生您好'] },
+              { title: '问题描述（10/09 08:00）', content: ['医生您好医生您好医生您好医生您好医生您好医生您好医生您好医生您好'] },
+              { title: '问题描述（10/09 08:00）', content: ['医生您好医生您好医生您好医生您好医生您好医生您好医生您好医生您好'] }
+            ]}
+          >
+          </AtTimeline>
+        </View>
+        <View class='input'>
+          <AtTextarea
+            // value={this.state.value}
+            // onChange={this.handleChange.bind(this)}
+            maxLength={200}
+            placeholder='回复...'
+          />
+        </View>
       </View>
     )
   }

@@ -33,8 +33,8 @@ class App extends Component {
       navigationBarTextStyle: 'black'
     },
     tabBar: {
-      color: "#333",
-      selectedColor: "#19aad1",
+      color: "#666666",
+      selectedColor: "#000000",
       backgroundColor: "#fff",
       list: [
         {
@@ -45,13 +45,13 @@ class App extends Component {
         },
         {
           "pagePath": "pages/user/user",
-          "text": "用户",
+          "text": "患者",
           "iconPath": "assets/user.png",
           "selectedIconPath": "assets/user-s.png"
         },
         {
           "pagePath": "pages/mine/mine",
-          "text": "我",
+          "text": "我的",
           "iconPath": "assets/mine.png",
           "selectedIconPath": "assets/mine-s.png"
         }

@@ -25,7 +25,7 @@ import './mine.scss'
 class Mine extends Component {
 
   config = {
-    navigationBarTitleText: '我'
+    navigationBarTitleText: '我的'
   }
 
   constructor () {
@@ -69,15 +69,15 @@ class Mine extends Component {
             src={QRCODE}
           />
         </AtCurtain>
-        <View className='at-row' style="padding: 20px 0;">
-          <View className='at-col at-col-1 at-col--auto' style="margin: 0 20px;">
+        <View className='info'>
+          <View className='info-1'>
             <AtAvatar circle image='https://jdc.jd.com/img/200'></AtAvatar>
           </View>
-          <View className='at-col'>
+          <View className='info-2'>
             <View>刘医生</View>
             <View>已认证</View>
           </View>
-          <View className='at-col at-col-1 at-col--auto' style="margin: 0 20px;" onClick={this.handleChange.bind(this)}>
+          <View className='info-3' onClick={this.handleChange.bind(this)}>
             <Image
               style="width: 40px; height: 40px;"
               src={QRCODE}

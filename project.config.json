@@ -2,7 +2,7 @@
 	"miniprogramRoot": "dist/",
 	"projectname": "mega-care-taro",
 	"description": "兆观照护",
-	"appid": "touristappid",
+	"appid": "wx749744cb27e45357",
 	"setting": {
 		"urlCheck": true,
 		"es6": false,
