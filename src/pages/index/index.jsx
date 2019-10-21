@@ -2,6 +2,8 @@ import Taro, { Component } from '@tarojs/taro'
 import { View, ScrollView, Button, Text, Swiper, SwiperItem } from '@tarojs/components'
 import { connect } from '@tarojs/redux'
 
+import { AtActivityIndicator } from 'taro-ui'
+
 import { add, minus, asyncAdd } from '../../actions/counter'
 
 import QCard from '../../components/QCard/QCard'
@@ -110,38 +112,18 @@ class Index extends Component {
 
   config = {
     navigationBarTitleText: '咨询',
-    // disableScroll: false,
-    enablePullDownRefresh: true
+    // disableScroll: true,
+    enablePullDownRefresh: true,
+    backgroundColor: "#ececec"
   }
 
   constructor() {
     super(...arguments)
     this.state = {
-      current: 0
+      current: 0,
+      moreLoading: false,
+      moreLoaded: false
     }
-  }
-
-  onPullDownRefresh() {
-    Taro.showNavigationBarLoading() //在标题栏中显示加载
-    setTimeout(() => {
-      // complete
-      // this.load();
-      Taro.hideNavigationBarLoading() //完成停止加载
-      Taro.stopPullDownRefresh() //停止下拉刷新
-    }, 800);
-  }
-
-  handleClick(value) {
-    this.setState({
-      current: value
-    })
-  }
-
-  swiperOnChange(e) {
-    // console.log(e.currentTarget.current);
-    this.setState({
-      current: e.currentTarget.current
-    })
   }
 
   componentWillReceiveProps(nextProps) {
@@ -160,8 +142,46 @@ class Index extends Component {
     })
   }
 
+  // 下拉刷新
+  onPullDownRefresh() {
+    Taro.showNavigationBarLoading() //在标题栏中显示加载
+    setTimeout(() => {
+      // complete
+      // this.load();
+      Taro.hideNavigationBarLoading() //完成停止加载
+      Taro.stopPullDownRefresh() //停止下拉刷新
+    }, 800);
+  }
+
+  handleClick(value) {
+    this.setState({
+      current: value 
+    })
+  }
+
+  swiperOnChange(e) {
+    // console.log(e.currentTarget.current);
+    this.setState({
+      current: e.currentTarget.current
+    })
+  }
+
+  // 上拉加载更多
+  scrollToLower() {
+    console.log('onScrollToLower!!!')
+    this.setState({
+      moreLoading: true
+    })
+    setTimeout(() => {
+      this.setState({
+        moreLoading: false,
+        moreLoaded: true
+      })
+    }, 3000)
+  }
+
   render () {
-    const { current } = this.state;
+    const { current, moreLoading, moreLoaded } = this.state;
     return (
       <View className='index'>
         <View className='tab'>
@@ -185,7 +205,12 @@ class Index extends Component {
             onChange={this.swiperOnChange.bind(this)}
           >
             <SwiperItem className="content-swiper-item">
-              <View className="content-l">
+              <ScrollView
+                className="content-l"
+                scrollY
+                enableBackToTop
+                onScrollToLower={this.scrollToLower.bind(this)}
+              >
                 {
                   reply.map(item => (
                     <QCard
@@ -201,10 +226,25 @@ class Index extends Component {
                     />
                   ))
                 }
-              </View>
+                {
+                  moreLoading &&
+                  <View className='content-t'>
+                    <AtActivityIndicator content='加载中...' color='#48AEFC' size={24}></AtActivityIndicator>
+                  </View>
+                }
+                {
+                  !moreLoading && moreLoaded &&
+                  <View className='content-t'>没有更多了</View>
+                }
+              </ScrollView>
             </SwiperItem>
             <SwiperItem className="content-swiper-item">
-              <View className="content-l">
+              <ScrollView
+                className="content-l"
+                scrollY
+                enableBackToTop
+                // onScrollToLower={this.scrollToLower.bind(this)}
+              >
                 {
                   noReply.map(item => (
                     <QCard
@@ -220,10 +260,15 @@ class Index extends Component {
                     />
                   ))
                 }
-              </View>
+              </ScrollView>
             </SwiperItem>
             <SwiperItem className="content-swiper-item">
-              <View className="content-l">
+              <ScrollView
+                className="content-l"
+                scrollY
+                enableBackToTop
+                // onScrollToLower={this.scrollToLower.bind(this)}
+              >
                 {
                   noReply.map(item => (
                     <QCard
@@ -239,7 +284,7 @@ class Index extends Component {
                     />
                   ))
                 }
-              </View>
+              </ScrollView>
             </SwiperItem>
           </Swiper>
         </View>
@@ -278,6 +323,53 @@ class Index extends Component {
       </View>
     )
   }
+  // render() {
+  //   const tabList = [{ title: '未回复' }, { title: '已回复' }]
+  //   return (
+  //     <View className='index'>
+  //       <AtTabs current={this.state.current} tabList={tabList} onClick={this.handleClick.bind(this)} style="overflow: auto;">
+  //         <AtTabsPane current={this.state.current} index={0}>
+  //           <View className="content-l">
+  //             {
+  //               noReply.map(item => (
+  //                 <QCard
+  //                   key={item.id}
+  //                   type='reply'
+  //                   name={item.name}
+  //                   isVip={item.isVip}
+  //                   icon={item.icon}
+  //                   tag={item.tag}
+  //                   time={item.time}
+  //                   desc={item.desc}
+  //                   toQuestion={this.toQuestion.bind(this, item.id)}
+  //                 />
+  //               ))
+  //             }
+  //           </View>
+  //         </AtTabsPane>
+  //         <AtTabsPane current={this.state.current} index={1}>
+  //           <View className="content-l">
+  //             {
+  //               noReply.map(item => (
+  //                 <QCard
+  //                   key={item.id}
+  //                   type='reply'
+  //                   name={item.name}
+  //                   isVip={item.isVip}
+  //                   icon={item.icon}
+  //                   tag={item.tag}
+  //                   time={item.time}
+  //                   desc={item.desc}
+  //                   toQuestion={this.toQuestion.bind(this, item.id)}
+  //                 />
+  //               ))
+  //             }
+  //           </View>
+  //         </AtTabsPane>
+  //       </AtTabs>
+  //     </View>
+  //   )
+  // }
 }
 
 export default Index
