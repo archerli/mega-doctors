@@ -1,0 +1,67 @@
+.msg-item {
+  margin: 40px 10px;
+  .msg-t {
+    margin-bottom: 20px;
+    text-align: center;
+    font-size: 20px;
+    color: #999999;
+  }
+  .msg-c {
+    display: flex;
+    .icon {
+      width: 80px;
+      height: 80px;
+      display: flex;
+      justify-content: center;
+      Image {
+        width: 60px;
+        height: 60px;
+        border-radius: 60px;
+      }
+    }
+    .content {
+      flex: 1;
+      display: flex;
+      .text {
+        padding: 20px 30px;
+        background: #FFFFFF;
+        border-radius: 8px;
+        font-size: 26px;
+        color: #666666;
+      }
+      .image {
+        width: 300px;
+        height: auto;
+        border-radius: 8px;
+      }
+      .link {
+        width: 360px;
+        height: 100px;
+        padding: 20px 30px;
+        background: #FFFFFF;
+        border-radius: 8px;
+        display: flex;
+        justify-content: space-between;
+        View {
+          display: flex;
+          flex-direction: column;
+        }
+        Text {
+          margin-bottom: 10px;
+          font-size: 26px;
+          color: #2E2E2E;
+        }
+        Image {
+          width: 50px;
+          height: 62px;
+        }
+      }
+    }
+    .content.self {
+      justify-content: flex-end;
+      .text {
+        background: #B1CDFF;
+      }
+    }
+  }
+}

@@ -22,9 +22,11 @@ class App extends Component {
   config = {
     pages: [
       'pages/index/index',
-      'pages/user/user',
+      'pages/patient/patient',
       'pages/question/question',
-      'pages/mine/mine'
+      'pages/remark/remark',
+      'pages/mine/mine',
+      'pages/webview/webview'
     ],
     window: {
       backgroundTextStyle: 'light',
@@ -44,7 +46,7 @@ class App extends Component {
           "selectedIconPath": "assets/index-s.png"
         },
         {
-          "pagePath": "pages/user/user",
+          "pagePath": "pages/patient/patient",
           "text": "患者",
           "iconPath": "assets/user.png",
           "selectedIconPath": "assets/user-s.png"

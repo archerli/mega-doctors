@@ -12,7 +12,7 @@ import QING from '../../assets/qing.png'
 import ZHONG from '../../assets/zhong.png'
 import STAR from '../../assets/star.png'
 
-import './index.scss'
+import './patient.scss'
 
 const reply = [
   {
@@ -108,13 +108,11 @@ const noReply = [
   }
 }))
 
-class Index extends Component {
+class Patient extends Component {
 
   config = {
     navigationBarTitleText: '咨询',
-    // disableScroll: true,
-    enablePullDownRefresh: true,
-    backgroundColor: "#ececec"
+    disableScroll: true
   }
 
   constructor() {
@@ -136,22 +134,22 @@ class Index extends Component {
 
   componentDidHide() { }
 
-  toQuestion(id, name) {
+  toQuestion() {
     Taro.navigateTo({
-      url: `/pages/question/question?id=${id}&name=${name}`
+      url: '/pages/question/question'
     })
   }
 
   // 下拉刷新
-  onPullDownRefresh() {
-    Taro.showNavigationBarLoading() //在标题栏中显示加载
-    setTimeout(() => {
-      // complete
-      // this.load();
-      Taro.hideNavigationBarLoading() //完成停止加载
-      Taro.stopPullDownRefresh() //停止下拉刷新
-    }, 800);
-  }
+  // onPullDownRefresh() {
+  //   Taro.showNavigationBarLoading() //在标题栏中显示加载
+  //   setTimeout(() => {
+  //     // complete
+  //     // this.load();
+  //     Taro.hideNavigationBarLoading() //完成停止加载
+  //     Taro.stopPullDownRefresh() //停止下拉刷新
+  //   }, 800);
+  // }
 
   handleClick(value) {
     this.setState({
@@ -183,20 +181,24 @@ class Index extends Component {
   render () {
     const { current, moreLoading, moreLoaded } = this.state;
     return (
-      <View className='index'>
+      <View className='patient'>
         <View className='tab'>
           <View
             className={current === 0 ? 'selected' : ''}
             onClick={this.handleClick.bind(this, 0)}
-          >新咨询</View>
+          >VIP患者</View>
           <View
             className={current === 1 ? 'selected' : ''}
             onClick={this.handleClick.bind(this, 1)}
-          >回复中</View>
+          >我关注的患者</View>
           <View
             className={current === 2 ? 'selected' : ''}
             onClick={this.handleClick.bind(this, 2)}
-          >已结束</View>
+          >付费患者</View>
+          <View
+            className={current === 3 ? 'selected' : ''}
+            onClick={this.handleClick.bind(this, 3)}
+          >普通患者</View>
         </View>
         <View className='content'>
           <Swiper
@@ -225,7 +227,7 @@ class Index extends Component {
                       tag={item.tag}
                       time={item.time}
                       desc={item.desc}
-                      toQuestion={this.toQuestion.bind(this, item.id, item.name)}
+                      toQuestion={this.toQuestion.bind(this, item.id)}
                     />
                   ))
                 }
@@ -259,7 +261,7 @@ class Index extends Component {
                       tag={item.tag}
                       time={item.time}
                       desc={item.desc}
-                      toQuestion={this.toQuestion.bind(this, item.id, item.name)}
+                      toQuestion={this.toQuestion.bind(this, item.id)}
                     />
                   ))
                 }
@@ -283,7 +285,31 @@ class Index extends Component {
                       tag={item.tag}
                       time={item.time}
                       desc={item.desc}
-                      toQuestion={this.toQuestion.bind(this, item.id, item.name)}
+                      toQuestion={this.toQuestion.bind(this, item.id)}
+                    />
+                  ))
+                }
+              </ScrollView>
+            </SwiperItem>
+            <SwiperItem className="content-swiper-item">
+              <ScrollView
+                className="content-l"
+                scrollY
+                enableBackToTop
+                // onScrollToLower={this.scrollToLower.bind(this)}
+              >
+                {
+                  noReply.map(item => (
+                    <QCard
+                      key={item.id}
+                      type='finished'
+                      name={item.name}
+                      isVip={item.isVip}
+                      icon={item.icon}
+                      tag={item.tag}
+                      time={item.time}
+                      desc={item.desc}
+                      toQuestion={this.toQuestion.bind(this, item.id)}
                     />
                   ))
                 }
@@ -291,88 +317,9 @@ class Index extends Component {
             </SwiperItem>
           </Swiper>
         </View>
-        {/* <View className='content'>
-          <View className={`content-c ${current ? 'left' : ''}`}>
-            <View className="content-l">
-              {
-                reply.map(item => (
-                  <QCard
-                    key={item.id}
-                    name={item.name}
-                    icon={item.icon}
-                    time={item.time}
-                    desc={item.desc}
-                    toQuestion={this.toQuestion.bind(this, item.id)}
-                  />
-                ))
-              }
-            </View>
-            <View className="content-l">
-              {
-                noReply.map(item => (
-                  <QCard
-                    key={item.id}
-                    name={item.name}
-                    icon={item.icon}
-                    time={item.time}
-                    desc={item.desc}
-                    toQuestion={this.toQuestion.bind(this, item.id)}
-                  />
-                ))
-              }
-            </View>
-          </View>
-        </View> */}
       </View>
     )
   }
-  // render() {
-  //   const tabList = [{ title: '未回复' }, { title: '已回复' }]
-  //   return (
-  //     <View className='index'>
-  //       <AtTabs current={this.state.current} tabList={tabList} onClick={this.handleClick.bind(this)} style="overflow: auto;">
-  //         <AtTabsPane current={this.state.current} index={0}>
-  //           <View className="content-l">
-  //             {
-  //               noReply.map(item => (
-  //                 <QCard
-  //                   key={item.id}
-  //                   type='reply'
-  //                   name={item.name}
-  //                   isVip={item.isVip}
-  //                   icon={item.icon}
-  //                   tag={item.tag}
-  //                   time={item.time}
-  //                   desc={item.desc}
-  //                   toQuestion={this.toQuestion.bind(this, item.id)}
-  //                 />
-  //               ))
-  //             }
-  //           </View>
-  //         </AtTabsPane>
-  //         <AtTabsPane current={this.state.current} index={1}>
-  //           <View className="content-l">
-  //             {
-  //               noReply.map(item => (
-  //                 <QCard
-  //                   key={item.id}
-  //                   type='reply'
-  //                   name={item.name}
-  //                   isVip={item.isVip}
-  //                   icon={item.icon}
-  //                   tag={item.tag}
-  //                   time={item.time}
-  //                   desc={item.desc}
-  //                   toQuestion={this.toQuestion.bind(this, item.id)}
-  //                 />
-  //               ))
-  //             }
-  //           </View>
-  //         </AtTabsPane>
-  //       </AtTabs>
-  //     </View>
-  //   )
-  // }
 }
 
-export default Index
+export default Patient

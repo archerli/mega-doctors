@@ -13,12 +13,6 @@ class QCard extends Component {
     super(...arguments)
   }
 
-  componentWillUnmount () { }
-
-  componentDidShow () { }
-
-  componentDidHide () { }
-
   createCardT3 () {
     const { type, toQuestion } = this.props
     switch (type) {
@@ -90,13 +84,6 @@ class QCard extends Component {
               }
             </View>
           </View>
-          {/* <View className='card-t-3'>
-            <View className='msg'>
-              <Image src={CLOCK} />
-              <Text>4小时30分后失效</Text>
-            </View>
-            <View className='btn' onClick={toQuestion}>去回复</View>
-          </View> */}
           { this.createCardT3() }
         </View>
         <View className='card-c'>
