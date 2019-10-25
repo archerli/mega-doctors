@@ -47,34 +47,11 @@ class Remark extends Component {
     })
   }
 
-  tagChange1(e) {
-    console.log(e.detail)
+  tagChange(id, e) {
+    // console.log(id)
+    // console.log(e.detail)
     this.setState({
-      tag1: e.detail.value
-    })
-  }
-
-  tagChange2(e) {
-    this.setState({
-      tag2: e.detail.value
-    })
-  }
-
-  tagChange3(e) {
-    this.setState({
-      tag3: e.detail.value
-    })
-  }
-
-  tagChange4(e) {
-    this.setState({
-      tag4: e.detail.value
-    })
-  }
-
-  tagChange5(e) {
-    this.setState({
-      tag5: e.detail.value
+      [`tag${id}`]: e.detail.value
     })
   }
 
@@ -84,19 +61,19 @@ class Remark extends Component {
     return (
       <View className='remark'>
         <View className='tag'>
-          <Picker mode='selector' range={tagRange} onChange={this.tagChange1.bind(this)}>
+          <Picker mode='selector' range={tagRange} onChange={this.tagChange.bind(this, 1)}>
             <View className={`tag-${tag1}`}>{tag1 === '0' ? 'OSAHS' : `OSAHS | ${tagRange[tag1]}`}</View>
           </Picker>
-          <Picker mode='selector' range={tagRange} onChange={this.tagChange2.bind(this)}>
+          <Picker mode='selector' range={tagRange} onChange={this.tagChange.bind(this, 2)}>
             <View className={`tag-${tag2}`}>{tag2 === '0' ? 'COBP' : `COBP | ${tagRange[tag2]}`}</View>
           </Picker>
-          <Picker mode='selector' range={tagRange} onChange={this.tagChange3.bind(this)}>
+          <Picker mode='selector' range={tagRange} onChange={this.tagChange.bind(this, 3)}>
             <View className={`tag-${tag3}`}>{tag3 === '0' ? '冠心病' : `冠心病 | ${tagRange[tag3]}`}</View>
           </Picker>
-          <Picker mode='selector' range={tagRange} onChange={this.tagChange4.bind(this)}>
+          <Picker mode='selector' range={tagRange} onChange={this.tagChange.bind(this, 4)}>
             <View className={`tag-${tag4}`}>{tag4 === '0' ? '糖尿病' : `糖尿病 | ${tagRange[tag4]}`}</View>
           </Picker>
-          <Picker mode='selector' range={tagRange} onChange={this.tagChange5.bind(this)}>
+          <Picker mode='selector' range={tagRange} onChange={this.tagChange.bind(this, 5)}>
             <View className={`tag-${tag5}`}>{tag5 === '0' ? '高血压' : `高血压 | ${tagRange[tag5]}`}</View>
           </Picker>
         </View>
