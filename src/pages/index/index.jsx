@@ -4,7 +4,10 @@ import { connect } from '@tarojs/redux'
 
 import { AtActivityIndicator } from 'taro-ui'
 
+import AV from 'leancloud-storage/live-query';
+
 import { add, minus, asyncAdd } from '../../actions/counter'
+import utils from '../../common/utils'
 
 import QCard from '../../components/QCard/QCard'
 import QRCODE from '../../assets/qrcode.png'

@@ -2,7 +2,7 @@
  * @desc 存放项目中使用的公共方法
  */
 
-// import AV from 'leancloud-storage/live-query';
+import AV from 'leancloud-storage/live-query';
 // import { APP } from './Constant';
 
 class utils {

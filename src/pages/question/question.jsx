@@ -160,54 +160,54 @@ class Questions extends Component {
   }
 
   onPageScroll(e) {
-    let { scrollTop } = e.detail
-    //当滚动的top值最大或最小时，为什么要做这一步是因为在手机实测小程序的时候会发生滚动条回弹，所以为了处理回弹，设置默认最大最小值
-    if (scrollTop <= 0) {
-      scrollTop = 0;
-    } else if (scrollTop > Taro.getSystemInfoSync().windowHeight) {
-      scrollTop = Taro.getSystemInfoSync().windowHeight;
-    }
-    //判断浏览器滚动条上下滚动
-    if (scrollTop > this.state.scrollTop || scrollTop == Taro.getSystemInfoSync().windowHeight) {
-      this.setState({
-        showRemark: true
-      })
-      //向下滚动
-    } else {
-      this.setState({
-        showRemark: false
-      })
-      //向上滚动
-    }
-    //给scrollTop重新赋值
-    setTimeout(() => {
-      this.setState({
-        scrollTop
-      })
-    }, 0)
+    // let { scrollTop } = e.detail
+    // //当滚动的top值最大或最小时，为什么要做这一步是因为在手机实测小程序的时候会发生滚动条回弹，所以为了处理回弹，设置默认最大最小值
+    // if (scrollTop <= 0) {
+    //   scrollTop = 0;
+    // } else if (scrollTop > Taro.getSystemInfoSync().windowHeight) {
+    //   scrollTop = Taro.getSystemInfoSync().windowHeight;
+    // }
+    // //判断浏览器滚动条上下滚动
+    // if (scrollTop > this.state.scrollTop || scrollTop == Taro.getSystemInfoSync().windowHeight) {
+    //   this.setState({
+    //     showRemark: true
+    //   })
+    //   //向下滚动
+    // } else {
+    //   this.setState({
+    //     showRemark: false
+    //   })
+    //   //向上滚动
+    // }
+    // //给scrollTop重新赋值
+    // setTimeout(() => {
+    //   this.setState({
+    //     scrollTop
+    //   })
+    // }, 0)
   }
 
   render () {
-    const { tag1, tag2, tag3, tag4, tag5, msgList, scrollIntoView, inputValue } = this.state
+    const { tag1, tag2, tag3, tag4, tag5, showRemark, msgList, scrollIntoView, inputValue } = this.state
     const tagRange = ['无', '轻度', '中度', '重度']
     return (
       <View className='question'>
         <View className='remark'>
           <View className='remark-1'>
             <Picker mode='selector' range={tagRange} onChange={this.tagChange.bind(this, 1)}>
-              <View className={`tag-${tag1}`}>{tag1 === '0' ? 'OSAHS' : `OSAHS | ${tagRange[tag1]}`}</View>
+              <View className={`tag-${tag1}`}>{tag1 === '0' ? 'OSAHS' : `OSAHS | ${tagRange[tag1].substr(0, 1)}`}</View>
             </Picker>
             <Picker mode='selector' range={tagRange} onChange={this.tagChange.bind(this, 2)}>
-              <View className={`tag-${tag2}`}>{tag2 === '0' ? 'COBP' : `COBP | ${tagRange[tag2]}`}</View>
+              <View className={`tag-${tag2}`}>{tag2 === '0' ? 'COBP' : `COBP | ${tagRange[tag2].substr(0, 1)}`}</View>
             </Picker>
             <Picker mode='selector' range={tagRange} onChange={this.tagChange.bind(this, 3)}>
-              <View className={`tag-${tag3}`}>{tag3 === '0' ? '冠心病' : `冠心病 | ${tagRange[tag3]}`}</View>
+              <View className={`tag-${tag3}`}>{tag3 === '0' ? '冠心病' : `冠心病 | ${tagRange[tag3].substr(0, 1)}`}</View>
             </Picker>
             <Picker mode='selector' range={tagRange} onChange={this.tagChange.bind(this, 4)}>
-              <View className={`tag-${tag4}`}>{tag4 === '0' ? '糖尿病' : `糖尿病 | ${tagRange[tag4]}`}</View>
+              <View className={`tag-${tag4}`}>{tag4 === '0' ? '糖尿病' : `糖尿病 | ${tagRange[tag4].substr(0, 1)}`}</View>
             </Picker>
             <Picker mode='selector' range={tagRange} onChange={this.tagChange.bind(this, 5)}>
-              <View className={`tag-${tag5}`}>{tag5 === '0' ? '高血压' : `高血压 | ${tagRange[tag5]}`}</View>
+              <View className={`tag-${tag5}`}>{tag5 === '0' ? '高血压' : `高血压 | ${tagRange[tag5].substr(0, 1)}`}</View>
             </Picker>
           </View>
           <View className='remark-2'></View>

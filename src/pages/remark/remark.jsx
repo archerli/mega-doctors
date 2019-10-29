@@ -62,19 +62,19 @@ class Remark extends Component {
       <View className='remark'>
         <View className='tag'>
           <Picker mode='selector' range={tagRange} onChange={this.tagChange.bind(this, 1)}>
-            <View className={`tag-${tag1}`}>{tag1 === '0' ? 'OSAHS' : `OSAHS | ${tagRange[tag1]}`}</View>
+            <View className={`tag-${tag1}`}>{tag1 === '0' ? 'OSAHS' : `OSAHS | ${tagRange[tag1].substr(0, 1)}`}</View>
           </Picker>
           <Picker mode='selector' range={tagRange} onChange={this.tagChange.bind(this, 2)}>
-            <View className={`tag-${tag2}`}>{tag2 === '0' ? 'COBP' : `COBP | ${tagRange[tag2]}`}</View>
+            <View className={`tag-${tag2}`}>{tag2 === '0' ? 'COBP' : `COBP | ${tagRange[tag2].substr(0, 1)}`}</View>
           </Picker>
           <Picker mode='selector' range={tagRange} onChange={this.tagChange.bind(this, 3)}>
-            <View className={`tag-${tag3}`}>{tag3 === '0' ? '冠心病' : `冠心病 | ${tagRange[tag3]}`}</View>
+            <View className={`tag-${tag3}`}>{tag3 === '0' ? '冠心病' : `冠心病 | ${tagRange[tag3].substr(0, 1)}`}</View>
           </Picker>
           <Picker mode='selector' range={tagRange} onChange={this.tagChange.bind(this, 4)}>
-            <View className={`tag-${tag4}`}>{tag4 === '0' ? '糖尿病' : `糖尿病 | ${tagRange[tag4]}`}</View>
+            <View className={`tag-${tag4}`}>{tag4 === '0' ? '糖尿病' : `糖尿病 | ${tagRange[tag4].substr(0, 1)}`}</View>
           </Picker>
           <Picker mode='selector' range={tagRange} onChange={this.tagChange.bind(this, 5)}>
-            <View className={`tag-${tag5}`}>{tag5 === '0' ? '高血压' : `高血压 | ${tagRange[tag5]}`}</View>
+            <View className={`tag-${tag5}`}>{tag5 === '0' ? '高血压' : `高血压 | ${tagRange[tag5].substr(0, 1)}`}</View>
           </Picker>
         </View>
         <View className='input'>

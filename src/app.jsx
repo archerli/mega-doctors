@@ -2,6 +2,7 @@ import '@tarojs/async-await'
 import Taro, { Component } from '@tarojs/taro'
 import { Provider } from '@tarojs/redux'
 
+import utils from './common/utils'
 import Index from './pages/index'
 
 import configStore from './store'
@@ -61,7 +62,9 @@ class App extends Component {
     },
   }
 
-  componentDidMount () {}
+  componentDidMount () {
+    utils.initAV('f82OcAshk5Q1J993fGLJ4bbs-gzGzoHsz', 'O9COJzi78yYXCWVWMkLqlpp8');
+  }
 
   componentDidShow () {}
 
