@@ -4,7 +4,8 @@ import { connect } from '@tarojs/redux'
 
 import { AtActivityIndicator } from 'taro-ui'
 
-import AV from 'leancloud-storage/live-query';
+import AV from 'leancloud-storage/dist/av-weapp-min.js'
+import { Realtime, TextMessage } from 'leancloud-realtime/dist/realtime.weapp.min.js'
 
 import { add, minus, asyncAdd } from '../../actions/counter'
 import utils from '../../common/utils'
@@ -131,6 +132,10 @@ class Index extends Component {
 
   componentWillReceiveProps(nextProps) {
     console.log(this.props, nextProps)
+  }
+
+  componentDidMount() {
+    
   }
 
   componentWillUnmount() { }
