@@ -6,13 +6,13 @@ import { AtActivityIndicator } from 'taro-ui'
 
 import { add, minus, asyncAdd } from '../../actions/counter'
 
-import QCard from '../../components/QCard/QCard'
+import PCard from '../../components/PCard/PCard'
 import QRCODE from '../../assets/qrcode.png'
 import QING from '../../assets/qing.png'
 import ZHONG from '../../assets/zhong.png'
 import STAR from '../../assets/star.png'
 
-import './patient.scss'
+import './Patient.scss'
 
 const reply = [
   {
@@ -64,16 +64,12 @@ const noReply = [
     name: '王大锤21',
     icon: QRCODE,
     tag: [ZHONG],
-    time: '2019/10/09 18:00',
-    desc: '医生你好医生你好医生你好医生你好医生你好医生你好医生你好医生你好医生你好医生你好医生你好'
   },
   {
     id: 22,
     name: '王大锤22',
     icon: 'http://img10.360buyimg.com/jdphoto/s72x72_jfs/t5872/209/5240187906/2872/8fa98cd/595c3b2aN4155b931.png',
     tag: [QING],
-    time: '2019/10/08 18:00',
-    desc: '医生你好医生你好医生你好医生你好医生你好医生你好医生你好医生你好医生你好医生你好医生你好'
   },
   {
     id: 23,
@@ -81,16 +77,12 @@ const noReply = [
     isVip: true,
     icon: 'https://jdc.jd.com/img/200',
     tag: [],
-    time: '2019/10/07 18:00',
-    desc: '医生你好医生你好医生你好医生你好医生你好医生你好医生你好医生你好医生你好医生你好医生你好'
   },
   {
     id: 24,
     name: '王大锤24',
     icon: 'http://img10.360buyimg.com/jdphoto/s72x72_jfs/t5872/209/5240187906/2872/8fa98cd/595c3b2aN4155b931.png',
     tag: [STAR, ZHONG],
-    time: '2019/10/06 18:00',
-    desc: '医生你好医生你好医生你好医生你好医生你好医生你好医生你好医生你好医生你好医生你好医生你好'
   }
 ];
 
@@ -136,7 +128,7 @@ class Patient extends Component {
 
   toQuestion() {
     Taro.navigateTo({
-      url: '/pages/question/question'
+      url: '/pages/Question/Question'
     })
   }
 
@@ -190,15 +182,15 @@ class Patient extends Component {
           <View
             className={current === 1 ? 'selected' : ''}
             onClick={this.handleClick.bind(this, 1)}
-          >我关注的患者</View>
+          >付费过</View>
           <View
             className={current === 2 ? 'selected' : ''}
             onClick={this.handleClick.bind(this, 2)}
-          >付费患者</View>
+          >关注的</View>
           <View
             className={current === 3 ? 'selected' : ''}
             onClick={this.handleClick.bind(this, 3)}
-          >普通患者</View>
+          >普通的</View>
         </View>
         <View className='content'>
           <Swiper
@@ -213,20 +205,15 @@ class Patient extends Component {
                 enableBackToTop
                 onScrollToLower={this.scrollToLower.bind(this)}
               >
-                {/* <View className='content-t'>
-                  <AtActivityIndicator color='#48AEFC' size={24}></AtActivityIndicator>
-                </View> */}
+                <View style='height: 1px;'></View> {/* 上边距在 ScrollView 不满一屏时滚动，使用一个 1px 的元素占位 */}
                 {
                   reply.map(item => (
-                    <QCard
+                    <PCard
                       key={item.id}
-                      type='new'
                       name={item.name}
                       isVip={item.isVip}
                       icon={item.icon}
                       tag={item.tag}
-                      time={item.time}
-                      desc={item.desc}
                       toQuestion={this.toQuestion.bind(this, item.id)}
                     />
                   ))
@@ -250,17 +237,15 @@ class Patient extends Component {
                 enableBackToTop
                 // onScrollToLower={this.scrollToLower.bind(this)}
               >
+                <View style='height: 1px;'></View>
                 {
                   noReply.map(item => (
-                    <QCard
+                    <PCard
                       key={item.id}
-                      type='reply'
                       name={item.name}
                       isVip={item.isVip}
                       icon={item.icon}
                       tag={item.tag}
-                      time={item.time}
-                      desc={item.desc}
                       toQuestion={this.toQuestion.bind(this, item.id)}
                     />
                   ))
@@ -274,17 +259,15 @@ class Patient extends Component {
                 enableBackToTop
                 // onScrollToLower={this.scrollToLower.bind(this)}
               >
+                <View style='height: 1px;'></View>
                 {
                   noReply.map(item => (
-                    <QCard
+                    <PCard
                       key={item.id}
-                      type='finished'
                       name={item.name}
                       isVip={item.isVip}
                       icon={item.icon}
                       tag={item.tag}
-                      time={item.time}
-                      desc={item.desc}
                       toQuestion={this.toQuestion.bind(this, item.id)}
                     />
                   ))
@@ -298,17 +281,15 @@ class Patient extends Component {
                 enableBackToTop
                 // onScrollToLower={this.scrollToLower.bind(this)}
               >
+                <View style='height: 1px;'></View>
                 {
                   noReply.map(item => (
-                    <QCard
+                    <PCard
                       key={item.id}
-                      type='finished'
                       name={item.name}
                       isVip={item.isVip}
                       icon={item.icon}
                       tag={item.tag}
-                      time={item.time}
-                      desc={item.desc}
                       toQuestion={this.toQuestion.bind(this, item.id)}
                     />
                   ))

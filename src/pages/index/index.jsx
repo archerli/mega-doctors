@@ -16,7 +16,7 @@ import QING from '../../assets/qing.png'
 import ZHONG from '../../assets/zhong.png'
 import STAR from '../../assets/star.png'
 
-import './index.scss'
+import './Index.scss'
 
 const reply = [
   {
@@ -79,23 +79,23 @@ const noReply = [
     time: '2019/10/08 18:00',
     desc: '医生你好医生你好医生你好医生你好医生你好医生你好医生你好医生你好医生你好医生你好医生你好'
   },
-  {
-    id: 23,
-    name: '王大锤23',
-    isVip: true,
-    icon: 'https://jdc.jd.com/img/200',
-    tag: [],
-    time: '2019/10/07 18:00',
-    desc: '医生你好医生你好医生你好医生你好医生你好医生你好医生你好医生你好医生你好医生你好医生你好'
-  },
-  {
-    id: 24,
-    name: '王大锤24',
-    icon: 'http://img10.360buyimg.com/jdphoto/s72x72_jfs/t5872/209/5240187906/2872/8fa98cd/595c3b2aN4155b931.png',
-    tag: [STAR, ZHONG],
-    time: '2019/10/06 18:00',
-    desc: '医生你好医生你好医生你好医生你好医生你好医生你好医生你好医生你好医生你好医生你好医生你好'
-  }
+  // {
+  //   id: 23,
+  //   name: '王大锤23',
+  //   isVip: true,
+  //   icon: 'https://jdc.jd.com/img/200',
+  //   tag: [],
+  //   time: '2019/10/07 18:00',
+  //   desc: '医生你好医生你好医生你好医生你好医生你好医生你好医生你好医生你好医生你好医生你好医生你好'
+  // },
+  // {
+  //   id: 24,
+  //   name: '王大锤24',
+  //   icon: 'http://img10.360buyimg.com/jdphoto/s72x72_jfs/t5872/209/5240187906/2872/8fa98cd/595c3b2aN4155b931.png',
+  //   tag: [STAR, ZHONG],
+  //   time: '2019/10/06 18:00',
+  //   desc: '医生你好医生你好医生你好医生你好医生你好医生你好医生你好医生你好医生你好医生你好医生你好'
+  // }
 ];
 
 @connect(({ counter }) => ({
@@ -146,7 +146,7 @@ class Index extends Component {
 
   toQuestion(id, name) {
     Taro.navigateTo({
-      url: `/pages/question/question?id=${id}&name=${name}`
+      url: `/pages/Question/Question?id=${id}&name=${name}`
     })
   }
 
@@ -219,9 +219,7 @@ class Index extends Component {
                 enableBackToTop
                 onScrollToLower={this.scrollToLower.bind(this)}
               >
-                {/* <View className='content-t'>
-                  <AtActivityIndicator color='#48AEFC' size={24}></AtActivityIndicator>
-                </View> */}
+                <View style='height: 1px;'></View> {/* 上边距在 ScrollView 不满一屏时滚动，使用一个 1px 的元素占位 */}
                 {
                   reply.map(item => (
                     <QCard
@@ -256,6 +254,7 @@ class Index extends Component {
                 enableBackToTop
                 // onScrollToLower={this.scrollToLower.bind(this)}
               >
+                <View style='height: 1px;'></View>
                 {
                   noReply.map(item => (
                     <QCard
@@ -280,6 +279,7 @@ class Index extends Component {
                 enableBackToTop
                 // onScrollToLower={this.scrollToLower.bind(this)}
               >
+                <View style='height: 1px;'></View>
                 {
                   noReply.map(item => (
                     <QCard

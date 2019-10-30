@@ -1,12 +1,17 @@
 import Taro, { Component } from '@tarojs/taro'
 import { View, Button, Text } from '@tarojs/components'
 import { connect } from '@tarojs/redux'
-import { AtAvatar, AtList, AtListItem, AtCurtain } from "taro-ui"
+import { AtAvatar, AtList, AtListItem, AtIcon } from "taro-ui"
 
 import { add, minus, asyncAdd } from '../../actions/counter'
-import QRCODE from '../../assets/qrcode.png'
 
-import './mine.scss'
+import AUTH from '../../assets/auth.png'
+import INVITE from '../../assets/invite.png'
+import SERVICE from '../../assets/service.png'
+import AG from '../../assets/ag.png'
+import SETTING from '../../assets/setting.png'
+
+import './Mine.scss'
 
 @connect(({ counter }) => ({
   counter
@@ -25,7 +30,9 @@ import './mine.scss'
 class Mine extends Component {
 
   config = {
-    navigationBarTitleText: '我的'
+    navigationBarTitleText: '我的',
+    disableScroll: true,
+    backgroundColor: "#ececec"
   }
 
   constructor () {
@@ -47,60 +54,67 @@ class Mine extends Component {
     })
   }
 
-  componentWillReceiveProps (nextProps) {
-    console.log(this.props, nextProps)
-  }
-
-  componentWillUnmount () { }
-
-  componentDidShow () { }
-
-  componentDidHide () { }
-
   render () {
     return (
       <View className='mine'>
-        <AtCurtain
-          isOpened={this.state.isOpened}
-          onClose={this.onClose.bind(this)}
-        >
-          <Image
-            style='width: 100%; height: 300px;'
-            src={QRCODE}
-          />
-        </AtCurtain>
         <View className='info'>
           <View className='info-1'>
             <AtAvatar circle image='https://jdc.jd.com/img/200'></AtAvatar>
           </View>
           <View className='info-2'>
-            <View>刘医生</View>
-            <View>已认证</View>
+            <View className='name'>
+              <Text>刘医生</Text>
+              <Image src={AUTH} />
+            </View>
+            <View>兆观号：10115</View>
           </View>
           <View className='info-3' onClick={this.handleChange.bind(this)}>
-            <Image
-              style="width: 40px; height: 40px;"
-              src={QRCODE}
-            />
+            <AtIcon value='chevron-right' size='28' color='#999999'></AtIcon>
           </View>
         </View>
-        <AtList>
-          <AtListItem
-            title='咨询'
-            arrow='right'
-            thumb='https://img12.360buyimg.com/jdphoto/s72x72_jfs/t6160/14/2008729947/2754/7d512a86/595c3aeeNa89ddf71.png'
-          />
-          <AtListItem
-            title='帮助'
-            arrow='right'
-            thumb='https://img12.360buyimg.com/jdphoto/s72x72_jfs/t6160/14/2008729947/2754/7d512a86/595c3aeeNa89ddf71.png'
-          />
-          <AtListItem
-            title='设置'
-            arrow='right'
-            thumb='https://img12.360buyimg.com/jdphoto/s72x72_jfs/t6160/14/2008729947/2754/7d512a86/595c3aeeNa89ddf71.png'
-          />
-        </AtList>
+        <View className='data'>
+          <View>
+            <Text>50</Text>
+            <Text className='data-i'>咨询量</Text>
+          </View>
+          <View>
+            <Text>100</Text>
+            <Text className='data-i'>我的患者</Text>
+          </View>
+          <View>
+            <Text>300</Text>
+            <Text className='data-i'>我的积分</Text>
+          </View>
+        </View>
+        <View className='list'>
+          <AtList style='margin-bottom: 20px;'>
+            <AtListItem
+              title='邀请患者'
+              arrow='right'
+              thumb={INVITE}
+            />
+            <AtListItem
+              title='我的兆观助手'
+              extraText='克里斯'
+              arrow='right'
+              thumb={SERVICE}
+            />
+          </AtList>
+        </View>
+        <View className='list'>
+          <AtList>
+            <AtListItem
+              title='使用协议'
+              arrow='right'
+              thumb={AG}
+            />
+            <AtListItem
+              title='设置'
+              arrow='right'
+              thumb={SETTING}
+            />
+          </AtList>
+        </View>
       </View>
     )
   }

@@ -11,7 +11,7 @@ import QING from '../../assets/qing.png'
 import ZHONG from '../../assets/zhong.png'
 import CLOCK from '../../assets/clock.png'
 
-import './question.scss'
+import './Question.scss'
 
 @connect(({ counter }) => ({
   counter
@@ -27,7 +27,7 @@ import './question.scss'
   }
 }))
 
-class Questions extends Component {
+class Question extends Component {
 
   config = {
     navigationBarTitleText: '',
@@ -114,7 +114,7 @@ class Questions extends Component {
 
   toRemark() {
     Taro.navigateTo({
-      url: '/pages/remark/remark'
+      url: '/pages/Remark/Remark'
     })
   }
 
@@ -223,6 +223,7 @@ class Questions extends Component {
           scrollIntoView={scrollIntoView}
           onScroll={this.onPageScroll.bind(this)}
         >
+          <View style='height: 1px;'></View> {/* 上边距在 ScrollView 不满一屏时滚动，使用一个 1px 的元素占位 */}
           {
             msgList.map((item, index) => (
               <MsgItem
@@ -237,7 +238,7 @@ class Questions extends Component {
               />
             ))
           }
-          <View style='height: 1px;'></View> {/* 下边距在 ScrollView 不显示，使用一个 1px 的元素占位 */}
+          <View style='height: 1px;'></View> {/* 下边距在 ScrollView 中不显示，使用一个 1px 的元素占位 */}
         </ScrollView>
         <View class='input'>
           <Input
@@ -256,4 +257,4 @@ class Questions extends Component {
   }
 }
 
-export default Questions
+export default Question

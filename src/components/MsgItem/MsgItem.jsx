@@ -45,9 +45,15 @@ class MsgItem extends Component {
     }
   }
 
+  toDetail() {
+    Taro.navigateTo({
+      url: `/pages/PatientDetail/PatientDetail`
+    })
+  }
+
   toWebview(url) {
     Taro.navigateTo({
-      url: `/pages/webview/webview?url=${url}`
+      url: `/pages/Webview/Webview?url=${url}`
     })
   }
 
@@ -72,7 +78,7 @@ class MsgItem extends Component {
             </View>
           </View>
           : <View className='msg-c'>
-            <View className='icon'>
+            <View className='icon' onClick={this.toDetail.bind(this)}>
               <Image src={icon} />
             </View>
             <View className='content'>

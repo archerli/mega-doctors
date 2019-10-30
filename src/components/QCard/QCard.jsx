@@ -13,39 +13,45 @@ class QCard extends Component {
     super(...arguments)
   }
 
+  toDetail() {
+    Taro.navigateTo({
+      url: `/pages/PatientDetail/PatientDetail`
+    })
+  }
+
   createCardT3 () {
     const { type, toQuestion } = this.props
     switch (type) {
       case 'new': {
         return (
-          <View className='card-t-3'>
+          <View className='card-t-3' onClick={toQuestion}>
             <View className='msg'>
               <Image src={CLOCK} />
               <Text>4小时30分后失效</Text>
             </View>
-            <View className='btn' onClick={toQuestion}>去回复</View>
+            <View className='btn'>去回复</View>
           </View>
         )
       }
       case 'reply': {
         return (
-          <View className='card-t-3'>
+          <View className='card-t-3' onClick={toQuestion}>
             <View className='msg'>
               <Image src={CLOCK} />
               <Text>4小时30分后结束</Text>
             </View>
-            <View className='btn' onClick={toQuestion}>继续回复</View>
+            <View className='btn'>继续回复</View>
           </View>
         )
       }
       case 'finished': {
         return (
-          <View className='card-t-3'>
+          <View className='card-t-3' onClick={toQuestion}>
             <View className='msg'>
               <Image src={JIFEN} />
               <Text style='color: #FFB503;'>贡献值：{'100'}</Text>
             </View>
-            <View className='btn' onClick={toQuestion}>查看</View>
+            <View className='btn'>查看</View>
           </View>
         )
       }
@@ -66,17 +72,17 @@ class QCard extends Component {
     return (
       <View className='card'>
         <View className='card-t'>
-          <View className='card-t-1'>
+          <View className='card-t-1' onClick={this.toDetail.bind(this)}>
             <Image src={icon} />
           </View>
-          <View className='card-t-2'>
-            <View>
+          <View className='card-t-2' onClick={this.toDetail.bind(this)}>
+            <View className='name'>
               <Text>{name}</Text>
               {
                 isVip && <Image src={VIP} />
               }
             </View>
-            <View>
+            <View className='tag'>
               {
                 tag.length && tag.map((item, index) => (
                   <Image src={item} key={index} />

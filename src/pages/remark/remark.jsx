@@ -5,7 +5,7 @@ import { AtTextarea } from 'taro-ui'
 
 import { add, minus, asyncAdd } from '../../actions/counter'
 
-import './remark.scss'
+import './Remark.scss'
 
 
 @connect(({ counter }) => ({
@@ -25,7 +25,7 @@ import './remark.scss'
 class Remark extends Component {
 
   config = {
-    navigationBarTitleText: '回复',
+    navigationBarTitleText: '备注',
     disableScroll: true
   }
 

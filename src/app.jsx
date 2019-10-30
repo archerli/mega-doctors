@@ -22,12 +22,13 @@ class App extends Component {
 
   config = {
     pages: [
-      'pages/index/index',
-      'pages/patient/patient',
-      'pages/question/question',
-      'pages/remark/remark',
-      'pages/mine/mine',
-      'pages/webview/webview'
+      'pages/Index/Index',
+      'pages/Patient/Patient',
+      'pages/Question/Question',
+      'pages/Remark/Remark',
+      'pages/Mine/Mine',
+      'pages/Webview/Webview',
+      'pages/PatientDetail/PatientDetail'
     ],
     window: {
       backgroundTextStyle: 'light',
@@ -41,19 +42,19 @@ class App extends Component {
       backgroundColor: "#fff",
       list: [
         {
-          "pagePath": "pages/index/index",
+          "pagePath": "pages/Index/Index",
           "text": "咨询",
           "iconPath": "assets/index.png",
           "selectedIconPath": "assets/index-s.png"
         },
         {
-          "pagePath": "pages/patient/patient",
+          "pagePath": "pages/Patient/Patient",
           "text": "患者",
           "iconPath": "assets/user.png",
           "selectedIconPath": "assets/user-s.png"
         },
         {
-          "pagePath": "pages/mine/mine",
+          "pagePath": "pages/Mine/Mine",
           "text": "我的",
           "iconPath": "assets/mine.png",
           "selectedIconPath": "assets/mine-s.png"

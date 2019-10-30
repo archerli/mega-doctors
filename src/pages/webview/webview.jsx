@@ -4,7 +4,7 @@ import { connect } from '@tarojs/redux'
 
 import { add, minus, asyncAdd } from '../../actions/counter'
 
-import './webview.scss'
+import './Webview.scss'
 
 @connect(({ counter }) => ({
   counter

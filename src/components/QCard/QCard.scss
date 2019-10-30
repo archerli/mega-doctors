@@ -26,15 +26,21 @@
       font-size: 30px;
       color: #333333;
       font-weight: 600;
-      View {
+      View.name {
         display: flex;
         align-items: center;
-        Text {
-          margin-right: 8px;
-        }
         Image {
-          width: 37px;
+          width: 36px;
           height: 34px;
+          margin-left: 8px;
+        }
+      }
+      View.tag {
+        height: 35px;
+        margin-bottom: 2px;
+        Image {
+          width: 35px;
+          height: 35px;
           margin-right: 8px;
         }
       }
