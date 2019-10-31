@@ -17,7 +17,7 @@ class PCard extends Component {
 
   toDetail() {
     Taro.navigateTo({
-      url: `/pages/PatientDetail/PatientDetail`
+      url: `/pages/PatientInfo/PatientInfo`
     })
   }
 

@@ -61,7 +61,7 @@ class utils {
     AV.init({
       appId: id,
       appKey: key,
-      serverURLs: 'https://avoscloud.com',
+      serverURLs: 'https://api-mhn.megahealth.cn',
     });
     // return AV;
   }

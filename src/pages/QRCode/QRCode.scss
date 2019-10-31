@@ -1,0 +1,40 @@
+.qrcode {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+  background-color: #ececec;
+  .doc-tip {
+    font-size: 30px;
+    color: #666666;
+  }
+  .pat-tip {
+    margin-bottom: 24px;
+    font-size: 36px;
+    color: #333333;
+    font-weight: bold;
+    transform: rotate(180deg);
+  }
+  .qrc-img {
+    margin: 36px 0 60px;
+    transform: rotate(180deg);
+    Image {
+      width: 420px;
+      height: 420px;
+    }
+  }
+  .btn {
+    margin: 80px 0 60px;
+    width: 360px;
+    height: 70px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 2px solid #3D79E5;
+    border-radius: 10px;
+    font-size: 32px;
+    color: #3D79E5;
+  }
+}

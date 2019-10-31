@@ -28,7 +28,10 @@ class App extends Component {
       'pages/Remark/Remark',
       'pages/Mine/Mine',
       'pages/Webview/Webview',
-      'pages/PatientDetail/PatientDetail'
+      'pages/PatientInfo/PatientInfo',
+      'pages/MyInfo/MyInfo',
+      'pages/DoctorAuth/DoctorAuth',
+      'pages/QRCode/QRCode'
     ],
     window: {
       backgroundTextStyle: 'light',

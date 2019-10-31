@@ -6,7 +6,7 @@ import { AtAvatar, AtList, AtListItem, AtCurtain } from "taro-ui"
 import { add, minus, asyncAdd } from '../../actions/counter'
 import QRCODE from '../../assets/qrcode.png'
 
-import './PatientDetail.scss'
+import './PatientInfo.scss'
 
 @connect(({ counter }) => ({
   counter
@@ -22,10 +22,11 @@ import './PatientDetail.scss'
   }
 }))
 
-class PatientDetail extends Component {
+class PatientInfo extends Component {
 
   config = {
     navigationBarTitleText: '患者信息',
+    disableScroll: true,
     backgroundColor: "#ececec"
   }
 
@@ -115,4 +116,4 @@ class PatientDetail extends Component {
   }
 }
 
-export default PatientDetail
+export default PatientInfo
