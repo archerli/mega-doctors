@@ -2,7 +2,7 @@ import Taro, { Component } from '@tarojs/taro'
 import { WebView } from '@tarojs/components'
 import { connect } from '@tarojs/redux'
 
-import { add, minus, asyncAdd } from '../../actions/counter'
+import { add, minus, asyncAdd } from '../../actions/creator'
 
 import './Webview.scss'
 

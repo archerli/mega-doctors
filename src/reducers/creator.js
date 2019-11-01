@@ -1,35 +1,64 @@
-import { ADD, MINUS } from '../constants/creator'
+import * as TYPES from '../constants/creator'
 
-import { INITIAL_STATE, MINE } from './initialState'
+import * as STATES from './initialState'
 
-export const creator = (state = INITIAL_STATE, action) => {
+// 患者列表
+export const patient = (state = STATES.PATIENT, action) => {
   switch (action.type) {
-    case ADD:
+    case TYPES.GET_DOCTOR_PATIENT_DATA:
       return {
         ...state,
-        num: state.num + 1
-      }
-    case MINUS:
-      return {
-        ...state,
-        num: state.num - 1
+        vip: action.data.vip,
+        paid: action.data.paid,
+        follow: action.data.follow,
+        normal: action.data.normal
       }
     default:
       return state
   }
 }
 
-export const mine = (state = MINE, action) => {
+// 患者信息
+export const patientInfo = (state = STATES.PATIENT_INFO, action) => {
   switch (action.type) {
-    case ADD:
+    case TYPES.GET_PATIENT_DATA:
       return {
         ...state,
-        name: action.payload.name
+        vip: action.data.vip,
+        paid: action.data.paid,
+        follow: action.data.follow,
+        normal: action.data.normal
       }
-    case MINUS:
+    default:
+      return state
+  }
+}
+
+// 我的
+export const mine = (state = STATES.MINE, action) => {
+  switch (action.type) {
+    case TYPES.GET_DOCTOR_DATA:
       return {
         ...state,
-        num: state.num - 1
+        name: action.data.name
+      }
+    default:
+      return state
+  }
+}
+
+// 个人信息
+export const myInfo = (state = STATES.MY_INFO, action) => {
+  switch (action.type) {
+    case TYPES.GET_DOCTOR_DATA:
+      return {
+        ...state,
+        name: action.data.name,
+        gender: action.data.gender,
+        hospital: action.data.hospital,
+        department: action.data.department,
+        title: action.data.title,
+        phone: action.data.phone
       }
     default:
       return state

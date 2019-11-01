@@ -1,7 +1,14 @@
 import { combineReducers } from 'redux'
-import { creator, mine } from './creator'
+import {
+  mine,
+  myInfo,
+  patient,
+  patientInfo
+} from './creator'
 
 export default combineReducers({
-  creator,
-  mine
+  mine,
+  myInfo,
+  patient,
+  patientInfo
 })

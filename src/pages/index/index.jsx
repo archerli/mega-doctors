@@ -7,7 +7,7 @@ import { AtActivityIndicator } from 'taro-ui'
 import AV from 'leancloud-storage/dist/av-weapp-min.js'
 import { Realtime, TextMessage } from 'leancloud-realtime/dist/realtime.weapp.min.js'
 
-import { add, minus, asyncAdd } from '../../actions/counter'
+import { add, minus, asyncAdd } from '../../actions/creator'
 import utils from '../../common/utils'
 
 import QCard from '../../components/QCard/QCard'

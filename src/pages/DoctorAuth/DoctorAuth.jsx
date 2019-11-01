@@ -3,7 +3,7 @@ import { View, Button, Text } from '@tarojs/components'
 import { connect } from '@tarojs/redux'
 import { AtAvatar, AtList, AtListItem, AtCurtain } from "taro-ui"
 
-import { add, minus, asyncAdd } from '../../actions/counter'
+import { add, minus, asyncAdd } from '../../actions/creator'
 import QRCODE from '../../assets/qrcode.png'
 
 import './DoctorAuth.scss'

@@ -3,22 +3,16 @@ import { View, Button, Text } from '@tarojs/components'
 import { connect } from '@tarojs/redux'
 import { AtAvatar, AtList, AtListItem, AtCurtain } from "taro-ui"
 
-import { add, minus, asyncAdd } from '../../actions/counter'
+import { getDoctorData } from '../../actions/creator'
 import QRCODE from '../../assets/qrcode.png'
 
 import './MyInfo.scss'
 
-@connect(({ counter }) => ({
-  counter
+@connect(({ myInfo }) => ({
+  myInfo
 }), (dispatch) => ({
-  add () {
-    dispatch(add())
-  },
-  dec () {
-    dispatch(minus())
-  },
-  asyncAdd () {
-    dispatch(asyncAdd())
+  getDoctorData() {
+    dispatch(getDoctorData())
   }
 }))
 
@@ -35,6 +29,10 @@ class MyInfo extends Component {
     this.state = {
       isOpened: false,
     }
+  }
+
+  componentDidMount() {
+    this.props.getDoctorData();
   }
 
   handleChange () {
@@ -56,13 +54,14 @@ class MyInfo extends Component {
   }
 
   render () {
+    const { myInfo } = this.props
     return (
       <View className='detail'>
         <View className='icon'>
           <AtList>
             <AtListItem
               title='工作照'
-              extraText='王大锤'
+              extraThumb={QRCODE}
               arrow='right'
             />
           </AtList>
@@ -71,32 +70,32 @@ class MyInfo extends Component {
           <AtList>
             <AtListItem
               title='姓名'
-              extraText='王大锤'
+              extraText={myInfo.name}
               arrow='right'
             />
             <AtListItem
               title='性别'
-              extraText='男'
+              extraText={myInfo.gender === 'M' ? '男' : '女'}
               arrow='right'
             />
             <AtListItem
               title='所在医院'
-              extraText='上海复旦大学附属医院'
+              extraText={myInfo.hospital}
               arrow='right'
             />
             <AtListItem
               title='所在科室'
-              extraText='呼吸科'
+              extraText={myInfo.department}
               arrow='right'
             />
             <AtListItem
               title='职称'
-              extraText='主任医师'
+              extraText={myInfo.title}
               arrow='right'
             />
             <AtListItem
               title='电话'
-              extraText='18866667777'
+              extraText={myInfo.phone}
               arrow='right'
             />
           </AtList>

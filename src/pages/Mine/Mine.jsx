@@ -3,7 +3,7 @@ import { View, Button, Text } from '@tarojs/components'
 import { connect } from '@tarojs/redux'
 import { AtAvatar, AtList, AtListItem, AtIcon } from "taro-ui"
 
-import { add, minus, asyncAdd, getDoctorData } from '../../actions/creator'
+import { getDoctorData } from '../../actions/creator'
 
 import AUTH from '../../assets/auth.png'
 import INVITE from '../../assets/invite.png'
@@ -16,15 +16,6 @@ import './Mine.scss'
 @connect(({ mine }) => ({
   mine
 }), (dispatch) => ({
-  add () {
-    dispatch(add())
-  },
-  dec () {
-    dispatch(minus())
-  },
-  asyncAdd () {
-    dispatch(asyncAdd())
-  },
   getDoctorData() {
     dispatch(getDoctorData())
   }
@@ -77,7 +68,7 @@ class Mine extends Component {
           </View>
           <View className='info-2'>
             <View className='name'>
-              <Text>{this.props.mine.name}</Text>
+              <Text>{mine.name}</Text>
               <Image src={AUTH} onClick={this.toDoctorAuth.bind(this)} />
             </View>
             <View>兆观号：10115</View>
@@ -88,7 +79,7 @@ class Mine extends Component {
         </View>
         <View className='data'>
           <View>
-            <Text>{this.props.mine.authenticated}</Text>
+            <Text>{mine.authenticated}</Text>
             <Text className='data-i'>咨询量</Text>
           </View>
           <View>

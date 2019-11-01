@@ -4,7 +4,7 @@ import { connect } from '@tarojs/redux'
 
 import { AtActivityIndicator } from 'taro-ui'
 
-import { add, minus, asyncAdd } from '../../actions/counter'
+import { getDoctorPatientData } from '../../actions/creator'
 
 import PCard from '../../components/PCard/PCard'
 import QRCODE from '../../assets/qrcode.png'
@@ -86,17 +86,11 @@ const noReply = [
   }
 ];
 
-@connect(({ counter }) => ({
-  counter
+@connect(({ patient }) => ({
+  patient
 }), (dispatch) => ({
-  add () {
-    dispatch(add())
-  },
-  dec () {
-    dispatch(minus())
-  },
-  asyncAdd () {
-    dispatch(asyncAdd())
+  getDoctorPatientData () {
+    dispatch(getDoctorPatientData())
   }
 }))
 
@@ -116,15 +110,9 @@ class Patient extends Component {
     }
   }
 
-  componentWillReceiveProps(nextProps) {
-    console.log(this.props, nextProps)
+  componentWillMount() {
+    this.props.getDoctorPatientData();
   }
-
-  componentWillUnmount() { }
-
-  componentDidShow() { }
-
-  componentDidHide() { }
 
   toQuestion() {
     Taro.navigateTo({
@@ -159,19 +147,20 @@ class Patient extends Component {
   // 上拉加载更多
   scrollToLower() {
     console.log('onScrollToLower!!!')
-    this.setState({
-      moreLoading: true
-    })
-    setTimeout(() => {
-      this.setState({
-        moreLoading: false,
-        moreLoaded: true
-      })
-    }, 3000)
+    // this.setState({
+    //   moreLoading: true
+    // })
+    // setTimeout(() => {
+    //   this.setState({
+    //     moreLoading: false,
+    //     moreLoaded: true
+    //   })
+    // }, 3000)
   }
 
   render () {
-    const { current, moreLoading, moreLoaded } = this.state;
+    const { patient } = this.props
+    const { current, moreLoading, moreLoaded } = this.state
     return (
       <View className='patient'>
         <View className='tab'>
@@ -207,9 +196,10 @@ class Patient extends Component {
               >
                 <View style='height: 1px;'></View> {/* 上边距在 ScrollView 不满一屏时滚动，使用一个 1px 的元素占位 */}
                 {
-                  reply.map(item => (
+                  patient.vip.map(item => (
                     <PCard
                       key={item.id}
+                      patientId={item.id}
                       name={item.name}
                       isVip={item.isVip}
                       icon={item.icon}
@@ -242,6 +232,7 @@ class Patient extends Component {
                   noReply.map(item => (
                     <PCard
                       key={item.id}
+                      patientId={item.id}
                       name={item.name}
                       isVip={item.isVip}
                       icon={item.icon}
@@ -264,6 +255,7 @@ class Patient extends Component {
                   noReply.map(item => (
                     <PCard
                       key={item.id}
+                      patientId={item.id}
                       name={item.name}
                       isVip={item.isVip}
                       icon={item.icon}
@@ -286,6 +278,7 @@ class Patient extends Component {
                   noReply.map(item => (
                     <PCard
                       key={item.id}
+                      patientId={item.id}
                       name={item.name}
                       isVip={item.isVip}
                       icon={item.icon}

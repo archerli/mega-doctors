@@ -3,7 +3,7 @@ import { View, Button, Text, Input } from '@tarojs/components'
 import { connect } from '@tarojs/redux'
 import { AtTextarea } from 'taro-ui'
 
-import { add, minus, asyncAdd } from '../../actions/counter'
+import { add, minus, asyncAdd } from '../../actions/creator'
 
 import './Remark.scss'
 
