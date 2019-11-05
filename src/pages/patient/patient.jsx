@@ -4,7 +4,7 @@ import { connect } from '@tarojs/redux'
 
 import { AtActivityIndicator } from 'taro-ui'
 
-import { getDoctorPatientData } from '../../actions/creator'
+import { getDoctorPatientData, swiperChange } from '../../actions/creator'
 
 import PCard from '../../components/PCard/PCard'
 import QRCODE from '../../assets/qrcode.png'
@@ -89,8 +89,11 @@ const noReply = [
 @connect(({ patient }) => ({
   patient
 }), (dispatch) => ({
-  getDoctorPatientData () {
+  getDoctorPatientData() {
     dispatch(getDoctorPatientData())
+  },
+  swiperChange (current) {
+    dispatch(swiperChange(current))
   }
 }))
 
@@ -110,7 +113,7 @@ class Patient extends Component {
     }
   }
 
-  componentWillMount() {
+  componentDidMount() {
     this.props.getDoctorPatientData();
   }
 
@@ -132,16 +135,18 @@ class Patient extends Component {
   // }
 
   handleClick(value) {
-    this.setState({
-      current: value 
-    })
+    // this.setState({
+    //   current: value 
+    // })
+    this.props.swiperChange(value)
   }
 
   swiperOnChange(e) {
     // console.log(e.currentTarget.current);
-    this.setState({
-      current: e.currentTarget.current
-    })
+    // this.setState({
+    //   current: e.currentTarget.current
+    // })
+    this.props.swiperChange(e.currentTarget.current)
   }
 
   // 上拉加载更多
@@ -160,31 +165,31 @@ class Patient extends Component {
 
   render () {
     const { patient } = this.props
-    const { current, moreLoading, moreLoaded } = this.state
+    const { moreLoading, moreLoaded } = this.state
     return (
       <View className='patient'>
         <View className='tab'>
           <View
-            className={current === 0 ? 'selected' : ''}
+            className={patient.current === 0 ? 'selected' : ''}
             onClick={this.handleClick.bind(this, 0)}
           >VIP患者</View>
           <View
-            className={current === 1 ? 'selected' : ''}
+            className={patient.current === 1 ? 'selected' : ''}
             onClick={this.handleClick.bind(this, 1)}
           >付费过</View>
           <View
-            className={current === 2 ? 'selected' : ''}
+            className={patient.current === 2 ? 'selected' : ''}
             onClick={this.handleClick.bind(this, 2)}
           >关注的</View>
           <View
-            className={current === 3 ? 'selected' : ''}
+            className={patient.current === 3 ? 'selected' : ''}
             onClick={this.handleClick.bind(this, 3)}
           >普通的</View>
         </View>
         <View className='content'>
           <Swiper
             className='content-swiper'
-            current={current}
+            current={patient.current}
             onChange={this.swiperOnChange.bind(this)}
           >
             <SwiperItem className="content-swiper-item">

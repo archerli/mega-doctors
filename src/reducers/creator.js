@@ -13,6 +13,11 @@ export const patient = (state = STATES.PATIENT, action) => {
         follow: action.data.follow,
         normal: action.data.normal
       }
+    case TYPES.SWIPER_CHANGE:
+      return {
+        ...state,
+        current: action.data
+      }
     default:
       return state
   }
@@ -24,10 +29,20 @@ export const patientInfo = (state = STATES.PATIENT_INFO, action) => {
     case TYPES.GET_PATIENT_DATA:
       return {
         ...state,
-        vip: action.data.vip,
-        paid: action.data.paid,
+        name: action.data.name,
+        gender: action.data.gender,
+        birthday: action.data.birthday,
+        phone: '',
+        city: '',
+        height: action.data.height,
+        weight: action.data.weight,
         follow: action.data.follow,
-        normal: action.data.normal
+        block: action.data.block
+      }
+    case TYPES.CHANGE_DOCTOR_PATIENT_DATA:
+      return {
+        ...state,
+        ...action.data
       }
     default:
       return state

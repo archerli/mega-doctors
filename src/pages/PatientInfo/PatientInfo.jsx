@@ -2,8 +2,9 @@ import Taro, { Component } from '@tarojs/taro'
 import { View, Button, Text } from '@tarojs/components'
 import { connect } from '@tarojs/redux'
 import { AtAvatar, AtList, AtListItem, AtCurtain } from "taro-ui"
+import AV from 'leancloud-storage/dist/av-weapp-min.js'
 
-import { getPatientData } from '../../actions/creator'
+import { getPatientData, changeDoctorPatientData } from '../../actions/creator'
 import QRCODE from '../../assets/qrcode.png'
 
 import './PatientInfo.scss'
@@ -11,8 +12,11 @@ import './PatientInfo.scss'
 @connect(({ patientInfo }) => ({
   patientInfo
 }), (dispatch) => ({
-  getPatientData (id) {
+  getPatientData(id) {
     dispatch(getPatientData(id))
+  },
+  changeDoctorPatientData(data) {
+    dispatch(changeDoctorPatientData(data))
   }
 }))
 
@@ -24,28 +28,20 @@ class PatientInfo extends Component {
     backgroundColor: "#ececec"
   }
 
-  constructor () {
+  constructor() {
     super(...arguments)
-    this.state = {
-      isOpened: false,
-    }
   }
 
   componentWillMount() {
     const params = this.$router.params
     console.log(params)
-    this.props.getPatientData(params.patientId);
+    this.props.getPatientData(params.patientId)
   }
 
-  handleChange () {
-    this.setState({
-      isOpened: true
-    })
-  }
-
-  onClose () {
-    this.setState({
-      isOpened: false
+  handleChange(key, e) {
+    console.log(e)
+    this.props.changeDoctorPatientData({
+      [key]: e.detail.value
     })
   }
 
@@ -55,41 +51,59 @@ class PatientInfo extends Component {
     })
   }
 
+  saveChange() {
+    const { follow, block } = this.props.patientInfo
+    const relation = AV.Object.createWithoutData('DoctorPatientRelation', '5db80167eaa375006c18a14c');
+    relation.set('follow', follow);
+    relation.set('block', block);
+    relation.save().then(res => {
+      Taro.showToast({
+        title: '保存成功'
+      })
+    }, err => {
+      Taro.showToast({
+        title: '保存失败，请重试',
+        icon: 'none'
+      })
+    });
+  }
+
   render () {
+    const { patientInfo } = this.props
     return (
       <View className='detail'>
         <View className='title'>基本信息</View>
         <AtList>
           <AtListItem
             title='姓名'
-            extraText='王大锤'
+            extraText={patientInfo.name}
           />
           <AtListItem
             title='性别'
-            extraText='男'
+            extraText={patientInfo.gender === 'M' ? '男' : '女'}
           />
           <AtListItem
             title='出生日期'
-            extraText='1900-01-01'
+            extraText={patientInfo.birthday}
           />
           <AtListItem
             title='联系电话'
-            extraText='18866667777'
+            extraText={patientInfo.phone}
           />
           <AtListItem
             title='所在城市'
-            extraText='杭州市'
+            extraText={patientInfo.city}
           />
         </AtList>
         <View className='title'>基本特征</View>
         <AtList>
           <AtListItem
             title='身高'
-            extraText='186cm'
+            extraText={patientInfo.height}
           />
           <AtListItem
             title='体重'
-            extraText='76kg'
+            extraText={patientInfo.weight}
           />
         </AtList>
         <View className='title'></View>
@@ -98,18 +112,20 @@ class PatientInfo extends Component {
             title='是否关注'
             isSwitch
             switchColor='#3D79E5'
-            onSwitchChange={this.handleChange.bind(this)}
+            switchIsCheck={patientInfo.follow}
+            onSwitchChange={this.handleChange.bind(this, 'follow')}
           />
           <AtListItem
             title='屏蔽消息'
             isSwitch
             switchColor='#3D79E5'
-            onSwitchChange={this.handleChange.bind(this)}
+            switchIsCheck={patientInfo.block}
+            onSwitchChange={this.handleChange.bind(this, 'block')}
           />
         </AtList>
         <View class='btn'>
           <Button className='edit' onClick={this.toRemark.bind(this)}>编辑备注</Button>
-          <Button className='save'>保存</Button>
+          <Button className='save' onClick={this.saveChange.bind(this)}>保存</Button>
         </View>
       </View>
     )

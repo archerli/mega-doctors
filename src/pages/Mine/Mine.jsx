@@ -58,6 +58,13 @@ class Mine extends Component {
     })
   }
 
+  dosth() {
+    Taro.requestSubscribeMessage({
+      tmplIds: ['W9nQspoCWnRGH1Qu5x0TjD9T6kzh31UeIviwUQLLU9s'],
+      success (res) { }
+    })
+  }
+
   render () {
     const { mine } = this.props
     return (
@@ -121,6 +128,7 @@ class Mine extends Component {
             />
           </AtList>
         </View>
+        <Button onClick={this.dosth.bind(this)}>TEST</Button>
       </View>
     )
   }

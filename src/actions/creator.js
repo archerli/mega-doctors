@@ -5,6 +5,13 @@ const action = (type, data) => {
   return { type, data }
 }
 
+export const swiperChange = (current) => {
+  return {
+    type: TYPES.SWIPER_CHANGE,
+    data: current
+  }
+}
+
 // 获取医生关联患者数据
 export const getDoctorPatientData = () => {
   return dispatch => {
@@ -21,13 +28,12 @@ export const getDoctorPatientData = () => {
       res.forEach(item => {
         const group = item.get('group')
         const patient = item.get('idPatient')
-        console.log(patient.id)
         switch (group) {
           case '1':
             vip.push({
-              id: patient.id,
-              name: patient.get('name'),
-              icon: patient.get('HeadPortiat') && patient.get('HeadPortiat').replace(/[\r\n]/g, ''),
+              id: patient && patient.id,
+              name: patient && patient.get('name'),
+              icon: patient && patient.get('HeadPortiat') && patient.get('HeadPortiat').replace(/[\r\n]/g, ''),
               isVip: false,
               tag: []
             })
@@ -53,6 +59,14 @@ export const getDoctorPatientData = () => {
   }
 }
 
+// 修改医生关联患者信息
+export const changeDoctorPatientData = (data) => {
+  return {
+    type: TYPES.CHANGE_DOCTOR_PATIENT_DATA,
+    data
+  }
+}
+
 // 获取患者数据
 export const getPatientData = (patientId) => {
   return dispatch => {
@@ -64,14 +78,17 @@ export const getPatientData = (patientId) => {
     query.find().then(res => {
       console.log(res)
       const patient = res[0].get('idPatient')
+      console.log(patient)
       dispatch(action(TYPES.GET_PATIENT_DATA, {
         name: patient.get('name'),
         gender: patient.get('gender'),
-        birth: patient.get('birthday'),
+        birthday: patient.get('birthday'),
         phone: '',
         city: '',
         height: patient.get('height'),
-        weight: patient.get('weight')
+        weight: patient.get('weight'),
+        follow: res[0].get('follow'),
+        block: res[0].get('block')
       }))
     });
   }

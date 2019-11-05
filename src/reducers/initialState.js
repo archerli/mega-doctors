@@ -1,5 +1,8 @@
 // 患者列表
 export const PATIENT = {
+  current: 0,
+  moreLoading: false,
+  moreLoaded: false,
   vip: [],
   paid: [],
   follow: [],
@@ -10,11 +13,13 @@ export const PATIENT = {
 export const PATIENT_INFO = {
   name: '',
   gender: '',
-  birth: '',
+  birthday: '',
   phone: '',
   city: '',
   height: '',
-  weight: ''
+  weight: '',
+  follow: false,
+  block: false
 }
 
 // 我的
