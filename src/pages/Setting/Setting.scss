@@ -1,14 +1,24 @@
-.myinfo {
+.setting {
   flex-direction: column;
   width: 100%;
   height: 100%;
   overflow: auto;
   background-color: #ececec;
-  .icon {
+  .title {
     padding: 20px 0;
   }
   .btn {
-    padding: 90px 30px 40px;
+    padding: 40px 30px;
+    Button.edit {
+      margin-bottom: 26px;
+      height: 88px;
+      line-height: 88px;
+      border: 1px solid #D6D5D6;
+      border-radius: 10px;
+      background: #ffffff;
+      font-size: 36px;
+      color: #000000;
+    }
     Button.save {
       height: 88px;
       line-height: 88px;
@@ -23,7 +33,7 @@
     padding: 24px 30px;
   }
   .at-list__item .item-extra__info {
-    padding-right: 40px;
+    padding-right: 4px;
   }
   .at-list__item-extra {
     max-width: 360px;

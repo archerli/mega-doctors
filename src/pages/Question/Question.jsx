@@ -1,6 +1,8 @@
 import Taro, { Component } from '@tarojs/taro'
 import { View, ScrollView, Text, Input, Button, Picker } from '@tarojs/components'
 import { connect } from '@tarojs/redux'
+import AV from 'leancloud-storage/dist/av-weapp-min.js'
+import { Realtime, TextMessage } from 'leancloud-realtime/dist/realtime.weapp.min.js'
 
 import { add, minus, asyncAdd } from '../../actions/creator'
 
@@ -110,6 +112,97 @@ class Question extends Component {
     this.setState({
       scrollIntoView: `last-${msgList.length - 1}`
     })
+
+    var realtime = new Realtime({
+      appId: 'f82OcAshk5Q1J993fGLJ4bbs-gzGzoHsz',
+      appKey: 'O9COJzi78yYXCWVWMkLqlpp8',
+      server: 'api-mhn.megahealth.cn',
+      plugins: AV.TypedMessagesPlugin // 注册富媒体消息插件
+    });
+    // Tom 用自己的名字作为 clientId 来登录即时通讯服务
+    realtime.createIMClient('5daeb07b7b968a0074945056')
+    .then(client => {
+      // 成功登录
+      this.client = client
+      return client.getConversation('5daeb07b7b968a0074945056')
+    })
+    .then(conversation => {
+      if (conversation) {
+        return conversation;
+      } else {
+        // 如果服务器端不存在这个 conversation
+        console.log('不存在这个 conversation，创建一个。');
+        // 创建与 Jerry 之间的对话
+        return this.client.createConversation({ // client 是一个 IMClient 实例
+          // 指定对话的成员除了当前用户 Tom（SDK 会默认把当前用户当做对话成员）之外，还有 Jerry
+          members: ['592e87b60ce4630057a7b582'],
+          // 对话名称
+          name: 'Tom & Jerry',
+          unique: true
+        }).then(conversation => {
+          console.log(conversation)
+          return conversation
+        })
+      }
+    })
+    .then(conversation => {
+      return conversation.join()
+    })
+    .then(conversation => {
+      // 获取聊天历史
+      this.conversation = conversation
+      this.messageIterator = conversation.createMessagesIterator();
+
+
+      this.messageIterator
+      .next()
+      .then(function(result) {
+        var data = result.value;
+        console.log(data)
+        // logFlag = false;
+        // // 存储下最早一条的消息时间戳
+        // var l = data.length;
+        // if (l) {
+        //   msgTime = data[0].timestamp;
+        // }
+        // for (var i = l - 1; i >= 0; i--) {
+        //   showMsg(data[i], true);
+        // }
+        // if (l) {
+        //   printWall.scrollTop = printWall.scrollHeight - height;
+        // }
+        // if (callback) {
+        //   callback();
+        // }
+      })
+      .catch(function(err) {
+        console.error(err);
+      });
+
+
+
+      // getLog(function() {
+      //   printWall.scrollTop = printWall.scrollHeight;
+      //   showLog('已经加入，可以开始聊天。');
+      // });
+      // 房间接受消息
+      conversation.on('message', function(message) {
+        // if (!msgTime) {
+        //   // 存储下最早的一个消息时间戳
+        //   msgTime = message.timestamp;
+        // }
+        // showMsg(message);
+      });
+    })
+    .catch(err => {
+      console.log(err)
+    });
+
+    
+
+
+
+
   }
 
   toRemark() {
@@ -144,19 +237,26 @@ class Question extends Component {
     // console.log(e)
     const value = e.detail.value
     if (!value) return
-    const { msgList } = this.state
-    msgList.push({
-      time: utils.formatTime(new Date().getTime(), 'yyyy/MM/dd HH:mm'),
-      from: 'self',
-      icon: CLOCK,
-      type: 'text',
-      content: e.detail.value
-    })
-    this.setState({
-      msgList,
-      scrollIntoView: `last-${msgList.length - 1}`,
-      inputValue: ''
-    })
+    // 发送消息
+    this.conversation.send(new TextMessage(value)).then(message => {
+      console.log('消息发送成功');
+      const { msgList } = this.state
+      msgList.push({
+        time: utils.formatTime(new Date().getTime(), 'yyyy/MM/dd HH:mm'),
+        from: 'self',
+        icon: CLOCK,
+        type: 'text',
+        content: e.detail.value
+      })
+      this.setState({
+        msgList,
+        scrollIntoView: `last-${msgList.length - 1}`,
+        inputValue: ''
+      })
+    }).catch(err => {
+      console.log(err)
+    });
+
   }
 
   onPageScroll(e) {
@@ -185,6 +285,21 @@ class Question extends Component {
     //     scrollTop
     //   })
     // }, 0)
+  }
+
+  endQuestion() {
+    Taro.showModal({
+      title: '提示',
+      content: '结束后不能继续发送消息，确定结束吗？',
+      success(res) {
+        if (res.confirm) {
+          console.log('confirm')
+          
+        } else if (res.cancel) {
+          console.log('cancel')
+        }
+      }
+    })
   }
 
   render () {
@@ -250,7 +365,7 @@ class Question extends Component {
             onInput={this.inputMsg.bind(this)}
             onConfirm={this.sendMsg.bind(this)}
           />
-          <Button>结束</Button>
+          <Button onClick={this.endQuestion.bind(this)}>结束</Button>
         </View>
       </View>
     )

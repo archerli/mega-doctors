@@ -56,7 +56,7 @@ class MyInfo extends Component {
   render () {
     const { myInfo } = this.props
     return (
-      <View className='detail'>
+      <View className='myinfo'>
         <View className='icon'>
           <AtList>
             <AtListItem

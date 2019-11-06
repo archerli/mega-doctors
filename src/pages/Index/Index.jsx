@@ -135,7 +135,15 @@ class Index extends Component {
   }
 
   componentDidMount() {
-    
+    const userInfo = Taro.getStorageSync('userInfo')
+    const havePhoneNumber = Taro.getStorageSync('havePhoneNumber')
+    console.log(userInfo)
+    console.log(havePhoneNumber)
+    if (!userInfo || !havePhoneNumber) {
+      Taro.reLaunch({
+        url: '../Auth/Auth'
+      })
+    }
   }
 
   componentWillUnmount() { }

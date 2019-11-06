@@ -58,20 +58,20 @@ class Mine extends Component {
     })
   }
 
-  dosth() {
-    Taro.requestSubscribeMessage({
-      tmplIds: ['W9nQspoCWnRGH1Qu5x0TjD9T6kzh31UeIviwUQLLU9s'],
-      success (res) { }
+  toSetting() {
+    Taro.navigateTo({
+      url: '/pages/Setting/Setting'
     })
   }
 
   render () {
     const { mine } = this.props
+    const userInfo = Taro.getStorageSync('userInfo')
     return (
       <View className='mine'>
         <View className='info'>
           <View className='info-1'>
-            <AtAvatar circle image='https://jdc.jd.com/img/200'></AtAvatar>
+            <AtAvatar circle image={userInfo.avatarUrl}></AtAvatar>
           </View>
           <View className='info-2'>
             <View className='name'>
@@ -125,10 +125,10 @@ class Mine extends Component {
               title='设置'
               arrow='right'
               thumb={SETTING}
+              onClick={this.toSetting.bind(this)}
             />
           </AtList>
         </View>
-        <Button onClick={this.dosth.bind(this)}>TEST</Button>
       </View>
     )
   }

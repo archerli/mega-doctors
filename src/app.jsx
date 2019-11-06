@@ -32,7 +32,8 @@ class App extends Component {
       'pages/MyInfo/MyInfo',
       'pages/DoctorAuth/DoctorAuth',
       'pages/QRCode/QRCode',
-      'pages/Auth/Auth'
+      'pages/Auth/Auth',
+      'pages/Setting/Setting'
     ],
     window: {
       backgroundTextStyle: 'light',
