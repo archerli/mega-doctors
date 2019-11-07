@@ -39,7 +39,8 @@ class QRCode extends Component {
   }
 
   componentDidMount() {
-    const imgData = QR.drawImg('http://megahealth.cn/followdoctor/index.html?id=5daeb07b7b968a0074945056', {
+    const doctorid = Taro.getStorageSync('doctorid')
+    const imgData = QR.drawImg(`http://megahealth.cn/followdoctor/index.html?id=${doctorid}`, {
       typeNumber: 4, // 码点大小 1-40，数字越大，码点越小，二维码会显得越密集
       errorCorrectLevel: 'M', // 纠错等级 H等级最高(30%) 简单来说，就是二维码被覆盖了多少仍然能被识别出来
       size: 500
@@ -83,7 +84,7 @@ class QRCode extends Component {
     //   }
     // })
     wx.setClipboardData({
-      data: '12345678',
+      data: '页面未完成',
       success: function (res) {
         wx.getClipboardData({
           success: function (res) {

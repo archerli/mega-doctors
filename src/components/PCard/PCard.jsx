@@ -6,6 +6,7 @@ import CLOCK from '../../assets/clock.png'
 import JIFEN from '../../assets/jifen.png'
 import REPORT from '../../assets/report.png'
 import MSG from '../../assets/msg.png'
+import DEFAULT_A from '../../assets/avatar-p.png'
 
 import './PCard.scss'
 
@@ -16,9 +17,16 @@ class PCard extends Component {
   }
 
   toDetail() {
-    const { patientId } = this.props;
+    const { patientId } = this.props
     Taro.navigateTo({
       url: `/pages/PatientInfo/PatientInfo?patientId=${patientId}`
+    })
+  }
+
+  toQuestion() {
+    const { patientId } = this.props
+    Taro.navigateTo({
+      url: `/pages/Question/Question?patientId=${patientId}`
     })
   }
 
@@ -27,18 +35,17 @@ class PCard extends Component {
       name,
       isVip,
       icon,
-      tag,
-      toQuestion
+      tag
     } = this.props
     return (
       <View className='card'>
         <View className='card-t'>
           <View className='card-t-1' onClick={this.toDetail.bind(this)}>
-            <Image src={icon} />
+            <Image src={icon || DEFAULT_A} />
           </View>
           <View className='card-t-2' onClick={this.toDetail.bind(this)}>
             <View>
-              <Text>{name}</Text>
+              <Text>{name || '患者'}</Text>
               {
                 isVip && <Image src={VIP} />
               }
@@ -56,7 +63,7 @@ class PCard extends Component {
               <Image src={JIFEN} />
               <Text style='color: #FFB503;'>贡献值：{'100'}</Text>
             </View>
-            <View className='btn' onClick={toQuestion}>
+            <View className='btn' onClick={this.toQuestion.bind(this)}>
               <Image className='img-m' src={MSG} />
               <Image className='img-r' src={REPORT} />
             </View>

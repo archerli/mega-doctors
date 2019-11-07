@@ -55,7 +55,14 @@ export const mine = (state = STATES.MINE, action) => {
     case TYPES.GET_DOCTOR_DATA:
       return {
         ...state,
-        name: action.data.name
+        name: action.data.name,
+        megaid: action.data.megaId,
+        authenticated: action.data.authenticated,
+      }
+    case TYPES.CHANGE_DOCTOR_DATA:
+      return {
+        ...state,
+        ...action.data
       }
     default:
       return state
@@ -74,6 +81,11 @@ export const myInfo = (state = STATES.MY_INFO, action) => {
         department: action.data.department,
         title: action.data.title,
         phone: action.data.phone
+      }
+    case TYPES.CHANGE_DOCTOR_DATA:
+      return {
+        ...state,
+        ...action.data
       }
     default:
       return state

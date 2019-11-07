@@ -209,7 +209,7 @@ class Patient extends Component {
                       isVip={item.isVip}
                       icon={item.icon}
                       tag={item.tag}
-                      toQuestion={this.toQuestion.bind(this, item.id)}
+                      // toQuestion={this.toQuestion.bind(this, item.id)}
                     />
                   ))
                 }
@@ -242,7 +242,7 @@ class Patient extends Component {
                       isVip={item.isVip}
                       icon={item.icon}
                       tag={item.tag}
-                      toQuestion={this.toQuestion.bind(this, item.id)}
+                      // toQuestion={this.toQuestion.bind(this, item.id)}
                     />
                   ))
                 }
@@ -265,7 +265,7 @@ class Patient extends Component {
                       isVip={item.isVip}
                       icon={item.icon}
                       tag={item.tag}
-                      toQuestion={this.toQuestion.bind(this, item.id)}
+                      // toQuestion={this.toQuestion.bind(this, item.id)}
                     />
                   ))
                 }
@@ -288,7 +288,7 @@ class Patient extends Component {
                       isVip={item.isVip}
                       icon={item.icon}
                       tag={item.tag}
-                      toQuestion={this.toQuestion.bind(this, item.id)}
+                      // toQuestion={this.toQuestion.bind(this, item.id)}
                     />
                   ))
                 }

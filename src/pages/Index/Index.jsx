@@ -139,7 +139,7 @@ class Index extends Component {
     const havePhoneNumber = Taro.getStorageSync('havePhoneNumber')
     console.log(userInfo)
     console.log(havePhoneNumber)
-    if (!userInfo || !havePhoneNumber) {
+    if (!userInfo) {
       Taro.reLaunch({
         url: '../Auth/Auth'
       })

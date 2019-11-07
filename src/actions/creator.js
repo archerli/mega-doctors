@@ -1,3 +1,4 @@
+import Taro from '@tarojs/taro'
 import AV from 'leancloud-storage/dist/av-weapp-min.js'
 import * as TYPES from '../constants/creator'
 
@@ -95,13 +96,29 @@ export const getPatientData = (patientId) => {
 }
 
 // 获取医生数据
-export const getDoctorData = () => {
+export const getDoctorData = (doctorid) => {
   return dispatch => {
     var query = new AV.Query('Doctor');
-    query.equalTo('name', '张医生');
-    query.find().then(res => {
+    // query.equalTo('name', '张医生');
+    query.get(doctorid).then(res => {
       console.log(res)
-      dispatch(action(TYPES.GET_DOCTOR_DATA, res[0].attributes))
-    });
+      dispatch(action(TYPES.GET_DOCTOR_DATA, res.attributes))
+    }, err => {
+      console.log(err)
+      Taro.removeStorageSync('userInfo')
+      Taro.removeStorageSync('openid')
+      Taro.removeStorageSync('doctorid')
+      Taro.reLaunch({
+        url: '../Auth/Auth'
+      })
+    })
+  }
+}
+
+// 修改医生关联患者信息
+export const changeDoctorData = (data) => {
+  return {
+    type: TYPES.CHANGE_DOCTOR_DATA,
+    data
   }
 }

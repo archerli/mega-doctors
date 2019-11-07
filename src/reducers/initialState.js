@@ -24,7 +24,8 @@ export const PATIENT_INFO = {
 
 // 我的
 export const MINE = {
-  name: '111',
+  name: '',
+  megaid: '',
   authenticated: 0,
 }
 
@@ -35,5 +36,10 @@ export const MY_INFO = {
   hospital: '',
   department: '',
   title: '',
-  phone: ''
+  phone: '',
+  // 弹出层相关
+  isOpened: false,
+  placeholder: '',
+  value: '',
+  focus: false
 }

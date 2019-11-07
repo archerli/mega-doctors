@@ -33,7 +33,7 @@ class PatientInfo extends Component {
   }
 
   componentWillMount() {
-    const params = this.$router.params
+    const { params } = this.$router
     console.log(params)
     this.props.getPatientData(params.patientId)
   }
@@ -46,8 +46,9 @@ class PatientInfo extends Component {
   }
 
   toRemark() {
+    const { params } = this.$router
     Taro.navigateTo({
-      url: '/pages/Remark/Remark'
+      url: `/pages/Remark/Remark?patientId=${params.patientId}`
     })
   }
 

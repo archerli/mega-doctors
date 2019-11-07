@@ -16,8 +16,8 @@ import './Mine.scss'
 @connect(({ mine }) => ({
   mine
 }), (dispatch) => ({
-  getDoctorData() {
-    dispatch(getDoctorData())
+  getDoctorData(doctorid) {
+    dispatch(getDoctorData(doctorid))
   }
 }))
 
@@ -37,7 +37,8 @@ class Mine extends Component {
   }
 
   componentDidMount() {
-    this.props.getDoctorData();
+    const doctorid = Taro.getStorageSync('doctorid')
+    this.props.getDoctorData(doctorid)
   }
 
   toDoctorAuth() {
@@ -75,10 +76,10 @@ class Mine extends Component {
           </View>
           <View className='info-2'>
             <View className='name'>
-              <Text>{mine.name}</Text>
+              <Text onClick={this.toMyInfo.bind(this)}>{mine.name || '请完善资料'}</Text>
               <Image src={AUTH} onClick={this.toDoctorAuth.bind(this)} />
             </View>
-            <View>兆观号：10115</View>
+            <View>兆观号：{mine.megaid}</View>
           </View>
           <View className='info-3' onClick={this.toMyInfo.bind(this)}>
             <AtIcon value='chevron-right' size='28' color='#999999'></AtIcon>

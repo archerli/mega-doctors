@@ -49,50 +49,50 @@ class Question extends Component {
       scrollIntoView: 'last-0',
       inputValue: '',
       msgList: [
-        {
-          time: '2018/10/23 18:00',
-          from: 'other',
-          icon: QING,
-          type: 'text',
-          content: '张医生您好张医生您好张医生您好张医生您好张医生您好张医生您好张医生您好张医生您好'
-        },
-        {
-          time: '2018/10/23 18:10',
-          from: 'other',
-          icon: QING,
-          type: 'text',
-          content: '张医生您好'
-        },
-        {
-          time: '2018/10/23 18:20',
-          from: 'other',
-          icon: QING,
-          type: 'image',
-          content: 'http://megahealth.cn/asset/home/01.jpg',
-          previewImage: this.previewImage.bind(this, ['http://megahealth.cn/asset/home/01.jpg', 'http://megahealth.cn/asset/ring/pic_02.jpg'], 'http://megahealth.cn/asset/home/01.jpg')
-        },
-        {
-          time: '2018/10/23 18:20',
-          from: 'other',
-          icon: QING,
-          type: 'image',
-          content: 'http://megahealth.cn/asset/ring/pic_02.jpg',
-          previewImage: this.previewImage.bind(this, ['http://megahealth.cn/asset/home/01.jpg', 'http://megahealth.cn/asset/ring/pic_02.jpg'], 'http://megahealth.cn/asset/ring/pic_02.jpg')
-        },
-        {
-          time: '2018/10/23 18:30',
-          from: 'other',
-          icon: QING,
-          type: 'link',
-          content: 'https%3A%2F%2Fyl-dev.megahealth.cn%2F%23%2Fhome%2Freport%2F5db0cd8fba39c80071bb5c02%3Ftype%3DnoLogo'
-        },
-        {
-          time: '2018/10/23 19:00',
-          from: 'self',
-          icon: CLOCK,
-          type: 'text',
-          content: '好的'
-        }
+        // {
+        //   time: '2018/10/23 18:00',
+        //   from: 'other',
+        //   icon: QING,
+        //   type: 'text',
+        //   content: '张医生您好张医生您好张医生您好张医生您好张医生您好张医生您好张医生您好张医生您好'
+        // },
+        // {
+        //   time: '2018/10/23 18:10',
+        //   from: 'other',
+        //   icon: QING,
+        //   type: 'text',
+        //   content: '张医生您好'
+        // },
+        // {
+        //   time: '2018/10/23 18:20',
+        //   from: 'other',
+        //   icon: QING,
+        //   type: 'image',
+        //   content: 'http://megahealth.cn/asset/home/01.jpg',
+        //   previewImage: this.previewImage.bind(this, ['http://megahealth.cn/asset/home/01.jpg', 'http://megahealth.cn/asset/ring/pic_02.jpg'], 'http://megahealth.cn/asset/home/01.jpg')
+        // },
+        // {
+        //   time: '2018/10/23 18:20',
+        //   from: 'other',
+        //   icon: QING,
+        //   type: 'image',
+        //   content: 'http://megahealth.cn/asset/ring/pic_02.jpg',
+        //   previewImage: this.previewImage.bind(this, ['http://megahealth.cn/asset/home/01.jpg', 'http://megahealth.cn/asset/ring/pic_02.jpg'], 'http://megahealth.cn/asset/ring/pic_02.jpg')
+        // },
+        // {
+        //   time: '2018/10/23 18:30',
+        //   from: 'other',
+        //   icon: QING,
+        //   type: 'link',
+        //   content: 'https%3A%2F%2Fyl-dev.megahealth.cn%2F%23%2Fhome%2Freport%2F5db0cd8fba39c80071bb5c02%3Ftype%3DnoLogo'
+        // },
+        // {
+        //   time: '2018/10/23 19:00',
+        //   from: 'self',
+        //   icon: CLOCK,
+        //   type: 'text',
+        //   content: '好的'
+        // }
       ]
     }
   }
@@ -105,14 +105,17 @@ class Question extends Component {
         title: params.name
       })
     }
+
+
+    // TODO
+    // 拿到患者ID获取标签和备注信息
+
+
   }
 
   componentDidMount() {
     const { msgList } = this.state
-    this.setState({
-      scrollIntoView: `last-${msgList.length - 1}`
-    })
-
+    const doctorid = Taro.getStorageSync('doctorid')
     var realtime = new Realtime({
       appId: 'f82OcAshk5Q1J993fGLJ4bbs-gzGzoHsz',
       appKey: 'O9COJzi78yYXCWVWMkLqlpp8',
@@ -120,11 +123,11 @@ class Question extends Component {
       plugins: AV.TypedMessagesPlugin // 注册富媒体消息插件
     });
     // Tom 用自己的名字作为 clientId 来登录即时通讯服务
-    realtime.createIMClient('5daeb07b7b968a0074945056')
+    realtime.createIMClient(doctorid)
     .then(client => {
       // 成功登录
       this.client = client
-      return client.getConversation('5daeb07b7b968a0074945056')
+      return client.getConversation(doctorid)
     })
     .then(conversation => {
       if (conversation) {
@@ -145,63 +148,61 @@ class Question extends Component {
         })
       }
     })
-    .then(conversation => {
-      return conversation.join()
-    })
+    // .then(conversation => {
+    //   return conversation.join()
+    // })
     .then(conversation => {
       // 获取聊天历史
       this.conversation = conversation
       this.messageIterator = conversation.createMessagesIterator();
 
-
       this.messageIterator
       .next()
-      .then(function(result) {
+      .then(result => {
         var data = result.value;
         console.log(data)
-        // logFlag = false;
-        // // 存储下最早一条的消息时间戳
-        // var l = data.length;
-        // if (l) {
-        //   msgTime = data[0].timestamp;
-        // }
-        // for (var i = l - 1; i >= 0; i--) {
-        //   showMsg(data[i], true);
-        // }
-        // if (l) {
-        //   printWall.scrollTop = printWall.scrollHeight - height;
-        // }
-        // if (callback) {
-        //   callback();
-        // }
+        const msgList = []
+        data.forEach(item => {
+          msgList.push({
+            time: utils.formatTime(item._timestamp.getTime(), 'yyyy/MM/dd HH:mm'),
+            from: item.from === doctorid ? 'self' : 'other',
+            icon: item.from === doctorid ? Taro.getStorageSync('userInfo').avatarUrl : CLOCK,
+            type: 'text',
+            content: item.content._lctext
+          })
+        });
+        this.setState({
+          msgList,
+          scrollIntoView: `last-${msgList.length - 1}`
+        })
       })
-      .catch(function(err) {
-        console.error(err);
+      .catch(err => {
+        console.log(err);
       });
 
-
-
-      // getLog(function() {
-      //   printWall.scrollTop = printWall.scrollHeight;
-      //   showLog('已经加入，可以开始聊天。');
-      // });
       // 房间接受消息
-      conversation.on('message', function(message) {
-        // if (!msgTime) {
-        //   // 存储下最早的一个消息时间戳
-        //   msgTime = message.timestamp;
-        // }
-        // showMsg(message);
+      this.conversation.on('message', message => {
+        console.log('接收到新消息')
+        console.log(message)
+        if (message.content && message.content._lctext) {
+          const { msgList } = this.state
+          msgList.push({
+            time: utils.formatTime(message._timestamp.getTime(), 'yyyy/MM/dd HH:mm'),
+            from: message.from === doctorid ? 'self' : 'other',
+            icon: message.from === doctorid ? Taro.getStorageSync('userInfo').avatarUrl : CLOCK,
+            type: 'text',
+            content: message.content._lctext
+          })
+          this.setState({
+            msgList,
+            scrollIntoView: `last-${msgList.length - 1}`
+          })
+        }
       });
     })
     .catch(err => {
       console.log(err)
     });
-
-    
-
-
-
 
   }
 
@@ -244,7 +245,7 @@ class Question extends Component {
       msgList.push({
         time: utils.formatTime(new Date().getTime(), 'yyyy/MM/dd HH:mm'),
         from: 'self',
-        icon: CLOCK,
+        icon: Taro.getStorageSync('userInfo').avatarUrl,
         type: 'text',
         content: e.detail.value
       })
@@ -255,8 +256,11 @@ class Question extends Component {
       })
     }).catch(err => {
       console.log(err)
+      Taro.showToast({
+        title: '发送失败，请重试',
+        icon: 'none'
+      })
     });
-
   }
 
   onPageScroll(e) {

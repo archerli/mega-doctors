@@ -1,7 +1,7 @@
 import Taro, { Component } from '@tarojs/taro'
 import { View, Button, Text } from '@tarojs/components'
 import { connect } from '@tarojs/redux'
-import { AtAvatar, AtList, AtListItem, AtCurtain } from "taro-ui"
+import { AtList, AtListItem } from "taro-ui"
 import AV from 'leancloud-storage/dist/av-weapp-min.js'
 
 import { getPatientData, changeDoctorPatientData } from '../../actions/creator'
