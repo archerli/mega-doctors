@@ -3,12 +3,14 @@ import {
   mine,
   myInfo,
   patient,
-  patientInfo
+  patientInfo,
+  consultation
 } from './creator'
 
 export default combineReducers({
   mine,
   myInfo,
   patient,
-  patientInfo
+  patientInfo,
+  consultation
 })

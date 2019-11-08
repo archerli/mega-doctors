@@ -5,12 +5,14 @@ import { connect } from '@tarojs/redux'
 import { AtActivityIndicator } from 'taro-ui'
 
 import { getDoctorPatientData, swiperChange } from '../../actions/creator'
+import { SWIPER_CHANGE_PATIENT } from '../../constants/creator'
 
 import PCard from '../../components/PCard/PCard'
 import QRCODE from '../../assets/qrcode.png'
 import QING from '../../assets/qing.png'
 import ZHONG from '../../assets/zhong.png'
 import STAR from '../../assets/star.png'
+import EMPTY from '../../assets/empty.png'
 
 import './Patient.scss'
 
@@ -92,8 +94,8 @@ const noReply = [
   getDoctorPatientData() {
     dispatch(getDoctorPatientData())
   },
-  swiperChange (current) {
-    dispatch(swiperChange(current))
+  swiperChange(type, current) {
+    dispatch(swiperChange(type, current))
   }
 }))
 
@@ -101,7 +103,9 @@ class Patient extends Component {
 
   config = {
     navigationBarTitleText: '咨询',
-    disableScroll: true
+    // disableScroll: true,
+    enablePullDownRefresh: true,
+    backgroundColor: "#ececec"
   }
 
   constructor() {
@@ -117,28 +121,22 @@ class Patient extends Component {
     this.props.getDoctorPatientData();
   }
 
-  toQuestion() {
-    Taro.navigateTo({
-      url: '/pages/Question/Question'
-    })
-  }
-
   // 下拉刷新
-  // onPullDownRefresh() {
-  //   Taro.showNavigationBarLoading() //在标题栏中显示加载
-  //   setTimeout(() => {
-  //     // complete
-  //     // this.load();
-  //     Taro.hideNavigationBarLoading() //完成停止加载
-  //     Taro.stopPullDownRefresh() //停止下拉刷新
-  //   }, 800);
-  // }
+  onPullDownRefresh() {
+    Taro.showNavigationBarLoading() //在标题栏中显示加载
+    setTimeout(() => {
+      // complete
+      this.props.getDoctorPatientData();
+      Taro.hideNavigationBarLoading() //完成停止加载
+      Taro.stopPullDownRefresh() //停止下拉刷新
+    }, 800);
+  }
 
   handleClick(value) {
     // this.setState({
     //   current: value 
     // })
-    this.props.swiperChange(value)
+    this.props.swiperChange(SWIPER_CHANGE_PATIENT, value)
   }
 
   swiperOnChange(e) {
@@ -146,7 +144,7 @@ class Patient extends Component {
     // this.setState({
     //   current: e.currentTarget.current
     // })
-    this.props.swiperChange(e.currentTarget.current)
+    this.props.swiperChange(SWIPER_CHANGE_PATIENT, e.currentTarget.current)
   }
 
   // 上拉加载更多
@@ -193,106 +191,134 @@ class Patient extends Component {
             onChange={this.swiperOnChange.bind(this)}
           >
             <SwiperItem className="content-swiper-item">
-              <ScrollView
-                className="content-l"
-                scrollY
-                enableBackToTop
-                onScrollToLower={this.scrollToLower.bind(this)}
-              >
-                <View style='height: 1px;'></View> {/* 上边距在 ScrollView 不满一屏时滚动，使用一个 1px 的元素占位 */}
-                {
-                  patient.vip.map(item => (
-                    <PCard
-                      key={item.id}
-                      patientId={item.id}
-                      name={item.name}
-                      isVip={item.isVip}
-                      icon={item.icon}
-                      tag={item.tag}
-                      // toQuestion={this.toQuestion.bind(this, item.id)}
-                    />
-                  ))
-                }
-                {
-                  moreLoading &&
-                  <View className='content-t'>
-                    <AtActivityIndicator content='加载中...' color='#48AEFC' size={24}></AtActivityIndicator>
-                  </View>
-                }
-                {
-                  !moreLoading && moreLoaded &&
-                  <View className='content-t'>没有更多了</View>
-                }
-              </ScrollView>
+              {
+                patient.vip.length
+                ? <ScrollView
+                  className="content-l"
+                  scrollY
+                  enableBackToTop
+                  onScrollToLower={this.scrollToLower.bind(this)}
+                >
+                  <View style='height: 1px;'></View> {/* 上边距在 ScrollView 不满一屏时滚动，使用一个 1px 的元素占位 */}
+                  {
+                    patient.vip.map(item => (
+                      <PCard
+                        key={item.id}
+                        patientId={item.id}
+                        name={item.name}
+                        isVip={item.isVip}
+                        icon={item.icon}
+                        tag={item.tag}
+                      />
+                    ))
+                  }
+                  <View style='height: 1px;'></View>
+                  {/* {
+                    moreLoading &&
+                    <View className='content-t'>
+                      <AtActivityIndicator content='加载中...' color='#48AEFC' size={24}></AtActivityIndicator>
+                    </View>
+                  }
+                  {
+                    !moreLoading && moreLoaded &&
+                    <View className='content-t'>没有更多了</View>
+                  } */}
+                </ScrollView>
+                : <View className='content-empty'>
+                  <Image src={EMPTY} />
+                  <View>您还没有VIP包年患者哦</View>
+                </View>
+              }
             </SwiperItem>
             <SwiperItem className="content-swiper-item">
-              <ScrollView
-                className="content-l"
-                scrollY
-                enableBackToTop
-                // onScrollToLower={this.scrollToLower.bind(this)}
-              >
-                <View style='height: 1px;'></View>
-                {
-                  noReply.map(item => (
-                    <PCard
-                      key={item.id}
-                      patientId={item.id}
-                      name={item.name}
-                      isVip={item.isVip}
-                      icon={item.icon}
-                      tag={item.tag}
-                      // toQuestion={this.toQuestion.bind(this, item.id)}
-                    />
-                  ))
-                }
-              </ScrollView>
+              {
+                patient.paid.length
+                ? <ScrollView
+                  className="content-l"
+                  scrollY
+                  enableBackToTop
+                  // onScrollToLower={this.scrollToLower.bind(this)}
+                >
+                  <View style='height: 1px;'></View>
+                  {
+                    patient.paid.map(item => (
+                      <PCard
+                        key={item.id}
+                        patientId={item.id}
+                        name={item.name}
+                        isVip={item.isVip}
+                        icon={item.icon}
+                        tag={item.tag}
+                      />
+                    ))
+                  }
+                  <View style='height: 1px;'></View>
+                </ScrollView>
+                : <View className='content-empty'>
+                  <Image src={EMPTY} />
+                  <View>还没有患者付费咨询哦，是不是设置中没有开启咨询</View>
+                </View>
+              }
             </SwiperItem>
             <SwiperItem className="content-swiper-item">
-              <ScrollView
-                className="content-l"
-                scrollY
-                enableBackToTop
-                // onScrollToLower={this.scrollToLower.bind(this)}
-              >
-                <View style='height: 1px;'></View>
-                {
-                  noReply.map(item => (
-                    <PCard
-                      key={item.id}
-                      patientId={item.id}
-                      name={item.name}
-                      isVip={item.isVip}
-                      icon={item.icon}
-                      tag={item.tag}
-                      // toQuestion={this.toQuestion.bind(this, item.id)}
-                    />
-                  ))
-                }
-              </ScrollView>
+              {
+                patient.follow.length
+                ? <ScrollView
+                  className="content-l"
+                  scrollY
+                  enableBackToTop
+                  // onScrollToLower={this.scrollToLower.bind(this)}
+                >
+                  <View style='height: 1px;'></View>
+                  {
+                    patient.follow.map(item => (
+                      <PCard
+                        key={item.id}
+                        patientId={item.id}
+                        name={item.name}
+                        isVip={item.isVip}
+                        icon={item.icon}
+                        tag={item.tag}
+                      />
+                    ))
+                  }
+                  <View style='height: 1px;'></View>
+                </ScrollView>
+                : <View className='content-empty'>
+                  <Image src={EMPTY} />
+                  <View>加星关注重要患者，咨询更优先</View>
+                </View>
+              }
             </SwiperItem>
             <SwiperItem className="content-swiper-item">
-              <ScrollView
-                className="content-l"
-                scrollY
-                enableBackToTop
-                // onScrollToLower={this.scrollToLower.bind(this)}
-              >
-                <View style='height: 1px;'></View>
-                {
-                  noReply.map(item => (
-                    <PCard
-                      key={item.id}
-                      patientId={item.id}
-                      name={item.name}
-                      isVip={item.isVip}
-                      icon={item.icon}
-                      tag={item.tag}
-                      // toQuestion={this.toQuestion.bind(this, item.id)}
-                    />
-                  ))
-                }
-              </ScrollView>
+              {
+                patient.normal.length
+                ? <ScrollView
+                  className="content-l"
+                  scrollY
+                  enableBackToTop
+                  // onScrollToLower={this.scrollToLower.bind(this)}
+                >
+                  <View style='height: 1px;'></View>
+                  {
+                    patient.normal.map(item => (
+                      <PCard
+                        key={item.id}
+                        patientId={item.id}
+                        name={item.name}
+                        isVip={item.isVip}
+                        icon={item.icon}
+                        tag={item.tag}
+                      />
+                    ))
+                  }
+                  <View style='height: 1px;'></View>
+                </ScrollView>
+                : <View className='content-empty'>
+                  <Image src={EMPTY} />
+                  <View>快去邀请您的患者扫码关注您吧</View>
+                </View>
+              }
             </SwiperItem>
           </Swiper>
         </View>

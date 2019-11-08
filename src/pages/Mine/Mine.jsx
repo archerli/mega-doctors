@@ -3,7 +3,7 @@ import { View, Button, Text } from '@tarojs/components'
 import { connect } from '@tarojs/redux'
 import { AtAvatar, AtList, AtListItem, AtIcon } from "taro-ui"
 
-import { getDoctorData } from '../../actions/creator'
+import { getDoctorData, getConsultationNum, getDoctorPatientNum } from '../../actions/creator'
 
 import AUTH from '../../assets/auth.png'
 import INVITE from '../../assets/invite.png'
@@ -18,6 +18,12 @@ import './Mine.scss'
 }), (dispatch) => ({
   getDoctorData(doctorid) {
     dispatch(getDoctorData(doctorid))
+  },
+  getConsultationNum() {
+    dispatch(getConsultationNum())
+  },
+  getDoctorPatientNum() {
+    dispatch(getDoctorPatientNum())
   }
 }))
 
@@ -39,6 +45,8 @@ class Mine extends Component {
   componentDidMount() {
     const doctorid = Taro.getStorageSync('doctorid')
     this.props.getDoctorData(doctorid)
+    this.props.getConsultationNum()
+    this.props.getDoctorPatientNum()
   }
 
   toDoctorAuth() {
@@ -54,6 +62,19 @@ class Mine extends Component {
   }
 
   toQRCode() {
+    const { mine } = this.props
+    if (!mine.name) {
+      return Taro.showToast({
+        title: '请先完善个人资料',
+        icon: 'none'
+      })
+    }
+    if (mine.authenticated !== '1') {
+      return Taro.showToast({
+        title: '请先通过认证哦',
+        icon: 'none'
+      })
+    }
     Taro.navigateTo({
       url: '/pages/QRCode/QRCode'
     })
@@ -77,7 +98,10 @@ class Mine extends Component {
           <View className='info-2'>
             <View className='name'>
               <Text onClick={this.toMyInfo.bind(this)}>{mine.name || '请完善资料'}</Text>
-              <Image src={AUTH} onClick={this.toDoctorAuth.bind(this)} />
+              {
+                mine.authenticated === '1' &&
+                <Image src={AUTH} onClick={this.toDoctorAuth.bind(this)} />
+              }
             </View>
             <View>兆观号：{mine.megaid}</View>
           </View>
@@ -87,15 +111,15 @@ class Mine extends Component {
         </View>
         <View className='data'>
           <View>
-            <Text>{mine.authenticated}</Text>
+            <Text>{mine.consultationNum}</Text>
             <Text className='data-i'>咨询量</Text>
           </View>
           <View>
-            <Text>100</Text>
+            <Text>{mine.patientNum}</Text>
             <Text className='data-i'>我的患者</Text>
           </View>
           <View>
-            <Text>300</Text>
+            <Text>0</Text>
             <Text className='data-i'>我的积分</Text>
           </View>
         </View>
@@ -109,7 +133,7 @@ class Mine extends Component {
             />
             <AtListItem
               title='我的兆观助手'
-              extraText='克里斯'
+              extraText=''
               arrow='right'
               thumb={SERVICE}
             />

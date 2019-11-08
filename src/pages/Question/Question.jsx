@@ -1,6 +1,7 @@
 import Taro, { Component } from '@tarojs/taro'
 import { View, ScrollView, Text, Input, Button, Picker } from '@tarojs/components'
 import { connect } from '@tarojs/redux'
+import { AtDivider } from 'taro-ui'
 import AV from 'leancloud-storage/dist/av-weapp-min.js'
 import { Realtime, TextMessage } from 'leancloud-realtime/dist/realtime.weapp.min.js'
 
@@ -39,6 +40,7 @@ class Question extends Component {
   constructor() {
     super(...arguments)
     this.state = {
+      isFinished: false,
       tag1: '0',
       tag2: '0',
       tag3: '0',
@@ -99,14 +101,22 @@ class Question extends Component {
 
   componentWillMount() {
     console.log(this.$router.params)
-    const params = this.$router.params
+    const { params } = this.$router
     if (params && params.name) {
       Taro.setNavigationBarTitle({
         title: params.name
       })
     }
 
-
+    const consultation = new AV.Query('Consultation')
+    consultation.get(params.questionId).then(res => {
+      console.log('consultation', res.get('status'))
+      this.setState({
+        isFinished: res.get('status') === '2'
+      })
+    }, err => {
+      
+    })
     // TODO
     // 拿到患者ID获取标签和备注信息
 
@@ -115,8 +125,9 @@ class Question extends Component {
 
   componentDidMount() {
     const { msgList } = this.state
+    const { params } = this.$router
     const doctorid = Taro.getStorageSync('doctorid')
-    var realtime = new Realtime({
+    const realtime = new Realtime({
       appId: 'f82OcAshk5Q1J993fGLJ4bbs-gzGzoHsz',
       appKey: 'O9COJzi78yYXCWVWMkLqlpp8',
       server: 'api-mhn.megahealth.cn',
@@ -138,7 +149,7 @@ class Question extends Component {
         // 创建与 Jerry 之间的对话
         return this.client.createConversation({ // client 是一个 IMClient 实例
           // 指定对话的成员除了当前用户 Tom（SDK 会默认把当前用户当做对话成员）之外，还有 Jerry
-          members: ['592e87b60ce4630057a7b582'],
+          members: [params.patientId],
           // 对话名称
           name: 'Tom & Jerry',
           unique: true
@@ -159,7 +170,7 @@ class Question extends Component {
       this.messageIterator
       .next()
       .then(result => {
-        var data = result.value;
+        const data = result.value;
         console.log(data)
         const msgList = []
         data.forEach(item => {
@@ -241,6 +252,12 @@ class Question extends Component {
     // 发送消息
     this.conversation.send(new TextMessage(value)).then(message => {
       console.log('消息发送成功');
+
+      const { params } = this.$router
+      const consultation = AV.Object.createWithoutData('Consultation', params.questionId)
+      consultation.set('status', '1')
+      consultation.save()
+
       const { msgList } = this.state
       msgList.push({
         time: utils.formatTime(new Date().getTime(), 'yyyy/MM/dd HH:mm'),
@@ -292,13 +309,35 @@ class Question extends Component {
   }
 
   endQuestion() {
+    if (this.state.isFinished) {
+      return Taro.showToast({
+        title: '本次咨询已结束',
+        icon: 'none'
+      })
+    }
     Taro.showModal({
       title: '提示',
       content: '结束后不能继续发送消息，确定结束吗？',
-      success(res) {
+      success: res => {
         if (res.confirm) {
           console.log('confirm')
-          
+          const { params } = this.$router
+          const consultation = AV.Object.createWithoutData('Consultation', params.questionId)
+          consultation.set('endAt', new Date().getTime())
+          consultation.set('status', '2')
+          consultation.save().then(res => {
+            Taro.showToast({
+              title: '咨询已结束'
+            })
+            this.setState({
+              isFinished: true
+            })
+          }, err => {
+            Taro.showToast({
+              title: '操作失败，请重试',
+              icon: 'none'
+            })
+          })
         } else if (res.cancel) {
           console.log('cancel')
         }
@@ -357,12 +396,18 @@ class Question extends Component {
               />
             ))
           }
+          {
+            this.state.isFinished &&
+            <AtDivider content='本次咨询已结束' fontColor='#E94F4F' lineColor='#E94F4F' />
+          }
           <View style='height: 1px;'></View> {/* 下边距在 ScrollView 中不显示，使用一个 1px 的元素占位 */}
         </ScrollView>
         <View class='input'>
           <Input
             type='text'
+            disabled={this.state.isFinished}
             confirmHold={true}
+            // adjustPosition={false}
             value={inputValue}
             placeholder='患者在等待你的回复哦~'
             confirmType='send'

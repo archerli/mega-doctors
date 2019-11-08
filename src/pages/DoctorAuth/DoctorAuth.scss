@@ -37,7 +37,26 @@
   }
   .licence-img {
     background: #FFFFFF;
-    height: 180px;
+    padding: 30px 40px;
+    position: relative;
+    Image {
+      display: block;
+      width: 120px;
+      height: 120px;
+    }
+    View {
+      position: absolute;
+      left: 40px;
+      bottom: 30px;
+      width: 120px;
+      height: 30px;
+      background: rgba(0, 0, 0, 0.6);
+      font-size: 20px;
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
   }
   .btn {
     padding: 100px 30px 40px;

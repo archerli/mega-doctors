@@ -113,7 +113,7 @@ class QRCode extends Component {
         <View className='qrc-img'>
           <Image src={imgData} />
         </View>
-        <View className='pat-tip'>打开微信扫一扫关注王医生</View>
+        <View className='pat-tip'>打开微信扫一扫关注医生</View>
         <View className='doc-tip'>扫码不会透露我的微信号或手机号</View>
         {
           isIOS &&

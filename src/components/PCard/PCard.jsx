@@ -24,9 +24,10 @@ class PCard extends Component {
   }
 
   toQuestion() {
-    const { patientId } = this.props
+    return;
+    const { patientId, name } = this.props
     Taro.navigateTo({
-      url: `/pages/Question/Question?patientId=${patientId}`
+      url: `/pages/Question/Question?patientId=${patientId}&name=${name}`
     })
   }
 
@@ -41,7 +42,7 @@ class PCard extends Component {
       <View className='card'>
         <View className='card-t'>
           <View className='card-t-1' onClick={this.toDetail.bind(this)}>
-            <Image src={icon || DEFAULT_A} />
+            <Image src={icon || DEFAULT_A} onError={() => {console.log('image error')}} />
           </View>
           <View className='card-t-2' onClick={this.toDetail.bind(this)}>
             <View>

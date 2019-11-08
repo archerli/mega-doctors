@@ -40,7 +40,10 @@ class Setting extends Component {
 
   subscribeMessage() {
     Taro.requestSubscribeMessage({
-      tmplIds: ['W9nQspoCWnRGH1Qu5x0TjD9T6kzh31UeIviwUQLLU9s'],
+      tmplIds: [
+        '-ksZxv3e1ZSHPrMQ6ej4mNcH7Zkqmq9-BOynBevfI4o',
+        'tJBMc1SOAcaWvVawKwHUMrIjoG6k1qG3VIHhZ6rSQ5Y'
+      ],
       success (res) { }
     })
   }

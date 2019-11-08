@@ -7,7 +7,8 @@ import { AtActivityIndicator } from 'taro-ui'
 import AV from 'leancloud-storage/dist/av-weapp-min.js'
 import { Realtime, TextMessage } from 'leancloud-realtime/dist/realtime.weapp.min.js'
 
-import { add, minus, asyncAdd } from '../../actions/creator'
+import { swiperChange, getConsultationData } from '../../actions/creator'
+import { SWIPER_CHANGE_INDEX } from '../../constants/creator'
 import utils from '../../common/utils'
 
 import QCard from '../../components/QCard/QCard'
@@ -15,6 +16,7 @@ import QRCODE from '../../assets/qrcode.png'
 import QING from '../../assets/qing.png'
 import ZHONG from '../../assets/zhong.png'
 import STAR from '../../assets/star.png'
+import EMPTY from '../../assets/empty.png'
 
 import './Index.scss'
 
@@ -98,17 +100,14 @@ const noReply = [
   // }
 ];
 
-@connect(({ counter }) => ({
-  counter
+@connect(({ consultation }) => ({
+  consultation
 }), (dispatch) => ({
-  add () {
-    dispatch(add())
+  getConsultationData() {
+    dispatch(getConsultationData())
   },
-  dec () {
-    dispatch(minus())
-  },
-  asyncAdd () {
-    dispatch(asyncAdd())
+  swiperChange(type, current) {
+    dispatch(swiperChange(type, current))
   }
 }))
 
@@ -124,14 +123,9 @@ class Index extends Component {
   constructor() {
     super(...arguments)
     this.state = {
-      current: 0,
       moreLoading: false,
       moreLoaded: false
     }
-  }
-
-  componentWillReceiveProps(nextProps) {
-    console.log(this.props, nextProps)
   }
 
   componentDidMount() {
@@ -144,42 +138,28 @@ class Index extends Component {
         url: '../Auth/Auth'
       })
     }
+    this.props.getConsultationData()
   }
 
-  componentWillUnmount() { }
-
-  componentDidShow() { }
-
-  componentDidHide() { }
-
-  toQuestion(id, name) {
-    Taro.navigateTo({
-      url: `/pages/Question/Question?id=${id}&name=${name}`
-    })
-  }
+  componentWillUnmount() {}
 
   // 下拉刷新
   onPullDownRefresh() {
     Taro.showNavigationBarLoading() //在标题栏中显示加载
     setTimeout(() => {
       // complete
-      // this.load();
+      this.props.getConsultationData()
       Taro.hideNavigationBarLoading() //完成停止加载
       Taro.stopPullDownRefresh() //停止下拉刷新
     }, 800);
   }
 
   handleClick(value) {
-    this.setState({
-      current: value 
-    })
+    this.props.swiperChange(SWIPER_CHANGE_INDEX, value)
   }
 
   swiperOnChange(e) {
-    // console.log(e.currentTarget.current);
-    this.setState({
-      current: e.currentTarget.current
-    })
+    this.props.swiperChange(SWIPER_CHANGE_INDEX, e.currentTarget.current)
   }
 
   // 上拉加载更多
@@ -197,113 +177,141 @@ class Index extends Component {
   }
 
   render () {
-    const { current, moreLoading, moreLoaded } = this.state;
+    const { consultation } = this.props
+    const { moreLoading, moreLoaded } = this.state;
     return (
       <View className='index'>
         <View className='tab'>
           <View
-            className={current === 0 ? 'selected' : ''}
+            className={consultation.current === 0 ? 'selected' : ''}
             onClick={this.handleClick.bind(this, 0)}
           >新咨询</View>
           <View
-            className={current === 1 ? 'selected' : ''}
+            className={consultation.current === 1 ? 'selected' : ''}
             onClick={this.handleClick.bind(this, 1)}
           >回复中</View>
           <View
-            className={current === 2 ? 'selected' : ''}
+            className={consultation.current === 2 ? 'selected' : ''}
             onClick={this.handleClick.bind(this, 2)}
           >已结束</View>
         </View>
         <View className='content'>
           <Swiper
             className='content-swiper'
-            current={current}
+            current={consultation.current}
             onChange={this.swiperOnChange.bind(this)}
           >
             <SwiperItem className="content-swiper-item">
-              <ScrollView
-                className="content-l"
-                scrollY
-                enableBackToTop
-                onScrollToLower={this.scrollToLower.bind(this)}
-              >
-                <View style='height: 1px;'></View> {/* 上边距在 ScrollView 不满一屏时滚动，使用一个 1px 的元素占位 */}
-                {
-                  reply.map(item => (
-                    <QCard
-                      key={item.id}
-                      type='new'
-                      name={item.name}
-                      isVip={item.isVip}
-                      icon={item.icon}
-                      tag={item.tag}
-                      time={item.time}
-                      desc={item.desc}
-                      toQuestion={this.toQuestion.bind(this, item.id, item.name)}
-                    />
-                  ))
-                }
-                {
-                  moreLoading &&
-                  <View className='content-t'>
-                    <AtActivityIndicator content='加载中...' color='#48AEFC' size={24}></AtActivityIndicator>
-                  </View>
-                }
-                {
-                  !moreLoading && moreLoaded &&
-                  <View className='content-t'>没有更多了</View>
-                }
-              </ScrollView>
+              {
+                consultation.newCons.length
+                ? <ScrollView
+                  className="content-l"
+                  scrollY
+                  enableBackToTop
+                  // onScrollToLower={this.scrollToLower.bind(this)}
+                >
+                  <View style='height: 1px;'></View> {/* 上边距在 ScrollView 不满一屏时滚动，使用一个 1px 的元素占位 */}
+                  {
+                    consultation.newCons.map(item => (
+                      <QCard
+                        key={item.id}
+                        type='new'
+                        questionId={item.id}
+                        patientId={item.patientId}
+                        name={item.name}
+                        isVip={item.isVip}
+                        icon={item.icon}
+                        tag={item.tag}
+                        time={item.time}
+                        desc={item.desc}
+                      />
+                    ))
+                  }
+                  <View style='height: 1px;'></View>
+                  {/* {
+                    moreLoading &&
+                    <View className='content-t'>
+                      <AtActivityIndicator content='加载中...' color='#48AEFC' size={24}></AtActivityIndicator>
+                    </View>
+                  }
+                  {
+                    !moreLoading && moreLoaded &&
+                    <View className='content-t'>没有更多了</View>
+                  } */}
+                </ScrollView>
+                : <View className='content-empty'>
+                  <Image src={EMPTY} />
+                  <View>无人咨询哦，可能需要在“我-设置”调整咨询时间</View>
+                </View>
+              }
             </SwiperItem>
             <SwiperItem className="content-swiper-item">
-              <ScrollView
-                className="content-l"
-                scrollY
-                enableBackToTop
-                // onScrollToLower={this.scrollToLower.bind(this)}
-              >
-                <View style='height: 1px;'></View>
-                {
-                  noReply.map(item => (
-                    <QCard
-                      key={item.id}
-                      type='reply'
-                      name={item.name}
-                      isVip={item.isVip}
-                      icon={item.icon}
-                      tag={item.tag}
-                      time={item.time}
-                      desc={item.desc}
-                      toQuestion={this.toQuestion.bind(this, item.id, item.name)}
-                    />
-                  ))
-                }
-              </ScrollView>
+              {
+                consultation.replying.length
+                ? <ScrollView
+                  className="content-l"
+                  scrollY
+                  enableBackToTop
+                  // onScrollToLower={this.scrollToLower.bind(this)}
+                >
+                  <View style='height: 1px;'></View>
+                  {
+                    consultation.replying.map(item => (
+                      <QCard
+                        key={item.id}
+                        type='reply'
+                        questionId={item.id}
+                        patientId={item.patientId}
+                        name={item.name}
+                        isVip={item.isVip}
+                        icon={item.icon}
+                        tag={item.tag}
+                        time={item.time}
+                        desc={item.desc}
+                      />
+                    ))
+                  }
+                  <View style='height: 1px;'></View>
+                </ScrollView>
+                : <View className='content-empty'>
+                  <Image src={EMPTY} />
+                  <View>您在新咨询的有效期内的回复会在此显示</View>
+                </View>
+              }
             </SwiperItem>
             <SwiperItem className="content-swiper-item">
-              <ScrollView
-                className="content-l"
-                scrollY
-                enableBackToTop
-                // onScrollToLower={this.scrollToLower.bind(this)}
-              >
-                <View style='height: 1px;'></View>
-                {
-                  noReply.map(item => (
-                    <QCard
-                      key={item.id}
-                      type='finished'
-                      name={item.name}
-                      isVip={item.isVip}
-                      icon={item.icon}
-                      tag={item.tag}
-                      time={item.time}
-                      desc={item.desc}
-                      toQuestion={this.toQuestion.bind(this, item.id, item.name)}
-                    />
-                  ))
-                }
-              </ScrollView>
+              {
+                consultation.finished.length
+                ? <ScrollView
+                  className="content-l"
+                  scrollY
+                  enableBackToTop
+                  // onScrollToLower={this.scrollToLower.bind(this)}
+                >
+                  <View style='height: 1px;'></View>
+                  {
+                    consultation.finished.map(item => (
+                      <QCard
+                        key={item.id}
+                        type='finished'
+                        questionId={item.id}
+                        patientId={item.patientId}
+                        name={item.name}
+                        isVip={item.isVip}
+                        icon={item.icon}
+                        tag={item.tag}
+                        time={item.time}
+                        desc={item.desc}
+                      />
+                    ))
+                  }
+                  <View style='height: 1px;'></View>
+                </ScrollView>
+                : <View className='content-empty'>
+                  <Image src={EMPTY} />
+                  <View>已结束的咨询单都会显示在这个地方哦</View>
+                </View>
+              }
             </SwiperItem>
           </Swiper>
         </View>

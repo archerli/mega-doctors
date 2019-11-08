@@ -2,6 +2,26 @@ import * as TYPES from '../constants/creator'
 
 import * as STATES from './initialState'
 
+// 咨询列表
+export const consultation = (state = STATES.CONSULTATION, action) => {
+  switch (action.type) {
+    case TYPES.GET_CONSULTATION_DATA:
+      return {
+        ...state,
+        newCons: action.data.newCons,
+        replying: action.data.replying,
+        finished: action.data.finished
+      }
+    case TYPES.SWIPER_CHANGE_INDEX:
+      return {
+        ...state,
+        current: action.data
+      }
+    default:
+      return state
+  }
+}
+
 // 患者列表
 export const patient = (state = STATES.PATIENT, action) => {
   switch (action.type) {
@@ -13,7 +33,7 @@ export const patient = (state = STATES.PATIENT, action) => {
         follow: action.data.follow,
         normal: action.data.normal
       }
-    case TYPES.SWIPER_CHANGE:
+    case TYPES.SWIPER_CHANGE_PATIENT:
       return {
         ...state,
         current: action.data
@@ -63,6 +83,16 @@ export const mine = (state = STATES.MINE, action) => {
       return {
         ...state,
         ...action.data
+      }
+    case TYPES.GET_CONSULTATION_NUM:
+      return {
+        ...state,
+        consultationNum: action.data
+      }
+    case TYPES.GET_DOCTOR_PATIENT_NUM:
+      return {
+        ...state,
+        patientNum: action.data
       }
     default:
       return state

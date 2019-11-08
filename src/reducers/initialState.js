@@ -1,3 +1,13 @@
+// 咨询列表
+export const CONSULTATION = {
+  current: 0,
+  moreLoading: false,
+  moreLoaded: false,
+  newCons: [],
+  replying: [],
+  finished: []
+}
+
 // 患者列表
 export const PATIENT = {
   current: 0,
@@ -27,6 +37,8 @@ export const MINE = {
   name: '',
   megaid: '',
   authenticated: 0,
+  consultationNum: 0,
+  patientNum: 0
 }
 
 // 个人信息

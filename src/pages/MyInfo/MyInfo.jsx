@@ -111,7 +111,7 @@ class MyInfo extends Component {
     const { myInfo } = this.props
     const userInfo = Taro.getStorageSync('userInfo')
     const genderRange = ['男', '女']
-    const titleRange = ['主任医师', '副主任医师', '主治医师', '住院总医师', '住院医师']
+    const titleRange = ['主任医师', '副主任医师', '主治医师', '住院医师']
     
     return (
       <View className='myinfo'>
@@ -170,14 +170,18 @@ class MyInfo extends Component {
           <Button className='save' onClick={this.saveChange.bind(this)}>保存</Button>
         </View>
         <AtFloatLayout isOpened={myInfo.isOpened}>
-          <Input
-            className='edit'
-            type={myInfo.placeholder === '电话' ? 'number': 'text'}
-            placeholder={myInfo.placeholder}
-            value={myInfo.value}
-            // focus
-            onConfirm={this.handleChange2.bind(this, myInfo.placeholder)}
-          />
+          {
+            myInfo.isOpened &&
+            <Input
+              className='edit'
+              // type={myInfo.placeholder === '电话' ? 'number': 'text'}
+              placeholder={myInfo.placeholder}
+              value={myInfo.value}
+              adjustPosition={false}
+              focus
+              onConfirm={this.handleChange2.bind(this, myInfo.placeholder)}
+            />
+          }
         </AtFloatLayout>
       </View>
     )

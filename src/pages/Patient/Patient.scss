@@ -38,6 +38,24 @@
             color: #999;
           }
         }
+        .content-empty {
+          padding: 0 120px;
+          height: 100%;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          Image {
+            width: 300px;
+            height: 230px;
+            margin-bottom: 60px;
+          }
+          View {
+            font-size: 28px;
+            color: #666666;
+            text-align: center;
+          }
+        }
       }
     }
   }
