@@ -4,7 +4,10 @@ import {
   myInfo,
   patient,
   patientInfo,
-  consultation
+  consultation,
+  question,
+  remark,
+  setting
 } from './creator'
 
 export default combineReducers({
@@ -12,5 +15,8 @@ export default combineReducers({
   myInfo,
   patient,
   patientInfo,
-  consultation
+  consultation,
+  question,
+  remark,
+  setting
 })

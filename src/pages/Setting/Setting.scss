@@ -9,17 +9,12 @@
   }
   .btn {
     padding: 40px 30px;
-    Button.edit {
-      margin-bottom: 26px;
-      height: 88px;
-      line-height: 88px;
-      border: 1px solid #D6D5D6;
-      border-radius: 10px;
-      background: #ffffff;
-      font-size: 36px;
-      color: #000000;
+    View {
+      font-size: 28px;
+      color: #666666;
     }
     Button.save {
+      margin-bottom: 12px;
       height: 88px;
       line-height: 88px;
       border: 1px solid #3D79E5;
@@ -33,7 +28,7 @@
     padding: 24px 30px;
   }
   .at-list__item .item-extra__info {
-    padding-right: 4px;
+    padding-right: 40px;
   }
   .at-list__item-extra {
     max-width: 360px;

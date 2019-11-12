@@ -5,7 +5,8 @@ import { AtDivider } from 'taro-ui'
 import AV from 'leancloud-storage/dist/av-weapp-min.js'
 import { Realtime, TextMessage } from 'leancloud-realtime/dist/realtime.weapp.min.js'
 
-import { add, minus, asyncAdd } from '../../actions/creator'
+import { action, getPatientData } from '../../actions/creator'
+import { CHANGE_DOCTOR_PATIENT_TAG } from '../../constants/creator'
 
 import utils from '../../common/utils'
 import MsgItem from '../../components/MsgItem/MsgItem'
@@ -16,17 +17,14 @@ import CLOCK from '../../assets/clock.png'
 
 import './Question.scss'
 
-@connect(({ counter }) => ({
-  counter
+@connect(({ question }) => ({
+  question
 }), (dispatch) => ({
-  add () {
-    dispatch(add())
+  action(type, data) {
+    dispatch(action(type, data))
   },
-  dec () {
-    dispatch(minus())
-  },
-  asyncAdd () {
-    dispatch(asyncAdd())
+  getPatientData(patientId) {
+    dispatch(getPatientData(patientId))
   }
 }))
 
@@ -41,11 +39,6 @@ class Question extends Component {
     super(...arguments)
     this.state = {
       isFinished: false,
-      tag1: '0',
-      tag2: '0',
-      tag3: '0',
-      tag4: '0',
-      tag5: '0',
       showRemark: true,
       scrollTop: 0,
       scrollIntoView: 'last-0',
@@ -119,6 +112,7 @@ class Question extends Component {
     })
     // TODO
     // 拿到患者ID获取标签和备注信息
+    this.props.getPatientData(params.patientId)
 
 
   }
@@ -164,6 +158,7 @@ class Question extends Component {
     // })
     .then(conversation => {
       // 获取聊天历史
+      // TODO: 根据开始时间和结束时间查询聊天记录
       this.conversation = conversation
       this.messageIterator = conversation.createMessagesIterator();
 
@@ -218,8 +213,9 @@ class Question extends Component {
   }
 
   toRemark() {
+    const { params } = this.$router
     Taro.navigateTo({
-      url: '/pages/Remark/Remark'
+      url: `/pages/Remark/Remark?patientId=${params.patientId}`
     })
   }
 
@@ -230,11 +226,19 @@ class Question extends Component {
     })
   }
 
-  tagChange(id, e) {
-    // console.log(id)
+  tagChange(key, e) {
+    // console.log(key)
     // console.log(e.detail)
-    this.setState({
-      [`tag${id}`]: e.detail.value
+    const { question } = this.props
+    const tag = {
+      ...question.tag,
+      [key]: e.detail.value
+    }
+    const relation = AV.Object.createWithoutData('DoctorPatientRelation', question.relationId)
+    relation.set('tag', tag)
+    relation.save().then(res => {
+      // console.log(res)
+      this.props.action(CHANGE_DOCTOR_PATIENT_TAG, res.get('tag'))
     })
   }
 
@@ -346,26 +350,27 @@ class Question extends Component {
   }
 
   render () {
-    const { tag1, tag2, tag3, tag4, tag5, showRemark, msgList, scrollIntoView, inputValue } = this.state
+    const { tag } = this.props.question
+    const { showRemark, msgList, scrollIntoView, inputValue } = this.state
     const tagRange = ['无', '轻度', '中度', '重度']
     return (
       <View className='question'>
         <View className='remark'>
           <View className='remark-1'>
-            <Picker mode='selector' range={tagRange} onChange={this.tagChange.bind(this, 1)}>
-              <View className={`tag-${tag1}`}>{tag1 === '0' ? 'OSAHS' : `OSAHS | ${tagRange[tag1].substr(0, 1)}`}</View>
+            <Picker mode='selector' range={tagRange} value={tag.osahs} onChange={this.tagChange.bind(this, 'osahs')}>
+              <View className={`tag-${tag.osahs}`}>{tag.osahs === '0' ? 'OSAHS' : `OSAHS | ${tagRange[tag.osahs].substr(0, 1)}`}</View>
             </Picker>
-            <Picker mode='selector' range={tagRange} onChange={this.tagChange.bind(this, 2)}>
-              <View className={`tag-${tag2}`}>{tag2 === '0' ? 'COBP' : `COBP | ${tagRange[tag2].substr(0, 1)}`}</View>
+            <Picker mode='selector' range={tagRange} value={tag.cobp} onChange={this.tagChange.bind(this, 'cobp')}>
+              <View className={`tag-${tag.cobp}`}>{tag.cobp === '0' ? 'COBP' : `COBP | ${tagRange[tag.cobp].substr(0, 1)}`}</View>
             </Picker>
-            <Picker mode='selector' range={tagRange} onChange={this.tagChange.bind(this, 3)}>
-              <View className={`tag-${tag3}`}>{tag3 === '0' ? '冠心病' : `冠心病 | ${tagRange[tag3].substr(0, 1)}`}</View>
+            <Picker mode='selector' range={tagRange} value={tag.gxb} onChange={this.tagChange.bind(this, 'gxb')}>
+              <View className={`tag-${tag.gxb}`}>{tag.gxb === '0' ? '冠心病' : `冠心病 | ${tagRange[tag.gxb].substr(0, 1)}`}</View>
             </Picker>
-            <Picker mode='selector' range={tagRange} onChange={this.tagChange.bind(this, 4)}>
-              <View className={`tag-${tag4}`}>{tag4 === '0' ? '糖尿病' : `糖尿病 | ${tagRange[tag4].substr(0, 1)}`}</View>
+            <Picker mode='selector' range={tagRange} value={tag.tnb} onChange={this.tagChange.bind(this, 'tnb')}>
+              <View className={`tag-${tag.tnb}`}>{tag.tnb === '0' ? '糖尿病' : `糖尿病 | ${tagRange[tag.tnb].substr(0, 1)}`}</View>
             </Picker>
-            <Picker mode='selector' range={tagRange} onChange={this.tagChange.bind(this, 5)}>
-              <View className={`tag-${tag5}`}>{tag5 === '0' ? '高血压' : `高血压 | ${tagRange[tag5].substr(0, 1)}`}</View>
+            <Picker mode='selector' range={tagRange} value={tag.gxy} onChange={this.tagChange.bind(this, 'gxy')}>
+              <View className={`tag-${tag.gxy}`}>{tag.gxy === '0' ? '高血压' : `高血压 | ${tagRange[tag.gxy].substr(0, 1)}`}</View>
             </Picker>
           </View>
           <View className='remark-2'></View>

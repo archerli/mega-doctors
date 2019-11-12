@@ -16,8 +16,8 @@ import './Mine.scss'
 @connect(({ mine }) => ({
   mine
 }), (dispatch) => ({
-  getDoctorData(doctorid) {
-    dispatch(getDoctorData(doctorid))
+  getDoctorData() {
+    dispatch(getDoctorData())
   },
   getConsultationNum() {
     dispatch(getConsultationNum())
@@ -43,8 +43,8 @@ class Mine extends Component {
   }
 
   componentDidMount() {
-    const doctorid = Taro.getStorageSync('doctorid')
-    this.props.getDoctorData(doctorid)
+    // const doctorid = Taro.getStorageSync('doctorid')
+    this.props.getDoctorData()
     this.props.getConsultationNum()
     this.props.getDoctorPatientNum()
   }

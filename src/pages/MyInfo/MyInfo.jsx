@@ -4,7 +4,9 @@ import { connect } from '@tarojs/redux'
 import { AtList, AtListItem, AtFloatLayout } from "taro-ui"
 import AV from 'leancloud-storage/dist/av-weapp-min.js'
 
-import { getDoctorData, changeDoctorData } from '../../actions/creator'
+import { action, getDoctorData } from '../../actions/creator'
+import { CHANGE_DOCTOR_DATA } from '../../constants/creator'
+
 import QRCODE from '../../assets/qrcode.png'
 
 import './MyInfo.scss'
@@ -12,11 +14,11 @@ import './MyInfo.scss'
 @connect(({ myInfo }) => ({
   myInfo
 }), (dispatch) => ({
-  getDoctorData(doctorid) {
-    dispatch(getDoctorData(doctorid))
+  action(type, data) {
+    dispatch(action(type, data))
   },
-  changeDoctorData(data) {
-    dispatch(changeDoctorData(data))
+  getDoctorData() {
+    dispatch(getDoctorData())
   }
 }))
 
@@ -33,12 +35,12 @@ class MyInfo extends Component {
   }
 
   componentDidMount() {
-    const doctorid = Taro.getStorageSync('doctorid')
-    this.props.getDoctorData(doctorid)
+    // const doctorid = Taro.getStorageSync('doctorid')
+    this.props.getDoctorData()
   }
 
   componentWillUnmount() {
-    this.props.changeDoctorData({
+    this.props.action(CHANGE_DOCTOR_DATA, {
       isOpened: false,
       placeholder: '',
       value: '',
@@ -55,7 +57,7 @@ class MyInfo extends Component {
     console.log(e)
     console.log(key)
     console.log(range)
-    this.props.changeDoctorData({
+    this.props.action(CHANGE_DOCTOR_DATA, {
       [key]: range[e.detail.value]
     })
   }
@@ -67,7 +69,7 @@ class MyInfo extends Component {
     const keyList = ['name', 'hospital', 'department', 'phone']
     key = keyList[_keyList.indexOf(key)]
     console.log(key)
-    this.props.changeDoctorData({
+    this.props.action(CHANGE_DOCTOR_DATA, {
       [key]: e.detail.value,
       isOpened: false,
       placeholder: '',
@@ -76,7 +78,7 @@ class MyInfo extends Component {
   }
 
   edit(placeholder, value) {
-    this.props.changeDoctorData({
+    this.props.action(CHANGE_DOCTOR_DATA, {
       isOpened: true,
       placeholder,
       value,
@@ -111,8 +113,8 @@ class MyInfo extends Component {
     const { myInfo } = this.props
     const userInfo = Taro.getStorageSync('userInfo')
     const genderRange = ['男', '女']
+    const _genderRange = ['M', 'F']
     const titleRange = ['主任医师', '副主任医师', '主治医师', '住院医师']
-    
     return (
       <View className='myinfo'>
         <View className='icon'>
@@ -132,7 +134,12 @@ class MyInfo extends Component {
               arrow='right'
               onClick={this.edit.bind(this, '姓名', myInfo.name)}
             />
-            <Picker mode='selector' range={genderRange} onChange={this.handleChange.bind(this, 'gender', ['M', 'F'])}>
+            <Picker
+              mode='selector'
+              range={genderRange}
+              value={_genderRange.indexOf(myInfo.gender)}
+              onChange={this.handleChange.bind(this, 'gender', _genderRange)}
+            >
               <AtListItem
                 title='性别'
                 extraText={myInfo.gender === 'M' ? '男' : '女'}
@@ -151,7 +158,12 @@ class MyInfo extends Component {
               arrow='right'
               onClick={this.edit.bind(this, '所在科室', myInfo.department)}
             />
-            <Picker mode='selector' range={titleRange} onChange={this.handleChange.bind(this, 'title', titleRange)}>
+            <Picker
+              mode='selector'
+              range={titleRange}
+              value={titleRange.indexOf(myInfo.title)}
+              onChange={this.handleChange.bind(this, 'title', titleRange)}
+            >
               <AtListItem
                 title='职称'
                 extraText={myInfo.title}

@@ -4,7 +4,9 @@ import { connect } from '@tarojs/redux'
 import { AtAvatar, AtList, AtListItem, AtCurtain } from "taro-ui"
 import AV from 'leancloud-storage/dist/av-weapp-min.js'
 
-import { getPatientData, changeDoctorPatientData } from '../../actions/creator'
+import { action, getPatientData } from '../../actions/creator'
+import { CHANGE_DOCTOR_PATIENT_DATA } from '../../constants/creator'
+
 import QRCODE from '../../assets/qrcode.png'
 
 import './PatientInfo.scss'
@@ -12,11 +14,11 @@ import './PatientInfo.scss'
 @connect(({ patientInfo }) => ({
   patientInfo
 }), (dispatch) => ({
+  action(type, data) {
+    dispatch(action(type, data))
+  },
   getPatientData(id) {
     dispatch(getPatientData(id))
-  },
-  changeDoctorPatientData(data) {
-    dispatch(changeDoctorPatientData(data))
   }
 }))
 
@@ -40,7 +42,7 @@ class PatientInfo extends Component {
 
   handleChange(key, e) {
     console.log(e)
-    this.props.changeDoctorPatientData({
+    this.props.action(CHANGE_DOCTOR_PATIENT_DATA, {
       [key]: e.detail.value
     })
   }
@@ -53,10 +55,18 @@ class PatientInfo extends Component {
   }
 
   saveChange() {
-    const { follow, block } = this.props.patientInfo
-    const relation = AV.Object.createWithoutData('DoctorPatientRelation', '5db80167eaa375006c18a14c');
-    relation.set('follow', follow);
-    relation.set('block', block);
+    const { relationId, follow, block, group } = this.props.patientInfo
+    // 增加或移除关注分类
+    if (follow && group.indexOf('3') === -1) {
+      group.push('3')
+    } else if (!follow && group.indexOf('3') > -1) {
+      group.remove('3')
+    }
+    console.log(group)
+    const relation = AV.Object.createWithoutData('DoctorPatientRelation', relationId)
+    relation.set('follow', follow)
+    relation.set('block', block)
+    relation.set('group', group)
     relation.save().then(res => {
       Taro.showToast({
         title: '保存成功'
@@ -66,7 +76,7 @@ class PatientInfo extends Component {
         title: '保存失败，请重试',
         icon: 'none'
       })
-    });
+    })
   }
 
   render () {

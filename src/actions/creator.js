@@ -3,7 +3,10 @@ import AV from 'leancloud-storage/dist/av-weapp-min.js'
 import * as TYPES from '../constants/creator'
 import utils from '../common/utils'
 
-const action = (type, data) => {
+const doctorid = Taro.getStorageSync('doctorid')
+
+// 通用
+export const action = (type, data) => {
   return { type, data }
 }
 
@@ -17,8 +20,8 @@ export const swiperChange = (type, current) => {
 // 获取咨询列表数据
 export const getConsultationData = () => {
   return dispatch => {
-    const doctorid = Taro.getStorageSync('doctorid')
     const query = new AV.Query('Consultation');
+    query.descending('createdAt');
     query.equalTo('idDoctor', AV.Object.createWithoutData('Doctor', doctorid));
     query.include('idDoctor');
     query.include('idPatient');
@@ -81,7 +84,6 @@ export const getConsultationData = () => {
 // 获取医生关联患者数据
 export const getDoctorPatientData = () => {
   return dispatch => {
-    const doctorid = Taro.getStorageSync('doctorid')
     const query = new AV.Query('DoctorPatientRelation');
     query.equalTo('idDoctor', AV.Object.createWithoutData('Doctor', doctorid));
     query.include('idDoctor');
@@ -95,8 +97,10 @@ export const getDoctorPatientData = () => {
       res.forEach(item => {
         const group = item.get('group')
         const patient = item.get('idPatient')
-        switch (group) {
-          case '1':
+        // 一个患者可能同时存在于多个分组，group 为 Array
+        // 0普通 1VIP 2付费 3关注
+        switch (true) {
+          case group.indexOf('1') > -1:
             vip.push({
               id: patient && patient.id,
               name: patient && patient.get('name'),
@@ -104,8 +108,7 @@ export const getDoctorPatientData = () => {
               isVip: false,
               tag: []
             })
-            break
-          case '2':
+          case group.indexOf('2') > -1:
             paid.push({
               id: patient && patient.id,
               name: patient && patient.get('name'),
@@ -113,8 +116,7 @@ export const getDoctorPatientData = () => {
               isVip: false,
               tag: []
             })
-            break
-          case '3':
+          case group.indexOf('3') > -1:
             follow.push({
               id: patient && patient.id,
               name: patient && patient.get('name'),
@@ -122,8 +124,7 @@ export const getDoctorPatientData = () => {
               isVip: false,
               tag: []
             })
-            break
-          case '4':
+          case group.indexOf('0') > -1:
             normal.push({
               id: patient && patient.id,
               name: patient && patient.get('name'),
@@ -131,7 +132,6 @@ export const getDoctorPatientData = () => {
               isVip: false,
               tag: []
             })
-            break
         }
       });
       dispatch(action(TYPES.GET_DOCTOR_PATIENT_DATA, {
@@ -144,20 +144,12 @@ export const getDoctorPatientData = () => {
   }
 }
 
-// 修改医生关联患者信息
-export const changeDoctorPatientData = (data) => {
-  return {
-    type: TYPES.CHANGE_DOCTOR_PATIENT_DATA,
-    data
-  }
-}
-
 // 获取患者数据
 export const getPatientData = (patientId) => {
   return dispatch => {
     console.log(patientId);
     const query = new AV.Query('DoctorPatientRelation');
-    query.equalTo('idDoctor', AV.Object.createWithoutData('Doctor', '5daeb07b7b968a0074945056'));
+    query.equalTo('idDoctor', AV.Object.createWithoutData('Doctor', doctorid));
     query.equalTo('idPatient', AV.Object.createWithoutData('Patients', patientId));
     query.include('idPatient');
     query.find().then(res => {
@@ -165,6 +157,7 @@ export const getPatientData = (patientId) => {
       const patient = res[0].get('idPatient')
       console.log(patient)
       dispatch(action(TYPES.GET_PATIENT_DATA, {
+        relationId: res[0].id,
         name: patient.get('name'),
         gender: patient.get('gender'),
         birthday: patient.get('birthday'),
@@ -173,14 +166,18 @@ export const getPatientData = (patientId) => {
         height: patient.get('height'),
         weight: patient.get('weight'),
         follow: res[0].get('follow'),
-        block: res[0].get('block')
+        block: res[0].get('block'),
+        source: res[0].get('source'),
+        group: res[0].get('group'),
+        tag: res[0].get('tag'),
+        remark: res[0].get('remark')
       }))
     });
   }
 }
 
 // 获取医生数据
-export const getDoctorData = (doctorid) => {
+export const getDoctorData = () => {
   return dispatch => {
     const query = new AV.Query('Doctor');
     // query.equalTo('name', '张医生');
@@ -199,18 +196,9 @@ export const getDoctorData = (doctorid) => {
   }
 }
 
-// 修改医生关联患者信息
-export const changeDoctorData = (data) => {
-  return {
-    type: TYPES.CHANGE_DOCTOR_DATA,
-    data
-  }
-}
-
 // 获取咨询数量
 export const getConsultationNum = () => {
   return dispatch => {
-    const doctorid = Taro.getStorageSync('doctorid')
     const query = new AV.Query('Consultation');
     query.equalTo('idDoctor', AV.Object.createWithoutData('Doctor', doctorid));
     query.count().then(count => {
@@ -223,7 +211,6 @@ export const getConsultationNum = () => {
 // 获取患者数量
 export const getDoctorPatientNum = () => {
   return dispatch => {
-    const doctorid = Taro.getStorageSync('doctorid')
     const query = new AV.Query('DoctorPatientRelation');
     query.equalTo('idDoctor', AV.Object.createWithoutData('Doctor', doctorid));
     query.count().then(count => {

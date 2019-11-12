@@ -1,5 +1,4 @@
 import * as TYPES from '../constants/creator'
-
 import * as STATES from './initialState'
 
 // 咨询列表
@@ -16,6 +15,25 @@ export const consultation = (state = STATES.CONSULTATION, action) => {
       return {
         ...state,
         current: action.data
+      }
+    default:
+      return state
+  }
+}
+
+// 咨询列表
+export const question = (state = STATES.QUESTION, action) => {
+  switch (action.type) {
+    case TYPES.GET_PATIENT_DATA:
+      return {
+        ...state,
+        relationId: action.data.relationId,
+        tag: action.data.tag
+      }
+    case TYPES.CHANGE_DOCTOR_PATIENT_TAG:
+      return {
+        ...state,
+        tag: action.data
       }
     default:
       return state
@@ -49,6 +67,7 @@ export const patientInfo = (state = STATES.PATIENT_INFO, action) => {
     case TYPES.GET_PATIENT_DATA:
       return {
         ...state,
+        relationId: action.data.relationId,
         name: action.data.name,
         gender: action.data.gender,
         birthday: action.data.birthday,
@@ -57,12 +76,38 @@ export const patientInfo = (state = STATES.PATIENT_INFO, action) => {
         height: action.data.height,
         weight: action.data.weight,
         follow: action.data.follow,
-        block: action.data.block
+        block: action.data.block,
+        group: action.data.group
       }
     case TYPES.CHANGE_DOCTOR_PATIENT_DATA:
       return {
         ...state,
         ...action.data
+      }
+    default:
+      return state
+  }
+}
+
+// 患者备注
+export const remark = (state = STATES.REMARK, action) => {
+  switch (action.type) {
+    case TYPES.GET_PATIENT_DATA:
+      return {
+        ...state,
+        relationId: action.data.relationId,
+        tag: action.data.tag,
+        remark: action.data.remark
+      }
+    case TYPES.CHANGE_DOCTOR_PATIENT_TAG:
+      return {
+        ...state,
+        tag: action.data
+      }
+    case TYPES.CHANGE_DOCTOR_PATIENT_REMARK:
+      return {
+        ...state,
+        remark: action.data
       }
     default:
       return state
@@ -113,6 +158,26 @@ export const myInfo = (state = STATES.MY_INFO, action) => {
         phone: action.data.phone
       }
     case TYPES.CHANGE_DOCTOR_DATA:
+      return {
+        ...state,
+        ...action.data
+      }
+    default:
+      return state
+  }
+}
+
+// 设置
+export const setting = (state = STATES.SETTING, action) => {
+  switch (action.type) {
+    case TYPES.GET_DOCTOR_DATA:
+      return {
+        ...state,
+        startConsultation: action.data.startConsultation,
+        startConsultationTime: action.data.startConsultationTime,
+        endConsultationTime: action.data.endConsultationTime
+      }
+    case TYPES.CHANGE_DOCTOR_SETTING:
       return {
         ...state,
         ...action.data

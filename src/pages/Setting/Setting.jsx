@@ -4,15 +4,21 @@ import { connect } from '@tarojs/redux'
 import { AtList, AtListItem } from "taro-ui"
 import AV from 'leancloud-storage/dist/av-weapp-min.js'
 
-import { getPatientData, changeDoctorPatientData } from '../../actions/creator'
+import { action, getDoctorData } from '../../actions/creator'
+import { CHANGE_DOCTOR_SETTING } from '../../constants/creator'
 import QRCODE from '../../assets/qrcode.png'
 
 import './Setting.scss'
 
-@connect(({ patientInfo }) => ({
-  patientInfo
+@connect(({ setting }) => ({
+  setting
 }), (dispatch) => ({
-
+  action(type, data) {
+    dispatch(action(type, data))
+  },
+  getDoctorData() {
+    dispatch(getDoctorData())
+  }
 }))
 
 class Setting extends Component {
@@ -28,14 +34,7 @@ class Setting extends Component {
   }
 
   componentWillMount() {
-
-  }
-
-  handleChange(key, e) {
-    console.log(e)
-    this.props.changeDoctorPatientData({
-      [key]: e.detail.value
-    })
+    this.props.getDoctorData()
   }
 
   subscribeMessage() {
@@ -48,25 +47,35 @@ class Setting extends Component {
     })
   }
 
+  handleChange(key, e) {
+    console.log(key)
+    console.log(e.detail.value)
+    this.props.action(CHANGE_DOCTOR_SETTING, {
+      [key]: e.detail.value
+    })
+  }
+
   saveChange() {
-    // const { follow, block } = this.props.patientInfo
-    // const relation = AV.Object.createWithoutData('DoctorPatientRelation', '5db80167eaa375006c18a14c');
-    // relation.set('follow', follow);
-    // relation.set('block', block);
-    // relation.save().then(res => {
-    //   Taro.showToast({
-    //     title: '保存成功'
-    //   })
-    // }, err => {
-    //   Taro.showToast({
-    //     title: '保存失败，请重试',
-    //     icon: 'none'
-    //   })
-    // });
+    const { setting } = this.props
+    const doctorid = Taro.getStorageSync('doctorid')
+    const doctor = AV.Object.createWithoutData('Doctor', doctorid)
+    doctor.set('startConsultation', setting.startConsultation)
+    doctor.set('startConsultationTime', setting.startConsultationTime)
+    doctor.set('endConsultationTime', setting.endConsultationTime)
+    doctor.save().then(res => {
+      Taro.showToast({
+        title: '保存成功'
+      })
+    }, err => {
+      Taro.showToast({
+        title: '保存失败，请重试',
+        icon: 'none'
+      })
+    })
   }
 
   render () {
-    const { patientInfo } = this.props
+    const { setting } = this.props
     return (
       <View className='setting'>
         <View className='title'>
@@ -75,17 +84,31 @@ class Setting extends Component {
               title='开启咨询'
               isSwitch
               switchColor='#3D79E5'
-              switchIsCheck={patientInfo.block}
-              onSwitchChange={this.handleChange.bind(this, 'block')}
+              switchIsCheck={setting.startConsultation}
+              onSwitchChange={this.handleChange.bind(this, 'startConsultation')}
             />
-            <AtListItem
-              title='开启时间'
-              extraText={'11:00'}
-            />
-            <AtListItem
-              title='结束时间'
-              extraText={'20:00'}
-            />
+            <Picker
+              mode='time'
+              value={setting.startConsultationTime || '00:00'}
+              onChange={this.handleChange.bind(this, 'startConsultationTime')}
+            >
+              <AtListItem
+                title='开启时间'
+                extraText={setting.startConsultationTime || '00:00'}
+                arrow='right'
+              />
+            </Picker>
+            <Picker
+              mode='time'
+              value={setting.endConsultationTime || '00:00'}
+              onChange={this.handleChange.bind(this, 'endConsultationTime')}
+            >
+              <AtListItem
+                title='结束时间'
+                extraText={setting.endConsultationTime || '00:00'}
+                arrow='right'
+              />
+            </Picker>
           </AtList>
         </View>
         <View class='btn'>

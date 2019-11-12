@@ -8,6 +8,12 @@ export const CONSULTATION = {
   finished: []
 }
 
+// 问题详情
+export const QUESTION = {
+  relationId: null,
+  tag: {"osahs":"0","cobp":"0","gxb":"0","tnb":"0","gxy":"0"}
+}
+
 // 患者列表
 export const PATIENT = {
   current: 0,
@@ -21,6 +27,7 @@ export const PATIENT = {
 
 // 患者信息
 export const PATIENT_INFO = {
+  relationId: null,
   name: '',
   gender: '',
   birthday: '',
@@ -29,7 +36,15 @@ export const PATIENT_INFO = {
   height: '',
   weight: '',
   follow: false,
-  block: false
+  block: false,
+  group: ["0"]
+}
+
+// 患者备注
+export const REMARK = {
+  relationId: null,
+  tag: {"osahs":"0","cobp":"0","gxb":"0","tnb":"0","gxy":"0"},
+  remark: ''
 }
 
 // 我的
@@ -54,4 +69,11 @@ export const MY_INFO = {
   placeholder: '',
   value: '',
   focus: false
+}
+
+// 设置
+export const SETTING = {
+  startConsultation: true,
+  startConsultationTime: '',
+  endConsultationTime: ''
 }
