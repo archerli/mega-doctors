@@ -62,6 +62,12 @@ class PatientInfo extends Component {
     } else if (!follow && group.indexOf('3') > -1) {
       group.remove('3')
     }
+    // console.log(group)
+    // if (follow && group.indexOf('0') > -1) {
+    //   group.remove('0')
+    // } else if (!follow && group.indexOf('0') === -1 && group.indexOf('1') === -1 && group.indexOf('2') === -1) {
+    //   group.push('0')
+    // }
     console.log(group)
     const relation = AV.Object.createWithoutData('DoctorPatientRelation', relationId)
     relation.set('follow', follow)

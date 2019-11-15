@@ -84,6 +84,9 @@ class App extends Component {
 
   componentDidMount () {
     utils.initAV('f82OcAshk5Q1J993fGLJ4bbs-gzGzoHsz', 'O9COJzi78yYXCWVWMkLqlpp8');
+    Taro.setStorageSync('haveTappedIndexTab', false)
+    Taro.setStorageSync('haveTappedPatientTab', false)
+    Taro.setStorageSync('haveTappedMineTab', false)
   }
 
   componentDidShow () {}

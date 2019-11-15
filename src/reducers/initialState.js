@@ -53,7 +53,8 @@ export const MINE = {
   megaid: '',
   authenticated: 0,
   consultationNum: 0,
-  patientNum: 0
+  patientNum: 0,
+  credit: 0
 }
 
 // 个人信息

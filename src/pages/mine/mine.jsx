@@ -3,7 +3,7 @@ import { View, Button, Text } from '@tarojs/components'
 import { connect } from '@tarojs/redux'
 import { AtAvatar, AtList, AtListItem, AtIcon } from "taro-ui"
 
-import { getDoctorData, getConsultationNum, getDoctorPatientNum } from '../../actions/creator'
+import { getDoctorData, getConsultationNum, getDoctorPatientNumAndCredit } from '../../actions/creator'
 
 import AUTH from '../../assets/auth.png'
 import INVITE from '../../assets/invite.png'
@@ -22,8 +22,8 @@ import './Mine.scss'
   getConsultationNum() {
     dispatch(getConsultationNum())
   },
-  getDoctorPatientNum() {
-    dispatch(getDoctorPatientNum())
+  getDoctorPatientNumAndCredit() {
+    dispatch(getDoctorPatientNumAndCredit())
   }
 }))
 
@@ -46,7 +46,22 @@ class Mine extends Component {
     // const doctorid = Taro.getStorageSync('doctorid')
     this.props.getDoctorData()
     this.props.getConsultationNum()
-    this.props.getDoctorPatientNum()
+    this.props.getDoctorPatientNumAndCredit()
+    const haveTappedMineTab = Taro.getStorageSync('haveTappedMineTab')
+    if (!haveTappedMineTab) {
+      Taro.setStorageSync('haveTappedMineTab', true)
+    }
+  }
+
+  // 切换tab时刷新页面
+  onTabItemTap() {
+    console.log('onTabItemTap')
+    const haveTappedMineTab = Taro.getStorageSync('haveTappedMineTab')
+    if (haveTappedMineTab) {
+      this.props.getDoctorData()
+      this.props.getConsultationNum()
+      this.props.getDoctorPatientNumAndCredit()
+    }
   }
 
   toDoctorAuth() {
@@ -119,7 +134,7 @@ class Mine extends Component {
             <Text className='data-i'>我的患者</Text>
           </View>
           <View>
-            <Text>0</Text>
+            <Text>{mine.credit}</Text>
             <Text className='data-i'>我的积分</Text>
           </View>
         </View>

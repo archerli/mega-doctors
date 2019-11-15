@@ -1,5 +1,5 @@
 import Taro, { Component } from '@tarojs/taro'
-import { View, Text } from '@tarojs/components'
+import { View, Text, Image } from '@tarojs/components'
 
 import VIP from '../../assets/vip.png'
 import CLOCK from '../../assets/clock.png'
@@ -36,7 +36,11 @@ class PCard extends Component {
       name,
       isVip,
       icon,
-      tag
+      tag,
+      credit,
+      source,
+      location,
+      lastTime
     } = this.props
     return (
       <View className='card'>
@@ -56,13 +60,13 @@ class PCard extends Component {
                 ))
               }
             </View>
-            <View className='msg-1'>上海用户丨来源：扫码</View>
-            <View className='msg-2'>最后咨询时间：30天前</View>
+            <View className='msg-1'>{location}用户丨来源：{source}</View>
+            <View className='msg-2'>最后咨询时间：{lastTime}</View>
           </View>
           <View className='card-t-3'>
             <View className='msg'>
               <Image src={JIFEN} />
-              <Text style='color: #FFB503;'>贡献值：{'100'}</Text>
+              <Text style='color: #FFB503;'>贡献值：{credit}</Text>
             </View>
             <View className='btn' onClick={this.toQuestion.bind(this)}>
               <Image className='img-m' src={MSG} />

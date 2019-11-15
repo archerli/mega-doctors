@@ -139,9 +139,22 @@ class Index extends Component {
       })
     }
     this.props.getConsultationData()
+    const haveTappedIndexTab = Taro.getStorageSync('haveTappedIndexTab')
+    if (!haveTappedIndexTab) {
+      Taro.setStorageSync('haveTappedIndexTab', true)
+    }
   }
 
   componentWillUnmount() {}
+
+  // 切换tab时刷新页面
+  onTabItemTap() {
+    console.log('onTabItemTap')
+    const haveTappedIndexTab = Taro.getStorageSync('haveTappedIndexTab')
+    if (haveTappedIndexTab) {
+      this.props.getConsultationData()
+    }
+  }
 
   // 下拉刷新
   onPullDownRefresh() {

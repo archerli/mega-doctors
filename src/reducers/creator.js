@@ -71,8 +71,8 @@ export const patientInfo = (state = STATES.PATIENT_INFO, action) => {
         name: action.data.name,
         gender: action.data.gender,
         birthday: action.data.birthday,
-        phone: '',
-        city: '',
+        phone: action.data.phone,
+        city: action.data.city,
         height: action.data.height,
         weight: action.data.weight,
         follow: action.data.follow,
@@ -137,7 +137,8 @@ export const mine = (state = STATES.MINE, action) => {
     case TYPES.GET_DOCTOR_PATIENT_NUM:
       return {
         ...state,
-        patientNum: action.data
+        patientNum: action.data.patientNum,
+        credit: action.data.credit
       }
     default:
       return state

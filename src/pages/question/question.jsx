@@ -39,6 +39,9 @@ class Question extends Component {
     super(...arguments)
     this.state = {
       isFinished: false,
+      status: '',
+      startTime: 0,
+      endTime: 0,
       showRemark: true,
       scrollTop: 0,
       scrollIntoView: 'last-0',
@@ -104,21 +107,20 @@ class Question extends Component {
     const consultation = new AV.Query('Consultation')
     consultation.get(params.questionId).then(res => {
       console.log('consultation', res.get('status'))
+      const status = res.get('status')
       this.setState({
-        isFinished: res.get('status') === '2'
+        isFinished: status === '2',
+        status
       })
     }, err => {
       
     })
-    // TODO
     // 拿到患者ID获取标签和备注信息
     this.props.getPatientData(params.patientId)
-
-
   }
 
   componentDidMount() {
-    const { msgList } = this.state
+    // const { msgList } = this.state
     const { params } = this.$router
     const doctorid = Taro.getStorageSync('doctorid')
     const realtime = new Realtime({
@@ -212,6 +214,11 @@ class Question extends Component {
 
   }
 
+  componentWillUnmount() {
+    console.log('componentWillUnmount')
+    this.client.close()
+  }
+
   toRemark() {
     const { params } = this.$router
     Taro.navigateTo({
@@ -256,13 +263,13 @@ class Question extends Component {
     // 发送消息
     this.conversation.send(new TextMessage(value)).then(message => {
       console.log('消息发送成功');
-
-      const { params } = this.$router
-      const consultation = AV.Object.createWithoutData('Consultation', params.questionId)
-      consultation.set('status', '1')
-      consultation.save()
-
-      const { msgList } = this.state
+      const { status, msgList } = this.state
+      if (status === '0') {
+        const { params } = this.$router
+        const consultation = AV.Object.createWithoutData('Consultation', params.questionId)
+        consultation.set('status', '1')
+        consultation.save()
+      }
       msgList.push({
         time: utils.formatTime(new Date().getTime(), 'yyyy/MM/dd HH:mm'),
         from: 'self',
@@ -330,11 +337,24 @@ class Question extends Component {
           consultation.set('endAt', new Date().getTime())
           consultation.set('status', '2')
           consultation.save().then(res => {
-            Taro.showToast({
-              title: '咨询已结束'
-            })
-            this.setState({
-              isFinished: true
+            const doctorid = Taro.getStorageSync('doctorid')
+            const query = new AV.Query('DoctorPatientRelation');
+            query.equalTo('idDoctor', AV.Object.createWithoutData('Doctor', doctorid));
+            query.equalTo('idPatient', AV.Object.createWithoutData('Patients', params.patientId));
+            query.find().then(r => {
+              console.log(r);
+              const relationId = r[0].id
+              const credit = r[0].get('credit')
+              const relation = AV.Object.createWithoutData('DoctorPatientRelation', relationId)
+              relation.set('credit', credit + 15)
+              relation.save().then(res => {
+                Taro.showToast({
+                  title: '咨询已结束'
+                })
+                this.setState({
+                  isFinished: true
+                })
+              })
             })
           }, err => {
             Taro.showToast({

@@ -1,5 +1,5 @@
 import Taro, { Component } from '@tarojs/taro'
-import { View, ScrollView, Button, Text, Swiper, SwiperItem } from '@tarojs/components'
+import { View, ScrollView, Image, Swiper, SwiperItem } from '@tarojs/components'
 import { connect } from '@tarojs/redux'
 
 import { AtActivityIndicator } from 'taro-ui'
@@ -102,7 +102,7 @@ const noReply = [
 class Patient extends Component {
 
   config = {
-    navigationBarTitleText: '咨询',
+    navigationBarTitleText: '患者',
     // disableScroll: true,
     enablePullDownRefresh: true,
     backgroundColor: "#ececec"
@@ -118,7 +118,20 @@ class Patient extends Component {
   }
 
   componentDidMount() {
-    this.props.getDoctorPatientData();
+    this.props.getDoctorPatientData()
+    const haveTappedPatientTab = Taro.getStorageSync('haveTappedPatientTab')
+    if (!haveTappedPatientTab) {
+      Taro.setStorageSync('haveTappedPatientTab', true)
+    }
+  }
+
+  // 切换tab时刷新页面
+  onTabItemTap() {
+    console.log('onTabItemTap')
+    const haveTappedPatientTab = Taro.getStorageSync('haveTappedPatientTab')
+    if (haveTappedPatientTab) {
+      this.props.getDoctorPatientData()
+    }
   }
 
   // 下拉刷新
@@ -126,7 +139,7 @@ class Patient extends Component {
     Taro.showNavigationBarLoading() //在标题栏中显示加载
     setTimeout(() => {
       // complete
-      this.props.getDoctorPatientData();
+      this.props.getDoctorPatientData()
       Taro.hideNavigationBarLoading() //完成停止加载
       Taro.stopPullDownRefresh() //停止下拉刷新
     }, 800);
@@ -209,6 +222,10 @@ class Patient extends Component {
                         isVip={item.isVip}
                         icon={item.icon}
                         tag={item.tag}
+                        credit={item.credit}
+                        source={item.source}
+                        location={item.location}
+                        lastTime={item.lastTime}
                       />
                     ))
                   }
@@ -249,6 +266,10 @@ class Patient extends Component {
                         isVip={item.isVip}
                         icon={item.icon}
                         tag={item.tag}
+                        credit={item.credit}
+                        source={item.source}
+                        location={item.location}
+                        lastTime={item.lastTime}
                       />
                     ))
                   }
@@ -279,6 +300,10 @@ class Patient extends Component {
                         isVip={item.isVip}
                         icon={item.icon}
                         tag={item.tag}
+                        credit={item.credit}
+                        source={item.source}
+                        location={item.location}
+                        lastTime={item.lastTime}
                       />
                     ))
                   }
@@ -309,6 +334,10 @@ class Patient extends Component {
                         isVip={item.isVip}
                         icon={item.icon}
                         tag={item.tag}
+                        credit={item.credit}
+                        source={item.source}
+                        location={item.location}
+                        lastTime={item.lastTime}
                       />
                     ))
                   }
