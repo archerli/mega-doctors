@@ -13,8 +13,8 @@ import utils from '../../common/utils'
 
 import QCard from '../../components/QCard/QCard'
 import QRCODE from '../../assets/qrcode.png'
-import QING from '../../assets/qing.png'
-import ZHONG from '../../assets/zhong.png'
+import QING from '../../assets/mild.png'
+import ZHONG from '../../assets/severe.png'
 import STAR from '../../assets/star.png'
 import EMPTY from '../../assets/empty.png'
 
@@ -103,8 +103,8 @@ const noReply = [
 @connect(({ consultation }) => ({
   consultation
 }), (dispatch) => ({
-  getConsultationData() {
-    dispatch(getConsultationData())
+  getConsultationData(conversations) {
+    dispatch(getConsultationData(conversations))
   },
   swiperChange(type, current) {
     dispatch(swiperChange(type, current))
@@ -128,7 +128,7 @@ class Index extends Component {
     }
   }
 
-  componentDidMount() {
+  async componentDidMount() {
     const userInfo = Taro.getStorageSync('userInfo')
     const havePhoneNumber = Taro.getStorageSync('havePhoneNumber')
     console.log(userInfo)
@@ -138,21 +138,42 @@ class Index extends Component {
         url: '../Auth/Auth'
       })
     }
-    this.props.getConsultationData()
     const haveTappedIndexTab = Taro.getStorageSync('haveTappedIndexTab')
     if (!haveTappedIndexTab) {
       Taro.setStorageSync('haveTappedIndexTab', true)
     }
+
+    const doctorid = Taro.getStorageSync('doctorid')
+    const realtime = new Realtime({
+      appId: 'f82OcAshk5Q1J993fGLJ4bbs-gzGzoHsz',
+      appKey: 'O9COJzi78yYXCWVWMkLqlpp8',
+      server: 'api-mhn.megahealth.cn',
+      plugins: AV.TypedMessagesPlugin // 注册富媒体消息插件
+    });
+    try {
+      this.client = await realtime.createIMClient(doctorid)
+      setTimeout(() => {
+        this.getData()
+        this.client.on('message', message => {
+          console.log('new message', message)
+        })
+      }, 300)
+    } catch(e) {
+      
+    }
   }
 
-  componentWillUnmount() {}
+  componentWillUnmount() {
+    console.log('componentWillUnmount')
+    this.client.close()
+  }
 
   // 切换tab时刷新页面
   onTabItemTap() {
     console.log('onTabItemTap')
     const haveTappedIndexTab = Taro.getStorageSync('haveTappedIndexTab')
     if (haveTappedIndexTab) {
-      this.props.getConsultationData()
+      this.getData()
     }
   }
 
@@ -161,10 +182,22 @@ class Index extends Component {
     Taro.showNavigationBarLoading() //在标题栏中显示加载
     setTimeout(() => {
       // complete
-      this.props.getConsultationData()
+      this.getData()
       Taro.hideNavigationBarLoading() //完成停止加载
       Taro.stopPullDownRefresh() //停止下拉刷新
     }, 800);
+  }
+
+  getData() {
+    const query = this.client.getQuery()
+    query.withLastMessagesRefreshed(true);
+    query.find().then(conversations => {
+      // conversations 就是想要的结果
+      console.log('conversations', conversations)
+      this.props.getConsultationData(conversations)
+    }).catch(err => {
+      console.log(err)
+    });
   }
 
   handleClick(value) {
@@ -237,6 +270,9 @@ class Index extends Component {
                         tag={item.tag}
                         time={item.time}
                         desc={item.desc}
+                        source={item.source}
+                        location={item.location}
+                        endTime={item.endTime}
                       />
                     ))
                   }
@@ -281,6 +317,10 @@ class Index extends Component {
                         tag={item.tag}
                         time={item.time}
                         desc={item.desc}
+                        source={item.source}
+                        location={item.location}
+                        endTime={item.endTime}
+                        lastMsgFrom={item.lastMsgFrom}
                       />
                     ))
                   }
@@ -315,6 +355,8 @@ class Index extends Component {
                         tag={item.tag}
                         time={item.time}
                         desc={item.desc}
+                        source={item.source}
+                        location={item.location}
                       />
                     ))
                   }

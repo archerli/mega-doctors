@@ -103,25 +103,16 @@ class Question extends Component {
         title: params.name
       })
     }
-
-    const consultation = new AV.Query('Consultation')
-    consultation.get(params.questionId).then(res => {
-      console.log('consultation', res.get('status'))
-      const status = res.get('status')
-      this.setState({
-        isFinished: status === '2',
-        status
-      })
-    }, err => {
-      
-    })
     // 拿到患者ID获取标签和备注信息
     this.props.getPatientData(params.patientId)
   }
 
-  componentDidMount() {
-    // const { msgList } = this.state
+  async componentDidMount() {
     const { params } = this.$router
+    await this.getConsultationData(params)
+    const { startTime, endTime } = this.state
+    const { question } = this.props
+    console.log(startTime, endTime)
     const doctorid = Taro.getStorageSync('doctorid')
     const realtime = new Realtime({
       appId: 'f82OcAshk5Q1J993fGLJ4bbs-gzGzoHsz',
@@ -162,19 +153,25 @@ class Question extends Component {
       // 获取聊天历史
       // TODO: 根据开始时间和结束时间查询聊天记录
       this.conversation = conversation
-      this.messageIterator = conversation.createMessagesIterator();
+      // 创建一个迭代器，用于消息分页
+      // this.messageIterator = conversation.createMessagesIterator()
 
-      this.messageIterator
-      .next()
+      // this.messageIterator
+      // .next()
+      conversation.queryMessages({
+        startTime,
+        endTime,
+      })
       .then(result => {
-        const data = result.value;
+        // const data = result.value;
+        const data = result
         console.log(data)
         const msgList = []
         data.forEach(item => {
           msgList.push({
             time: utils.formatTime(item._timestamp.getTime(), 'yyyy/MM/dd HH:mm'),
             from: item.from === doctorid ? 'self' : 'other',
-            icon: item.from === doctorid ? Taro.getStorageSync('userInfo').avatarUrl : CLOCK,
+            icon: item.from === doctorid ? Taro.getStorageSync('userInfo').avatarUrl : question.pAvatar,
             type: 'text',
             content: item.content._lctext
           })
@@ -189,7 +186,7 @@ class Question extends Component {
       });
 
       // 房间接受消息
-      this.conversation.on('message', message => {
+      conversation.on('message', message => {
         console.log('接收到新消息')
         console.log(message)
         if (message.content && message.content._lctext) {
@@ -197,7 +194,7 @@ class Question extends Component {
           msgList.push({
             time: utils.formatTime(message._timestamp.getTime(), 'yyyy/MM/dd HH:mm'),
             from: message.from === doctorid ? 'self' : 'other',
-            icon: message.from === doctorid ? Taro.getStorageSync('userInfo').avatarUrl : CLOCK,
+            icon: message.from === doctorid ? Taro.getStorageSync('userInfo').avatarUrl : question.pAvatar,
             type: 'text',
             content: message.content._lctext
           })
@@ -217,6 +214,30 @@ class Question extends Component {
   componentWillUnmount() {
     console.log('componentWillUnmount')
     this.client.close()
+  }
+
+  getConsultationData(params) {
+    return new Promise((resolve, reject) => {
+      const consultation = new AV.Query('Consultation')
+      consultation.get(params.questionId).then(res => {
+        console.log('consultation', res)
+        console.log('consultation', res.get('status'))
+        const status = res.get('status')
+        const startTime = res.get('startAt')
+        const endTime = res.get('endAt') || new Date().getTime()
+        this.setState({
+          isFinished: status === '2',
+          status,
+          startTime,
+          endTime
+        }, () => {
+          resolve()
+        })
+      }, err => {
+        console.log(err)
+        reject(err)
+      })
+    })
   }
 
   toRemark() {
@@ -320,7 +341,8 @@ class Question extends Component {
   }
 
   endQuestion() {
-    if (this.state.isFinished) {
+    const { isFinished, msgList } = this.state
+    if (isFinished) {
       return Taro.showToast({
         title: '本次咨询已结束',
         icon: 'none'
@@ -331,11 +353,16 @@ class Question extends Component {
       content: '结束后不能继续发送消息，确定结束吗？',
       success: res => {
         if (res.confirm) {
+          Taro.showLoading({
+            title: '结束中...',
+            mask: true
+          })
           console.log('confirm')
           const { params } = this.$router
           const consultation = AV.Object.createWithoutData('Consultation', params.questionId)
           consultation.set('endAt', new Date().getTime())
           consultation.set('status', '2')
+          consultation.set('lastMessage', msgList.length ? msgList[msgList.length - 1].content : '')
           consultation.save().then(res => {
             const doctorid = Taro.getStorageSync('doctorid')
             const query = new AV.Query('DoctorPatientRelation');
@@ -348,6 +375,7 @@ class Question extends Component {
               const relation = AV.Object.createWithoutData('DoctorPatientRelation', relationId)
               relation.set('credit', credit + 15)
               relation.save().then(res => {
+                Taro.hideLoading()
                 Taro.showToast({
                   title: '咨询已结束'
                 })
@@ -357,6 +385,7 @@ class Question extends Component {
               })
             })
           }, err => {
+            Taro.hideLoading()
             Taro.showToast({
               title: '操作失败，请重试',
               icon: 'none'

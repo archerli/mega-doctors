@@ -43,8 +43,8 @@
 			"list": [
 				{
 					"id": 0,
-					"name": "pages/Patient/Patient",
-					"pathName": "pages/Patient/Patient",
+					"name": "pages/MyInfo/MyInfo",
+					"pathName": "pages/MyInfo/MyInfo",
 					"query": "",
 					"scene": null
 				}

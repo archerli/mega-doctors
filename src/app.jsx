@@ -47,7 +47,8 @@ class App extends Component {
       'pages/DoctorAuth/DoctorAuth',
       'pages/QRCode/QRCode',
       'pages/Auth/Auth',
-      'pages/Setting/Setting'
+      'pages/Setting/Setting',
+      'pages/Avatar/Avatar'
     ],
     window: {
       backgroundTextStyle: 'light',
@@ -79,7 +80,7 @@ class App extends Component {
           "selectedIconPath": "assets/mine-s.png"
         }
       ]
-    },
+    }
   }
 
   componentDidMount () {
@@ -89,9 +90,15 @@ class App extends Component {
     Taro.setStorageSync('haveTappedMineTab', false)
   }
 
-  componentDidShow () {}
+  componentDidShow () {
+    // console.log('onShow', Taro.getStorageSync('onShow'))
+    // Taro.setStorageSync('onShow', 1);
+  }
 
-  componentDidHide () {}
+  componentDidHide () {
+    // console.log('onHide', Taro.getStorageSync('onHide'))
+    // Taro.setStorageSync('onHide', 1);
+  }
 
   componentDidCatchError () {}
 

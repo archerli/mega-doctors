@@ -64,6 +64,12 @@ class Mine extends Component {
     }
   }
 
+  toAvatar() {
+    Taro.navigateTo({
+      url: '/pages/Avatar/Avatar'
+    })
+  }
+
   toDoctorAuth() {
     Taro.navigateTo({
       url: '/pages/DoctorAuth/DoctorAuth'
@@ -107,7 +113,7 @@ class Mine extends Component {
     return (
       <View className='mine'>
         <View className='info'>
-          <View className='info-1'>
+          <View className='info-1' onClick={this.toAvatar.bind(this)}>
             <AtAvatar circle image={userInfo.avatarUrl}></AtAvatar>
           </View>
           <View className='info-2'>

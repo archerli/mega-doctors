@@ -57,17 +57,13 @@ class PatientInfo extends Component {
   saveChange() {
     const { relationId, follow, block, group } = this.props.patientInfo
     // 增加或移除关注分类
-    if (follow && group.indexOf('3') === -1) {
-      group.push('3')
-    } else if (!follow && group.indexOf('3') > -1) {
-      group.remove('3')
+    if (follow) {
+      if (group.indexOf('3') === -1) group.push('3')
+      if (group.indexOf('0') > -1) group.remove('0')
+    } else {
+      if (group.indexOf('3') > -1) group.remove('3')
+      if (group.indexOf('0') === -1 && group.indexOf('1') === -1 && group.indexOf('2') === -1) group.push('0')
     }
-    // console.log(group)
-    // if (follow && group.indexOf('0') > -1) {
-    //   group.remove('0')
-    // } else if (!follow && group.indexOf('0') === -1 && group.indexOf('1') === -1 && group.indexOf('2') === -1) {
-    //   group.push('0')
-    // }
     console.log(group)
     const relation = AV.Object.createWithoutData('DoctorPatientRelation', relationId)
     relation.set('follow', follow)

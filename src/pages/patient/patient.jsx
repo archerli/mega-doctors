@@ -9,8 +9,8 @@ import { SWIPER_CHANGE_PATIENT } from '../../constants/creator'
 
 import PCard from '../../components/PCard/PCard'
 import QRCODE from '../../assets/qrcode.png'
-import QING from '../../assets/qing.png'
-import ZHONG from '../../assets/zhong.png'
+import QING from '../../assets/mild.png'
+import ZHONG from '../../assets/severe.png'
 import STAR from '../../assets/star.png'
 import EMPTY from '../../assets/empty.png'
 
@@ -205,7 +205,7 @@ class Patient extends Component {
           >
             <SwiperItem className="content-swiper-item">
               {
-                patient.vip.length
+                patient.vipList.length
                 ? <ScrollView
                   className="content-l"
                   scrollY
@@ -214,7 +214,7 @@ class Patient extends Component {
                 >
                   <View style='height: 1px;'></View> {/* 上边距在 ScrollView 不满一屏时滚动，使用一个 1px 的元素占位 */}
                   {
-                    patient.vip.map(item => (
+                    patient.vipList.map(item => (
                       <PCard
                         key={item.id}
                         patientId={item.id}
@@ -249,7 +249,7 @@ class Patient extends Component {
             </SwiperItem>
             <SwiperItem className="content-swiper-item">
               {
-                patient.paid.length
+                patient.paidList.length
                 ? <ScrollView
                   className="content-l"
                   scrollY
@@ -258,7 +258,7 @@ class Patient extends Component {
                 >
                   <View style='height: 1px;'></View>
                   {
-                    patient.paid.map(item => (
+                    patient.paidList.map(item => (
                       <PCard
                         key={item.id}
                         patientId={item.id}
@@ -283,7 +283,7 @@ class Patient extends Component {
             </SwiperItem>
             <SwiperItem className="content-swiper-item">
               {
-                patient.follow.length
+                patient.followList.length
                 ? <ScrollView
                   className="content-l"
                   scrollY
@@ -292,7 +292,7 @@ class Patient extends Component {
                 >
                   <View style='height: 1px;'></View>
                   {
-                    patient.follow.map(item => (
+                    patient.followList.map(item => (
                       <PCard
                         key={item.id}
                         patientId={item.id}
@@ -317,7 +317,7 @@ class Patient extends Component {
             </SwiperItem>
             <SwiperItem className="content-swiper-item">
               {
-                patient.normal.length
+                patient.normalList.length
                 ? <ScrollView
                   className="content-l"
                   scrollY
@@ -326,7 +326,7 @@ class Patient extends Component {
                 >
                   <View style='height: 1px;'></View>
                   {
-                    patient.normal.map(item => (
+                    patient.normalList.map(item => (
                       <PCard
                         key={item.id}
                         patientId={item.id}

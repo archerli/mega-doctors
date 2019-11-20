@@ -5,9 +5,7 @@ import { AtList, AtListItem, AtFloatLayout } from "taro-ui"
 import AV from 'leancloud-storage/dist/av-weapp-min.js'
 
 import { action, getDoctorData } from '../../actions/creator'
-import { CHANGE_DOCTOR_DATA } from '../../constants/creator'
-
-import QRCODE from '../../assets/qrcode.png'
+import { CHANGE_DOCTOR_DATA, CHANGE_DOCTOR_NAME } from '../../constants/creator'
 
 import './MyInfo.scss'
 
@@ -43,13 +41,13 @@ class MyInfo extends Component {
     this.props.action(CHANGE_DOCTOR_DATA, {
       isOpened: false,
       placeholder: '',
-      value: '',
+      // value: '',
     })
   }
 
-  toRemark() {
+  toAvatar() {
     Taro.navigateTo({
-      url: '/pages/Remark/Remark'
+      url: '/pages/Avatar/Avatar'
     })
   }
 
@@ -73,7 +71,14 @@ class MyInfo extends Component {
       [key]: e.detail.value,
       isOpened: false,
       placeholder: '',
-      value: ''
+      // value: ''
+    })
+  }
+
+  closeFloatLayout() {
+    this.props.action(CHANGE_DOCTOR_DATA, {
+      isOpened: false,
+      placeholder: ''
     })
   }
 
@@ -81,14 +86,45 @@ class MyInfo extends Component {
     this.props.action(CHANGE_DOCTOR_DATA, {
       isOpened: true,
       placeholder,
-      value,
-      focus: true
+      // value,
+      // focus: true
     })
   }
 
   saveChange() {
     const { myInfo } = this.props
     console.log(myInfo)
+    if (!myInfo.name) {
+      return Taro.showToast({
+        title: '请填写姓名',
+        icon: 'none'
+      })
+    }
+    if (!myInfo.hospital) {
+      return Taro.showToast({
+        title: '请填写所在医院',
+        icon: 'none'
+      })
+    }
+    if (!myInfo.department) {
+      return Taro.showToast({
+        title: '请填写所在科室',
+        icon: 'none'
+      })
+    }
+    if (!myInfo.phone) {
+      return Taro.showToast({
+        title: '请填写手机号',
+        icon: 'none'
+      })
+    }
+    const reg = /^[1][34587]\d{9}$/;
+    if (!reg.test(myInfo.phone)) {
+      return Taro.showToast({
+        title: '手机号格式不正确',
+        icon: 'none'
+      })
+    }
     const doctorid = Taro.getStorageSync('doctorid')
     const doctor = AV.Object.createWithoutData('Doctor', doctorid);
     doctor.set('name', myInfo.name);
@@ -100,6 +136,10 @@ class MyInfo extends Component {
     doctor.save().then(res => {
       Taro.showToast({
         title: '保存成功'
+      })
+      // 修改我的页面显示的医生姓名
+      this.props.action(CHANGE_DOCTOR_NAME, {
+        name: myInfo.name
       })
     }, err => {
       Taro.showToast({
@@ -123,13 +163,14 @@ class MyInfo extends Component {
               title='工作照'
               extraThumb={userInfo.avatarUrl}
               arrow='right'
+              onClick={this.toAvatar.bind(this)}
             />
           </AtList>
         </View>
         <View>
           <AtList>
             <AtListItem
-              title='姓名'
+              title='姓名 *'
               extraText={myInfo.name}
               arrow='right'
               onClick={this.edit.bind(this, '姓名', myInfo.name)}
@@ -141,19 +182,19 @@ class MyInfo extends Component {
               onChange={this.handleChange.bind(this, 'gender', _genderRange)}
             >
               <AtListItem
-                title='性别'
+                title='性别 *'
                 extraText={myInfo.gender === 'M' ? '男' : '女'}
                 arrow='right'
               />
             </Picker>
             <AtListItem
-              title='所在医院'
+              title='所在医院 *'
               extraText={myInfo.hospital}
               arrow='right'
               onClick={this.edit.bind(this, '所在医院', myInfo.hospital)}
             />
             <AtListItem
-              title='所在科室'
+              title='所在科室 *'
               extraText={myInfo.department}
               arrow='right'
               onClick={this.edit.bind(this, '所在科室', myInfo.department)}
@@ -165,13 +206,16 @@ class MyInfo extends Component {
               onChange={this.handleChange.bind(this, 'title', titleRange)}
             >
               <AtListItem
-                title='职称'
+                title='职称 *'
                 extraText={myInfo.title}
                 arrow='right'
               />
             </Picker>
+          </AtList>
+          <View className='tip'>以上内容将展示给患者，请确保准确专业</View>
+          <AtList>
             <AtListItem
-              title='电话'
+              title='电话 *'
               extraText={myInfo.phone}
               arrow='right'
               onClick={this.edit.bind(this, '电话', myInfo.phone)}
@@ -181,15 +225,48 @@ class MyInfo extends Component {
         <View class='btn'>
           <Button className='save' onClick={this.saveChange.bind(this)}>保存</Button>
         </View>
-        <AtFloatLayout isOpened={myInfo.isOpened}>
+        <AtFloatLayout isOpened={myInfo.isOpened} onClose={this.closeFloatLayout.bind(this)}>
           {
-            myInfo.isOpened &&
+            myInfo.isOpened && myInfo.placeholder === '姓名' &&
             <Input
               className='edit'
-              // type={myInfo.placeholder === '电话' ? 'number': 'text'}
-              placeholder={myInfo.placeholder}
-              value={myInfo.value}
+              placeholder='姓名'
+              value={myInfo.name}
               adjustPosition={false}
+              focus
+              onConfirm={this.handleChange2.bind(this, myInfo.placeholder)}
+            />
+          }
+          {
+            myInfo.isOpened && myInfo.placeholder === '所在医院' &&
+            <Input
+              className='edit'
+              placeholder='所在医院'
+              value={myInfo.hospital}
+              adjustPosition={false}
+              focus
+              onConfirm={this.handleChange2.bind(this, myInfo.placeholder)}
+            />
+          }
+          {
+            myInfo.isOpened && myInfo.placeholder === '所在科室' &&
+            <Input
+              className='edit'
+              placeholder='所在科室'
+              value={myInfo.department}
+              adjustPosition={false}
+              focus
+              onConfirm={this.handleChange2.bind(this, myInfo.placeholder)}
+            />
+          }
+          {
+            myInfo.isOpened && myInfo.placeholder === '电话' &&
+            <Input
+              className='edit'
+              placeholder='电话'
+              value={myInfo.phone}
+              adjustPosition={false}
+              maxLength='11'
               focus
               onConfirm={this.handleChange2.bind(this, myInfo.placeholder)}
             />

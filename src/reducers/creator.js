@@ -28,7 +28,8 @@ export const question = (state = STATES.QUESTION, action) => {
       return {
         ...state,
         relationId: action.data.relationId,
-        tag: action.data.tag
+        tag: action.data.tag,
+        pAvatar: action.data.avatar
       }
     case TYPES.CHANGE_DOCTOR_PATIENT_TAG:
       return {
@@ -46,10 +47,10 @@ export const patient = (state = STATES.PATIENT, action) => {
     case TYPES.GET_DOCTOR_PATIENT_DATA:
       return {
         ...state,
-        vip: action.data.vip,
-        paid: action.data.paid,
-        follow: action.data.follow,
-        normal: action.data.normal
+        vipList: action.data.vipList,
+        paidList: action.data.paidList,
+        followList: action.data.followList,
+        normalList: action.data.normalList
       }
     case TYPES.SWIPER_CHANGE_PATIENT:
       return {
@@ -124,7 +125,7 @@ export const mine = (state = STATES.MINE, action) => {
         megaid: action.data.megaId,
         authenticated: action.data.authenticated,
       }
-    case TYPES.CHANGE_DOCTOR_DATA:
+    case TYPES.CHANGE_DOCTOR_NAME:
       return {
         ...state,
         ...action.data
