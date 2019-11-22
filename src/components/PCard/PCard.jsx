@@ -24,10 +24,29 @@ class PCard extends Component {
   }
 
   toQuestion() {
-    return;
-    const { patientId, name } = this.props
+    const { questionId, patientId, name } = this.props
+    if (!questionId) {
+      return Taro.showToast({
+        title: '最近没有咨询',
+        icon: 'none'
+      })
+    }
     Taro.navigateTo({
-      url: `/pages/Question/Question?patientId=${patientId}&name=${name}`
+      url: `/pages/Question/Question?questionId=${questionId}&patientId=${patientId}&name=${name}`
+    })
+  }
+
+  toReport() {
+    const { reportId } = this.props
+    if (!reportId) {
+      return Taro.showToast({
+        title: '最近没有报告',
+        icon: 'none'
+      })
+    }
+    const url = 'https%3A%2F%2Fyl-dev.megahealth.cn%2F%23%2Fhome%2Freport%2F5db0cd8fba39c80071bb5c02%3Ftype%3DnoLogo'
+    Taro.navigateTo({
+      url: `/pages/Webview/Webview?url=${url}`
     })
   }
 
@@ -61,16 +80,16 @@ class PCard extends Component {
               }
             </View>
             <View className='msg-1'>{location}用户丨来源：{source}</View>
-            <View className='msg-2'>最后咨询时间：{lastTime}</View>
+            <View className='msg-2'>最近咨询：{lastTime}</View>
           </View>
           <View className='card-t-3'>
             <View className='msg'>
               <Image src={JIFEN} />
               <Text style='color: #FFB503;'>贡献值：{credit}</Text>
             </View>
-            <View className='btn' onClick={this.toQuestion.bind(this)}>
-              <Image className='img-m' src={MSG} />
-              <Image className='img-r' src={REPORT} />
+            <View className='btn'>
+              <Image className='img-m' src={MSG} onClick={this.toQuestion.bind(this)} />
+              <Image className='img-r' src={REPORT} onClick={this.toReport.bind(this)} />
             </View>
           </View>
         </View>

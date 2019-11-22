@@ -226,6 +226,8 @@ class Patient extends Component {
                         source={item.source}
                         location={item.location}
                         lastTime={item.lastTime}
+                        questionId={item.latestConsultationId}
+                        reportId={item.latestReportId}
                       />
                     ))
                   }
@@ -270,6 +272,8 @@ class Patient extends Component {
                         source={item.source}
                         location={item.location}
                         lastTime={item.lastTime}
+                        questionId={item.latestConsultationId}
+                        reportId={item.latestReportId}
                       />
                     ))
                   }
@@ -304,6 +308,8 @@ class Patient extends Component {
                         source={item.source}
                         location={item.location}
                         lastTime={item.lastTime}
+                        questionId={item.latestConsultationId}
+                        reportId={item.latestReportId}
                       />
                     ))
                   }
@@ -338,6 +344,8 @@ class Patient extends Component {
                         source={item.source}
                         location={item.location}
                         lastTime={item.lastTime}
+                        questionId={item.latestConsultationId}
+                        reportId={item.latestReportId}
                       />
                     ))
                   }

@@ -18,6 +18,16 @@
     color: #666666;
     View {
       margin-left: 40px;
+      position: relative;
+      .dot {
+        width: 12px;
+        height: 12px;
+        background: #FF4D4D;
+        border-radius: 12px;
+        position: absolute;
+        right: -10px;
+        top: 10px;
+      }
     }
     .selected {
       border-bottom: 5px solid #48AEFC;

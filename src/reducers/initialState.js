@@ -3,16 +3,15 @@ export const CONSULTATION = {
   current: 0,
   moreLoading: false,
   moreLoaded: false,
-  newCons: [],
-  replying: [],
-  finished: []
+  newCons: null,
+  replying: null,
+  finished: null
 }
 
 // 问题详情
 export const QUESTION = {
   relationId: null,
-  tag: {"osahs":"0","cobp":"0","gxb":"0","tnb":"0","gxy":"0"},
-  pAvatar: ''
+  tag: {"osahs":"0","cobp":"0","gxb":"0","tnb":"0","gxy":"0"}
 }
 
 // 患者列表
@@ -68,9 +67,7 @@ export const MY_INFO = {
   phone: '',
   // 弹出层相关
   isOpened: false,
-  placeholder: '',
-  // value: '',
-  // focus: false
+  inputName: ''
 }
 
 // 设置

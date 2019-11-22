@@ -28,8 +28,7 @@ export const question = (state = STATES.QUESTION, action) => {
       return {
         ...state,
         relationId: action.data.relationId,
-        tag: action.data.tag,
-        pAvatar: action.data.avatar
+        tag: action.data.tag
       }
     case TYPES.CHANGE_DOCTOR_PATIENT_TAG:
       return {

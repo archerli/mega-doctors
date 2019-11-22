@@ -4,6 +4,7 @@ import { View, Text } from '@tarojs/components'
 import VIP from '../../assets/vip.png'
 import CLOCK from '../../assets/clock.png'
 import JIFEN from '../../assets/jifen.png'
+import REPORT from '../../assets/report-i.png'
 import DEFAULT_A from '../../assets/avatar-p.png'
 
 import './QCard.scss'
@@ -29,38 +30,47 @@ class QCard extends Component {
   }
 
   createCardT3 () {
-    const { type, endTime, lastMsgFrom } = this.props
+    const { type, endTime, reportId, lastMsgFrom } = this.props
     switch (type) {
       case 'new': {
         return (
           <View className='card-t-3' onClick={this.toQuestion.bind(this)}>
-            <View className='msg'>
+            <View className='msg-1'>
               <Image src={CLOCK} />
               <Text>{endTime}后失效</Text>
             </View>
-            <View className='btn'>去回复</View>
+            <View className='msg-2'>
+              { reportId && <Image src={REPORT} /> }
+              <View className='btn'>去回复</View>
+            </View>
           </View>
         )
       }
       case 'reply': {
         return (
           <View className='card-t-3' onClick={this.toQuestion.bind(this)}>
-            <View className='msg'>
+            <View className='msg-1'>
               <Image src={CLOCK} />
               <Text>{endTime}后结束</Text>
             </View>
-            <View className='btn'>{lastMsgFrom === 'self' ? '继续回复' : '去回复'}</View>
+            <View className='msg-2'>
+              { reportId && <Image src={REPORT} /> }
+              <View className='btn'>{lastMsgFrom === 'self' ? '继续回复' : '去回复'}</View>
+            </View>
           </View>
         )
       }
       case 'finished': {
         return (
           <View className='card-t-3' onClick={this.toQuestion.bind(this)}>
-            <View className='msg'>
+            <View className='msg-1'>
               <Image src={JIFEN} />
               <Text style='color: #FFB503;'>贡献值：{'15'}</Text>
             </View>
-            <View className='btn'>查看</View>
+            <View className='msg-2'>
+              { reportId && <Image src={REPORT} /> }
+              <View className='btn'>查看</View>
+            </View>
           </View>
         )
       }
@@ -84,7 +94,7 @@ class QCard extends Component {
           <View className='card-t-1' onClick={this.toDetail.bind(this)}>
             <Image src={icon || DEFAULT_A} onError={() => {console.log('image error')}} />
           </View>
-          <View className='card-t-2'>
+          <View className='card-t-2' onClick={this.toDetail.bind(this)}>
             <View className='name'>
               <Text>{name}</Text>
               {
@@ -108,7 +118,7 @@ class QCard extends Component {
           <Text style='color: #666;'>{desc}</Text>
         </View>
         <View className='card-b'>
-          <Text>{location}用户 | 来源：{source}</Text>
+          <Text>{location}用户 | 来源：{source || '暂无'}</Text>
           <Text>{time}</Text>
         </View>
       </View>

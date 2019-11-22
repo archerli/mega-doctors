@@ -1,5 +1,5 @@
 import Taro, { Component } from '@tarojs/taro'
-import { View, Input, Button, Text } from '@tarojs/components'
+import { View, Input, Button, Form } from '@tarojs/components'
 import { connect } from '@tarojs/redux'
 import { AtList, AtListItem, AtFloatLayout } from "taro-ui"
 import AV from 'leancloud-storage/dist/av-weapp-min.js'
@@ -40,8 +40,7 @@ class MyInfo extends Component {
   componentWillUnmount() {
     this.props.action(CHANGE_DOCTOR_DATA, {
       isOpened: false,
-      placeholder: '',
-      // value: '',
+      inputName: ''
     })
   }
 
@@ -61,33 +60,38 @@ class MyInfo extends Component {
   }
 
   handleChange2(key, e) {
+    console.log(key)
     console.log(e)
-    console.log(key)
-    const _keyList = ['姓名', '所在医院', '所在科室', '电话']
-    const keyList = ['name', 'hospital', 'department', 'phone']
-    key = keyList[_keyList.indexOf(key)]
-    console.log(key)
     this.props.action(CHANGE_DOCTOR_DATA, {
       [key]: e.detail.value,
       isOpened: false,
-      placeholder: '',
-      // value: ''
+      inputName: ''
+    })
+  }
+
+  submitChange(key, e) {
+    console.log(key)
+    console.log(e)
+    const value = e.detail.value
+    console.log(value[key])
+    this.props.action(CHANGE_DOCTOR_DATA, {
+      [key]: value[key],
+      isOpened: false,
+      inputName: ''
     })
   }
 
   closeFloatLayout() {
     this.props.action(CHANGE_DOCTOR_DATA, {
       isOpened: false,
-      placeholder: ''
+      inputName: ''
     })
   }
 
-  edit(placeholder, value) {
+  edit(inputName) {
     this.props.action(CHANGE_DOCTOR_DATA, {
       isOpened: true,
-      placeholder,
-      // value,
-      // focus: true
+      inputName
     })
   }
 
@@ -173,7 +177,7 @@ class MyInfo extends Component {
               title='姓名 *'
               extraText={myInfo.name}
               arrow='right'
-              onClick={this.edit.bind(this, '姓名', myInfo.name)}
+              onClick={this.edit.bind(this, 'name')}
             />
             <Picker
               mode='selector'
@@ -191,13 +195,13 @@ class MyInfo extends Component {
               title='所在医院 *'
               extraText={myInfo.hospital}
               arrow='right'
-              onClick={this.edit.bind(this, '所在医院', myInfo.hospital)}
+              onClick={this.edit.bind(this, 'hospital')}
             />
             <AtListItem
               title='所在科室 *'
               extraText={myInfo.department}
               arrow='right'
-              onClick={this.edit.bind(this, '所在科室', myInfo.department)}
+              onClick={this.edit.bind(this, 'department')}
             />
             <Picker
               mode='selector'
@@ -218,7 +222,7 @@ class MyInfo extends Component {
               title='电话 *'
               extraText={myInfo.phone}
               arrow='right'
-              onClick={this.edit.bind(this, '电话', myInfo.phone)}
+              onClick={this.edit.bind(this, 'phone')}
             />
           </AtList>
         </View>
@@ -226,51 +230,61 @@ class MyInfo extends Component {
           <Button className='save' onClick={this.saveChange.bind(this)}>保存</Button>
         </View>
         <AtFloatLayout isOpened={myInfo.isOpened} onClose={this.closeFloatLayout.bind(this)}>
-          {
-            myInfo.isOpened && myInfo.placeholder === '姓名' &&
-            <Input
-              className='edit'
-              placeholder='姓名'
-              value={myInfo.name}
-              adjustPosition={false}
-              focus
-              onConfirm={this.handleChange2.bind(this, myInfo.placeholder)}
-            />
-          }
-          {
-            myInfo.isOpened && myInfo.placeholder === '所在医院' &&
-            <Input
-              className='edit'
-              placeholder='所在医院'
-              value={myInfo.hospital}
-              adjustPosition={false}
-              focus
-              onConfirm={this.handleChange2.bind(this, myInfo.placeholder)}
-            />
-          }
-          {
-            myInfo.isOpened && myInfo.placeholder === '所在科室' &&
-            <Input
-              className='edit'
-              placeholder='所在科室'
-              value={myInfo.department}
-              adjustPosition={false}
-              focus
-              onConfirm={this.handleChange2.bind(this, myInfo.placeholder)}
-            />
-          }
-          {
-            myInfo.isOpened && myInfo.placeholder === '电话' &&
-            <Input
-              className='edit'
-              placeholder='电话'
-              value={myInfo.phone}
-              adjustPosition={false}
-              maxLength='11'
-              focus
-              onConfirm={this.handleChange2.bind(this, myInfo.placeholder)}
-            />
-          }
+          <Form className='float-layout' onSubmit={this.submitChange.bind(this, myInfo.inputName)}>
+            <View>
+              {
+                myInfo.isOpened && myInfo.inputName === 'name' &&
+                <Input
+                  name='name'
+                  className='edit'
+                  placeholder='姓名'
+                  value={myInfo.name}
+                  adjustPosition={false}
+                  focus
+                  onConfirm={this.handleChange2.bind(this, 'name')}
+                />
+              }
+              {
+                myInfo.isOpened && myInfo.inputName === 'hospital' &&
+                <Input
+                  name='hospital'
+                  className='edit'
+                  placeholder='所在医院'
+                  value={myInfo.hospital}
+                  adjustPosition={false}
+                  focus
+                  onConfirm={this.handleChange2.bind(this, 'hospital')}
+                />
+              }
+              {
+                myInfo.isOpened && myInfo.inputName === 'department' &&
+                <Input
+                  name='department'
+                  className='edit'
+                  placeholder='所在科室'
+                  value={myInfo.department}
+                  adjustPosition={false}
+                  focus
+                  onConfirm={this.handleChange2.bind(this, 'department')}
+                />
+              }
+              {
+                myInfo.isOpened && myInfo.inputName === 'phone' &&
+                <Input
+                  name='phone'
+                  className='edit'
+                  type="number"
+                  placeholder='电话'
+                  value={myInfo.phone}
+                  adjustPosition={false}
+                  maxLength='11'
+                  focus
+                  onConfirm={this.handleChange2.bind(this, 'phone')}
+                />
+              }
+              <Button className='confirm' form-type='submit'>完成</Button>
+            </View>
+          </Form>
         </AtFloatLayout>
       </View>
     )

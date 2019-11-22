@@ -35,12 +35,30 @@
     max-width: 360px;
   }
 
-  .edit {
-    padding: 0 20px;
-    border: 2px solid #ececec;
-    border-radius: 10px;
-    height: 80px;
+  Form.float-layout {
+    View {
+      display: flex;
+      .edit {
+        flex: 1;
+        padding: 0 20px;
+        margin-right: 20px;
+        border: 2px solid #ececec;
+        border-radius: 10px;
+        height: 80px;
+      }
+      .confirm {
+        height: 80px;
+        line-height: 80px;
+        border: 1px solid #3D79E5;
+        border-radius: 10px;
+        background: #3D79E5;
+        font-size: 30px;
+        color: #FFFFFF;
+      }
+    }
+    
   }
+  
   // .at-float-layout__container {
   //   // max-height: 1200px;
   // }

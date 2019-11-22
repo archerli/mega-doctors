@@ -128,6 +128,13 @@ class Index extends Component {
     }
   }
 
+  componentWillMount() {
+    Taro.showLoading({
+      title: '加载中...',
+      mask: true
+    })
+  }
+
   async componentDidMount() {
     const userInfo = Taro.getStorageSync('userInfo')
     const havePhoneNumber = Taro.getStorageSync('havePhoneNumber')
@@ -159,7 +166,16 @@ class Index extends Component {
         })
       }, 300)
     } catch(e) {
-      
+      Taro.hideLoading()
+    }
+  }
+
+  // 切换tab/返回时刷新页面
+  componentDidShow () {
+    const haveTappedIndexTab = Taro.getStorageSync('haveTappedIndexTab')
+    if (haveTappedIndexTab) {
+      console.log('componentDidShow')
+      this.getData()
     }
   }
 
@@ -169,13 +185,13 @@ class Index extends Component {
   }
 
   // 切换tab时刷新页面
-  onTabItemTap() {
-    console.log('onTabItemTap')
-    const haveTappedIndexTab = Taro.getStorageSync('haveTappedIndexTab')
-    if (haveTappedIndexTab) {
-      this.getData()
-    }
-  }
+  // onTabItemTap() {
+  //   console.log('onTabItemTap')
+  //   const haveTappedIndexTab = Taro.getStorageSync('haveTappedIndexTab')
+  //   if (haveTappedIndexTab) {
+  //     this.getData()
+  //   }
+  // }
 
   // 下拉刷新
   onPullDownRefresh() {
@@ -197,6 +213,7 @@ class Index extends Component {
       this.props.getConsultationData(conversations)
     }).catch(err => {
       console.log(err)
+      Taro.hideLoading()
     });
   }
 
@@ -231,15 +248,23 @@ class Index extends Component {
           <View
             className={consultation.current === 0 ? 'selected' : ''}
             onClick={this.handleClick.bind(this, 0)}
-          >新咨询</View>
+          >
+            新咨询
+            { consultation.newCons && consultation.newCons.length && <View className='dot'></View> }
+          </View>
           <View
             className={consultation.current === 1 ? 'selected' : ''}
             onClick={this.handleClick.bind(this, 1)}
-          >回复中</View>
+          >
+            回复中
+            { consultation.replying && consultation.replying.length && <View className='dot'></View> }
+          </View>
           <View
             className={consultation.current === 2 ? 'selected' : ''}
             onClick={this.handleClick.bind(this, 2)}
-          >已结束</View>
+          >
+            已结束
+          </View>
         </View>
         <View className='content'>
           <Swiper
@@ -249,7 +274,7 @@ class Index extends Component {
           >
             <SwiperItem className="content-swiper-item">
               {
-                consultation.newCons.length
+                consultation.newCons && consultation.newCons.length
                 ? <ScrollView
                   className="content-l"
                   scrollY
@@ -272,6 +297,7 @@ class Index extends Component {
                         desc={item.desc}
                         source={item.source}
                         location={item.location}
+                        reportId={item.reportId}
                         endTime={item.endTime}
                       />
                     ))
@@ -288,7 +314,7 @@ class Index extends Component {
                     <View className='content-t'>没有更多了</View>
                   } */}
                 </ScrollView>
-                : <View className='content-empty'>
+                : consultation.newCons && <View className='content-empty'>
                   <Image src={EMPTY} />
                   <View>无人咨询哦，可能需要在“我-设置”调整咨询时间</View>
                 </View>
@@ -296,7 +322,7 @@ class Index extends Component {
             </SwiperItem>
             <SwiperItem className="content-swiper-item">
               {
-                consultation.replying.length
+                consultation.replying && consultation.replying.length
                 ? <ScrollView
                   className="content-l"
                   scrollY
@@ -319,6 +345,7 @@ class Index extends Component {
                         desc={item.desc}
                         source={item.source}
                         location={item.location}
+                        reportId={item.reportId}
                         endTime={item.endTime}
                         lastMsgFrom={item.lastMsgFrom}
                       />
@@ -326,7 +353,7 @@ class Index extends Component {
                   }
                   <View style='height: 1px;'></View>
                 </ScrollView>
-                : <View className='content-empty'>
+                : consultation.replying && <View className='content-empty'>
                   <Image src={EMPTY} />
                   <View>您在新咨询的有效期内的回复会在此显示</View>
                 </View>
@@ -334,7 +361,7 @@ class Index extends Component {
             </SwiperItem>
             <SwiperItem className="content-swiper-item">
               {
-                consultation.finished.length
+                consultation.finished && consultation.finished.length
                 ? <ScrollView
                   className="content-l"
                   scrollY
@@ -357,12 +384,13 @@ class Index extends Component {
                         desc={item.desc}
                         source={item.source}
                         location={item.location}
+                        reportId={item.reportId}
                       />
                     ))
                   }
                   <View style='height: 1px;'></View>
                 </ScrollView>
-                : <View className='content-empty'>
+                : consultation.finished && <View className='content-empty'>
                   <Image src={EMPTY} />
                   <View>已结束的咨询单都会显示在这个地方哦</View>
                 </View>
