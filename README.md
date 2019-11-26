@@ -171,6 +171,8 @@ X-LC-Prod: 0
 {
     "result": {
         "success": true,
+        "isOld": true,
+        "status": "0",
         "consultationId": "5dd7b98543c2570074c9d9bf"
     }
 }
@@ -178,7 +180,9 @@ X-LC-Prod: 0
 
  **返回参数说明** 
 
-| parameter      | 类型   | describtion               |
-| :------------- | :----- | ------------------------- |
-| consultationId | string | 会话consultation objectId |
+| parameter      | 类型    | describtion                     |
+| :------------- | :------ | ------------------------------- |
+| consultationId | string  | 会话consultation objectId       |
+| isOld          | boolean | 是否本次新创建的咨询            |
+| status         | string  | 0：新咨询，1：咨询中，2：已关闭 |
 
