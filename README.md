@@ -173,6 +173,7 @@ X-LC-Prod: 0
         "success": true,
         "isOld": true,
         "status": "0",
+        "startAt": 1574755900697
         "consultationId": "5dd7b98543c2570074c9d9bf"
     }
 }
@@ -185,4 +186,5 @@ X-LC-Prod: 0
 | consultationId | string  | 会话consultation objectId       |
 | isOld          | boolean | 是否本次新创建的咨询            |
 | status         | string  | 0：新咨询，1：咨询中，2：已关闭 |
+| startAt        | number  | 咨询创建时间，时间戳（毫秒）    |
 
