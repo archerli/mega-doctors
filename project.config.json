@@ -22,6 +22,7 @@
 	"compileType": "miniprogram",
 	"simulatorType": "wechat",
 	"simulatorPluginLibVersion": {},
+	"libVersion": "2.9.3",
 	"condition": {
 		"search": {
 			"current": -1,
@@ -43,8 +44,8 @@
 			"list": [
 				{
 					"id": 0,
-					"name": "pages/Patient/Patient",
-					"pathName": "pages/Patient/Patient",
+					"name": "pages/MyInfo/MyInfo",
+					"pathName": "pages/MyInfo/MyInfo",
 					"query": "",
 					"scene": null
 				}

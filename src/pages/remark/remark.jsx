@@ -84,7 +84,7 @@ class Remark extends Component {
             <View className={`tag-${tag.osahs}`}>{tag.osahs === '0' ? 'OSAHS' : `OSAHS | ${tagRange[tag.osahs].substr(0, 1)}`}</View>
           </Picker>
           <Picker mode='selector' range={tagRange} value={tag.cobp} onChange={this.tagChange.bind(this, 'cobp')}>
-            <View className={`tag-${tag.cobp}`}>{tag.cobp === '0' ? 'COBP' : `COBP | ${tagRange[tag.cobp].substr(0, 1)}`}</View>
+            <View className={`tag-${tag.cobp}`}>{tag.cobp === '0' ? 'COPD' : `COPD | ${tagRange[tag.cobp].substr(0, 1)}`}</View>
           </Picker>
           <Picker mode='selector' range={tagRange} value={tag.gxb} onChange={this.tagChange.bind(this, 'gxb')}>
             <View className={`tag-${tag.gxb}`}>{tag.gxb === '0' ? '冠心病' : `冠心病 | ${tagRange[tag.gxb].substr(0, 1)}`}</View>

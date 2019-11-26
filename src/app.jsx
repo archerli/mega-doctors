@@ -44,11 +44,11 @@ class App extends Component {
       'pages/Webview/Webview',
       'pages/PatientInfo/PatientInfo',
       'pages/MyInfo/MyInfo',
+      'pages/Avatar/Avatar',
       'pages/DoctorAuth/DoctorAuth',
       'pages/QRCode/QRCode',
       'pages/Auth/Auth',
-      'pages/Setting/Setting',
-      'pages/Avatar/Avatar'
+      'pages/Setting/Setting'
     ],
     window: {
       backgroundTextStyle: 'light',

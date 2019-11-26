@@ -14,7 +14,8 @@ import MsgItem from '../../components/MsgItem/MsgItem'
 import QING from '../../assets/qing.png'
 import ZHONG from '../../assets/zhong.png'
 import CLOCK from '../../assets/clock.png'
-import DEFAULT_A from '../../assets/avatar-p.png'
+import DEFAULT_P from '../../assets/avatar-p.png'
+import DEFAULT_D from '../../assets/avatar-d.png'
 
 import './Question.scss'
 
@@ -48,7 +49,8 @@ class Question extends Component {
       scrollTop: 0,
       scrollIntoView: 'last-0',
       inputValue: '',
-      pAvatar: DEFAULT_A,
+      pAvatar: DEFAULT_P,
+      dAvatar: DEFAULT_D,
       msgList: [
         // {
         //   time: '2018/10/23 18:00',
@@ -116,12 +118,12 @@ class Question extends Component {
 
   async componentDidMount() {
     const { params } = this.$router
-    await this.getPatient(params.patientId)
+    const doctorid = Taro.getStorageSync('doctorid')
+    await this.getAvatar(params.patientId, doctorid)
     await this.getConsultation(params.questionId)
-    const { startTime, endTime, pAvatar, isFinished } = this.state
+    const { startTime, endTime, pAvatar, dAvatar, isFinished } = this.state
     const { question } = this.props
     console.log(startTime, endTime)
-    const doctorid = Taro.getStorageSync('doctorid')
     const realtime = new Realtime({
       appId: 'f82OcAshk5Q1J993fGLJ4bbs-gzGzoHsz',
       appKey: 'O9COJzi78yYXCWVWMkLqlpp8',
@@ -180,7 +182,7 @@ class Question extends Component {
             timestamp: item._timestamp.getTime(),
             time: utils.formatTime(item._timestamp.getTime(), 'yyyy/MM/dd HH:mm'),
             from: item.from === doctorid ? 'self' : 'other',
-            icon: item.from === doctorid ? Taro.getStorageSync('userInfo').avatarUrl : pAvatar,
+            icon: item.from === doctorid ? dAvatar : pAvatar,
             type: 'text',
             content: item.content._lctext
           })
@@ -191,8 +193,9 @@ class Question extends Component {
         }, () => {
           Taro.hideLoading()
 
+          const restTime = 24 * 60 * 60 * 1000 - (new Date().getTime() - msgList[msgList.length - 1].timestamp)
           //////////
-          if (!isFinished && (24 * 60 * 60 * 1000 - (new Date().getTime() - msgList[msgList.length - 1].timestamp)) <= 0) {
+          if (!isFinished && restTime <= 0) {
             const consultation = AV.Object.createWithoutData('Consultation', params.questionId)
             consultation.set('endAt', new Date().getTime())
             consultation.set('status', '2')
@@ -223,6 +226,28 @@ class Question extends Component {
           }
           //////////
 
+          if (!isFinished && restTime > 0) {
+            // 房间接受消息
+            conversation.on('message', message => {
+              console.log('接收到新消息')
+              console.log(message)
+              if (message.content && message.content._lctext) {
+                const { msgList } = this.state
+                msgList.push({
+                  time: utils.formatTime(message._timestamp.getTime(), 'yyyy/MM/dd HH:mm'),
+                  from: message.from === doctorid ? 'self' : 'other',
+                  icon: message.from === doctorid ? dAvatar : pAvatar,
+                  type: 'text',
+                  content: message.content._lctext
+                })
+                this.setState({
+                  msgList,
+                  scrollIntoView: `last-${msgList.length - 1}`
+                })
+              }
+            });
+          }
+
         })
       })
       .catch(err => {
@@ -234,25 +259,7 @@ class Question extends Component {
         console.log(err);
       });
 
-      // 房间接受消息
-      conversation.on('message', message => {
-        console.log('接收到新消息')
-        console.log(message)
-        if (message.content && message.content._lctext) {
-          const { msgList } = this.state
-          msgList.push({
-            time: utils.formatTime(message._timestamp.getTime(), 'yyyy/MM/dd HH:mm'),
-            from: message.from === doctorid ? 'self' : 'other',
-            icon: message.from === doctorid ? Taro.getStorageSync('userInfo').avatarUrl : pAvatar,
-            type: 'text',
-            content: message.content._lctext
-          })
-          this.setState({
-            msgList,
-            scrollIntoView: `last-${msgList.length - 1}`
-          })
-        }
-      });
+      
     })
     .catch(err => {
       Taro.hideLoading()
@@ -270,21 +277,38 @@ class Question extends Component {
     this.client.close()
   }
 
-  getPatient(id) {
-    return new Promise((resolve, reject) => {
+  getAvatar(patientId, doctorId) {
+    const p1 = new Promise((resolve, reject) => {
       const patient = new AV.Query('Patients')
-      patient.get(id).then(res => {
+      patient.get(patientId).then(res => {
         console.log('patient', res)
         this.setState({
-          pAvatar: res.get('avatar') && res.get('avatar').get('url') || DEFAULT_A
+          pAvatar: res.get('avatar') && res.get('avatar').get('url') || DEFAULT_P
         }, () => {
           resolve()
         })
       }, err => {
         console.log(err)
-        reject(err)
+        resolve()
       })
     })
+
+    const p2 = new Promise((resolve, reject) => {
+      const doctor = new AV.Query('Doctor')
+      doctor.get(doctorId).then(res => {
+        console.log('doctor', res)
+        this.setState({
+          dAvatar: res.get('avatar') && res.get('avatar').get('url') || DEFAULT_D
+        }, () => {
+          resolve()
+        })
+      }, err => {
+        console.log(err)
+        resolve()
+      })
+    })
+
+    return Promise.all([p1, p2])
   }
 
   getConsultation(id) {
@@ -389,6 +413,7 @@ class Question extends Component {
     //////////
 
     // 发送消息
+    const { dAvatar } = this.state
     this.conversation.send(new TextMessage(value)).then(message => {
       console.log('消息发送成功');
       const { status, msgList } = this.state
@@ -401,7 +426,7 @@ class Question extends Component {
       msgList.push({
         time: utils.formatTime(new Date().getTime(), 'yyyy/MM/dd HH:mm'),
         from: 'self',
-        icon: Taro.getStorageSync('userInfo').avatarUrl,
+        icon: dAvatar,
         type: 'text',
         content: e.detail.value
       })
@@ -507,6 +532,7 @@ class Question extends Component {
 
   render () {
     const { tag } = this.props.question
+    const { params } = this.$router
     const { showRemark, msgList, scrollIntoView, inputValue } = this.state
     const tagRange = ['无', '轻度', '中度', '重度']
     return (
@@ -517,7 +543,7 @@ class Question extends Component {
               <View className={`tag-${tag.osahs}`}>{tag.osahs === '0' ? 'OSAHS' : `OSAHS | ${tagRange[tag.osahs].substr(0, 1)}`}</View>
             </Picker>
             <Picker mode='selector' range={tagRange} value={tag.cobp} onChange={this.tagChange.bind(this, 'cobp')}>
-              <View className={`tag-${tag.cobp}`}>{tag.cobp === '0' ? 'COBP' : `COBP | ${tagRange[tag.cobp].substr(0, 1)}`}</View>
+              <View className={`tag-${tag.cobp}`}>{tag.cobp === '0' ? 'COPD' : `COPD | ${tagRange[tag.cobp].substr(0, 1)}`}</View>
             </Picker>
             <Picker mode='selector' range={tagRange} value={tag.gxb} onChange={this.tagChange.bind(this, 'gxb')}>
               <View className={`tag-${tag.gxb}`}>{tag.gxb === '0' ? '冠心病' : `冠心病 | ${tagRange[tag.gxb].substr(0, 1)}`}</View>
@@ -531,7 +557,9 @@ class Question extends Component {
           </View>
           <View className='remark-2'></View>
           <View className='remark-3'>
-            <View className='btn' onClick={this.toRemark.bind(this)}>备注</View>
+            <Picker mode='selector' range={tagRange} value={tag.gxy} onChange={this.tagChange.bind(this, 'gxy')}>
+              <View className='btn'>报告</View>
+            </Picker>
           </View>
         </View>
         <ScrollView
@@ -547,6 +575,7 @@ class Question extends Component {
             msgList.map((item, index) => (
               <MsgItem
                 id={`last-${index}`}
+                patientId={params.patientId}
                 key={index}
                 time={item.time}
                 from={item.from}
@@ -564,6 +593,7 @@ class Question extends Component {
           <View style='height: 1px;'></View> {/* 下边距在 ScrollView 中不显示，使用一个 1px 的元素占位 */}
         </ScrollView>
         <View class='input'>
+          <Button onClick={this.endQuestion.bind(this)}>结束</Button>
           <Input
             type='text'
             disabled={this.state.isFinished}
@@ -575,7 +605,6 @@ class Question extends Component {
             onInput={this.inputMsg.bind(this)}
             onConfirm={this.sendMsg.bind(this)}
           />
-          <Button onClick={this.endQuestion.bind(this)}>结束</Button>
         </View>
       </View>
     )

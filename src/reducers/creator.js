@@ -120,8 +120,9 @@ export const mine = (state = STATES.MINE, action) => {
     case TYPES.GET_DOCTOR_DATA:
       return {
         ...state,
+        avatar: action.data.avatar,
         name: action.data.name,
-        megaid: action.data.megaId,
+        megaId: action.data.megaId,
         authenticated: action.data.authenticated,
       }
     case TYPES.CHANGE_DOCTOR_NAME:
@@ -151,6 +152,7 @@ export const myInfo = (state = STATES.MY_INFO, action) => {
     case TYPES.GET_DOCTOR_DATA:
       return {
         ...state,
+        avatar: action.data.avatar,
         name: action.data.name,
         gender: action.data.gender,
         hospital: action.data.hospital,

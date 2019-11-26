@@ -362,7 +362,21 @@ export const getDoctorData = () => {
     query.find().then(res => {
       console.log(res)
       if (res.length) {
-        dispatch(action(TYPES.GET_DOCTOR_DATA, res[0].attributes))
+        const r = res[0]
+        dispatch(action(TYPES.GET_DOCTOR_DATA, {
+          avatar: r.get('avatar') && r.get('avatar').get('url'),
+          name: r.get('name'),
+          megaId: r.get('megaId'),
+          authenticated: r.get('authenticated'),
+          gender: r.get('gender'),
+          hospital: r.get('hospital'),
+          department: r.get('department'),
+          title: r.get('title'),
+          phone: r.get('phone'),
+          startConsultation: r.get('startConsultation'),
+          startConsultationTime: r.get('startConsultationTime'),
+          endConsultationTime: r.get('endConsultationTime')
+        }))
       } else {
         Taro.removeStorageSync('userInfo')
         Taro.removeStorageSync('openid')

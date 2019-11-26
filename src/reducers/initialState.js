@@ -49,6 +49,7 @@ export const REMARK = {
 
 // 我的
 export const MINE = {
+  avatar: '',
   name: '',
   megaid: '',
   authenticated: 0,
@@ -59,6 +60,7 @@ export const MINE = {
 
 // 个人信息
 export const MY_INFO = {
+  avatar: '',
   name: '',
   gender: '',
   hospital: '',

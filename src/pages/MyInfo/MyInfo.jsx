@@ -7,6 +7,8 @@ import AV from 'leancloud-storage/dist/av-weapp-min.js'
 import { action, getDoctorData } from '../../actions/creator'
 import { CHANGE_DOCTOR_DATA, CHANGE_DOCTOR_NAME } from '../../constants/creator'
 
+import AVATAR_D from '../../assets/avatar-d.png'
+
 import './MyInfo.scss'
 
 @connect(({ myInfo }) => ({
@@ -33,7 +35,6 @@ class MyInfo extends Component {
   }
 
   componentDidMount() {
-    // const doctorid = Taro.getStorageSync('doctorid')
     this.props.getDoctorData()
   }
 
@@ -44,9 +45,16 @@ class MyInfo extends Component {
     })
   }
 
-  toAvatar() {
-    Taro.navigateTo({
-      url: '/pages/Avatar/Avatar'
+  chooseImage() {
+    Taro.chooseImage({
+      count: 1,
+      success: res => {
+        const tempFilePaths = res.tempFilePaths
+        console.log(tempFilePaths)
+        Taro.navigateTo({
+          url: `/pages/Avatar/Avatar?avatarUrl=${tempFilePaths[0]}`
+        })
+      }
     })
   }
 
@@ -155,7 +163,6 @@ class MyInfo extends Component {
 
   render () {
     const { myInfo } = this.props
-    const userInfo = Taro.getStorageSync('userInfo')
     const genderRange = ['男', '女']
     const _genderRange = ['M', 'F']
     const titleRange = ['主任医师', '副主任医师', '主治医师', '住院医师']
@@ -165,9 +172,9 @@ class MyInfo extends Component {
           <AtList>
             <AtListItem
               title='工作照'
-              extraThumb={userInfo.avatarUrl}
+              extraThumb={myInfo.avatar || AVATAR_D}
               arrow='right'
-              onClick={this.toAvatar.bind(this)}
+              onClick={this.chooseImage.bind(this)}
             />
           </AtList>
         </View>

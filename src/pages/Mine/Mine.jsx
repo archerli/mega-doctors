@@ -10,6 +10,7 @@ import INVITE from '../../assets/invite.png'
 import SERVICE from '../../assets/service.png'
 import AG from '../../assets/ag.png'
 import SETTING from '../../assets/setting.png'
+import AVATAR_D from '../../assets/avatar-d.png'
 
 import './Mine.scss'
 
@@ -64,12 +65,6 @@ class Mine extends Component {
     }
   }
 
-  toAvatar() {
-    Taro.navigateTo({
-      url: '/pages/Avatar/Avatar'
-    })
-  }
-
   toDoctorAuth() {
     Taro.navigateTo({
       url: '/pages/DoctorAuth/DoctorAuth'
@@ -109,12 +104,11 @@ class Mine extends Component {
 
   render () {
     const { mine } = this.props
-    const userInfo = Taro.getStorageSync('userInfo')
     return (
       <View className='mine'>
         <View className='info'>
-          <View className='info-1' onClick={this.toAvatar.bind(this)}>
-            <AtAvatar circle image={userInfo.avatarUrl}></AtAvatar>
+          <View className='info-1' onClick={this.toMyInfo.bind(this)}>
+            <AtAvatar circle image={mine.avatar || AVATAR_D}></AtAvatar>
           </View>
           <View className='info-2'>
             <View className='name'>
@@ -124,7 +118,7 @@ class Mine extends Component {
                 <Image src={AUTH} onClick={this.toDoctorAuth.bind(this)} />
               }
             </View>
-            <View>兆观号：{mine.megaid}</View>
+            <View>兆观号：{mine.megaId}</View>
           </View>
           <View className='info-3' onClick={this.toMyInfo.bind(this)}>
             <AtIcon value='chevron-right' size='28' color='#999999'></AtIcon>

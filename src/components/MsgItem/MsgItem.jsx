@@ -46,8 +46,9 @@ class MsgItem extends Component {
   }
 
   toDetail() {
+    const { patientId } = this.props
     Taro.navigateTo({
-      url: `/pages/PatientInfo/PatientInfo`
+      url: `/pages/PatientInfo/PatientInfo?patientId=${patientId}`
     })
   }
 

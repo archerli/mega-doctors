@@ -5,7 +5,7 @@ import VIP from '../../assets/vip.png'
 import CLOCK from '../../assets/clock.png'
 import JIFEN from '../../assets/jifen.png'
 import REPORT from '../../assets/report-i.png'
-import DEFAULT_A from '../../assets/avatar-p.png'
+import DEFAULT_P from '../../assets/avatar-p.png'
 
 import './QCard.scss'
 
@@ -92,7 +92,7 @@ class QCard extends Component {
       <View className='card'>
         <View className='card-t'>
           <View className='card-t-1' onClick={this.toDetail.bind(this)}>
-            <Image src={icon || DEFAULT_A} onError={() => {console.log('image error')}} />
+            <Image src={icon || DEFAULT_P} onError={() => {console.log('image error')}} />
           </View>
           <View className='card-t-2' onClick={this.toDetail.bind(this)}>
             <View className='name'>
