@@ -30,6 +30,11 @@ export const question = (state = STATES.QUESTION, action) => {
         relationId: action.data.relationId,
         tag: action.data.tag
       }
+    case TYPES.GET_PATIENT_REPORT_LIST:
+      return {
+        ...state,
+        reportList: action.data.reportList
+      }
     case TYPES.CHANGE_DOCTOR_PATIENT_TAG:
       return {
         ...state,
@@ -55,6 +60,11 @@ export const patient = (state = STATES.PATIENT, action) => {
       return {
         ...state,
         current: action.data
+      }
+    case TYPES.GET_PATIENT_REPORT_LIST:
+      return {
+        ...state,
+        curPatientReports: action.data.reportList
       }
     default:
       return state

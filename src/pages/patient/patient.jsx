@@ -1,10 +1,11 @@
 import Taro, { Component } from '@tarojs/taro'
-import { View, ScrollView, Image, Swiper, SwiperItem } from '@tarojs/components'
+import { View, ScrollView, Image, Swiper, SwiperItem, PickerView, PickerViewColumn } from '@tarojs/components'
 import { connect } from '@tarojs/redux'
+import AV from 'leancloud-storage/dist/av-weapp-min.js'
 
-import { AtActivityIndicator } from 'taro-ui'
+import { AtActivityIndicator, AtCalendar } from 'taro-ui'
 
-import { getDoctorPatientData, swiperChange } from '../../actions/creator'
+import { action, getDoctorPatientData, getPatientReportList, swiperChange } from '../../actions/creator'
 import { SWIPER_CHANGE_PATIENT } from '../../constants/creator'
 
 import PCard from '../../components/PCard/PCard'
@@ -91,8 +92,14 @@ const noReply = [
 @connect(({ patient }) => ({
   patient
 }), (dispatch) => ({
+  action(type, data) {
+    dispatch(action(type, data))
+  },
   getDoctorPatientData() {
     dispatch(getDoctorPatientData())
+  },
+  getPatientReportList(patientId) {
+    dispatch(getPatientReportList(patientId))
   },
   swiperChange(type, current) {
     dispatch(swiperChange(type, current))
@@ -113,7 +120,9 @@ class Patient extends Component {
     this.state = {
       current: 0,
       moreLoading: false,
-      moreLoaded: false
+      moreLoaded: false,
+      showPicker: false,
+      curPatientReports: []
     }
   }
 
@@ -174,9 +183,51 @@ class Patient extends Component {
     // }, 3000)
   }
 
+  clickReportIcon(patientId) {
+    // this.setState({
+    //   showPicker: true
+    // })
+    // this.props.getPatientReportList(patientId)
+    console.log(patientId);
+    const query = new AV.Query('RingSport');
+    query.equalTo('userInfoPointer', AV.Object.createWithoutData('Patients', patientId));
+    // query.greaterThan('AHI', 0);
+    query.descending('createdAt');
+    query.find().then(res => {
+      console.log('getPatientReportsData:reports', res)
+      const reportList = []
+      res.forEach(item => {
+        reportList.push({
+          id: item.id,
+          date: utils.formatTime(item.createdAt.getTime(), 'yyyy-MM-dd')
+        })
+      })
+
+      this.setState({
+        curPatientReports: reportList
+      })
+    });
+  }
+
+  hidePicker() {
+    this.setState({
+      showPicker: false
+    })
+  }
+
+  toReport(e) {
+    console.log(e.detail.value)
+    const { curPatientReports } = this.state
+    console.log('curPatientReports-----', curPatientReports)
+    // const url = `https://raw.megahealth.cn/view#/parsemhn?objId=${curPatientReports[e.detail.value].id}`
+    // Taro.navigateTo({
+    //   url: `/pages/Webview/Webview?url=${encodeURIComponent(url)}`
+    // })
+  }
+
   render () {
     const { patient } = this.props
-    const { moreLoading, moreLoaded } = this.state
+    const { moreLoading, moreLoaded, curPatientReports } = this.state
     return (
       <View className='patient'>
         <View className='tab'>
@@ -228,6 +279,8 @@ class Patient extends Component {
                         lastTime={item.lastTime}
                         questionId={item.latestConsultationId}
                         reportId={item.latestReportId}
+                        patientReports={curPatientReports}
+                        onPickerClick={this.clickReportIcon.bind(this, item.id)}
                       />
                     ))
                   }
@@ -274,6 +327,8 @@ class Patient extends Component {
                         lastTime={item.lastTime}
                         questionId={item.latestConsultationId}
                         reportId={item.latestReportId}
+                        patientReports={curPatientReports}
+                        onPickerClick={this.clickReportIcon.bind(this, item.id)}
                       />
                     ))
                   }
@@ -310,6 +365,8 @@ class Patient extends Component {
                         lastTime={item.lastTime}
                         questionId={item.latestConsultationId}
                         reportId={item.latestReportId}
+                        patientReports={curPatientReports}
+                        onPickerClick={this.clickReportIcon.bind(this, item.id)}
                       />
                     ))
                   }
@@ -346,6 +403,8 @@ class Patient extends Component {
                         lastTime={item.lastTime}
                         questionId={item.latestConsultationId}
                         reportId={item.latestReportId}
+                        patientReports={curPatientReports}
+                        onPickerClick={this.clickReportIcon.bind(this, item.id)}
                       />
                     ))
                   }
@@ -359,6 +418,20 @@ class Patient extends Component {
             </SwiperItem>
           </Swiper>
         </View>
+        {/* {
+          this.state.showPicker &&
+          <PickerView
+            className='picker'
+            indicatorClass='picker-column'
+            onChange={this.toReport.bind(this)}
+          >
+            <PickerViewColumn>
+              { patient.curPatientReports.map(item => <View key={item.id} className='picker-column-view'>{item.date}</View>) }
+            </PickerViewColumn>
+          </PickerView>
+        }
+        { this.state.showPicker && <View className='mask' onClick={this.hidePicker.bind(this)}></View> } */}
+        {/* <AtCalendar marks={ [ { value: '2018/11/11' } ] } /> */}
       </View>
     )
   }

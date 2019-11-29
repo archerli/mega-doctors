@@ -2,7 +2,6 @@ import Taro, { Component } from '@tarojs/taro'
 import { View, Text, Image } from '@tarojs/components'
 
 import VIP from '../../assets/vip.png'
-import CLOCK from '../../assets/clock.png'
 import JIFEN from '../../assets/jifen.png'
 import REPORT from '../../assets/report.png'
 import MSG from '../../assets/msg.png'
@@ -36,17 +35,25 @@ class PCard extends Component {
     })
   }
 
-  toReport() {
-    const { reportId } = this.props
-    if (!reportId) {
-      return Taro.showToast({
-        title: '最近没有报告',
-        icon: 'none'
-      })
-    }
-    const url = 'https%3A%2F%2Fyl-dev.megahealth.cn%2F%23%2Fhome%2Freport%2F5db0cd8fba39c80071bb5c02%3Ftype%3DnoLogo'
+  toReport(e) {
+    // const { reportId } = this.props
+    // if (!reportId) {
+    //   return Taro.showToast({
+    //     title: '最近没有报告',
+    //     icon: 'none'
+    //   })
+    // }
+    // const url = 'https%3A%2F%2Fyl-dev.megahealth.cn%2F%23%2Fhome%2Freport%2F5db0cd8fba39c80071bb5c02%3Ftype%3DnoLogo'
+    // Taro.navigateTo({
+    //   url: `/pages/Webview/Webview?url=${url}`
+    // })
+
+    console.log(e.detail.value)
+    const { patientReports } = this.props
+    console.log(patientReports)
+    const url = `https://raw.megahealth.cn/view#/parsemhn?objId=${patientReports[e.detail.value].id}`
     Taro.navigateTo({
-      url: `/pages/Webview/Webview?url=${url}`
+      url: `/pages/Webview/Webview?url=${encodeURIComponent(url)}`
     })
   }
 
@@ -59,8 +66,12 @@ class PCard extends Component {
       credit,
       source,
       location,
-      lastTime
+      lastTime,
+      patientReports,
+      onPickerClick
     } = this.props
+    // const { reportList } = this.state
+    const reports = patientReports && patientReports.map(item => item.date)
     return (
       <View className='card'>
         <View className='card-t'>
@@ -89,7 +100,10 @@ class PCard extends Component {
             </View>
             <View className='btn'>
               <Image className='img-m' src={MSG} onClick={this.toQuestion.bind(this)} />
-              <Image className='img-r' src={REPORT} onClick={this.toReport.bind(this)} />
+              {/* <Picker mode='selector' range={reports} onChange={this.toReport.bind(this)}>
+                <Image className='img-r' src={REPORT} onClick={onPickerClick} />
+              </Picker> */}
+              <Image className='img-r' src={REPORT} />
             </View>
           </View>
         </View>

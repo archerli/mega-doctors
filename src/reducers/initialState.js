@@ -11,7 +11,8 @@ export const CONSULTATION = {
 // 问题详情
 export const QUESTION = {
   relationId: null,
-  tag: {"osahs":"0","cobp":"0","gxb":"0","tnb":"0","gxy":"0"}
+  tag: {"osahs":"0","cobp":"0","gxb":"0","tnb":"0","gxy":"0"},
+  reportList: []
 }
 
 // 患者列表
@@ -22,7 +23,8 @@ export const PATIENT = {
   vipList: [],
   paidList: [],
   followList: [],
-  normalList: []
+  normalList: [],
+  curPatientReports: []
 }
 
 // 患者信息

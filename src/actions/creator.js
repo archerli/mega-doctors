@@ -341,6 +341,30 @@ export const getPatientData = patientId => {
   }
 }
 
+// 获取患者报告列表
+export const getPatientReportList = patientId => {
+  return dispatch => {
+    console.log(patientId);
+    const query = new AV.Query('RingSport');
+    query.equalTo('userInfoPointer', AV.Object.createWithoutData('Patients', patientId));
+    // query.greaterThan('AHI', 0);
+    query.descending('createdAt');
+    query.find().then(res => {
+      console.log('getPatientReportsData:reports', res)
+      const reportList = []
+      res.forEach(item => {
+        reportList.push({
+          id: item.id,
+          date: utils.formatTime(item.createdAt.getTime(), 'yyyy-MM-dd')
+        })
+      })
+      dispatch(action(TYPES.GET_PATIENT_REPORT_LIST, {
+        reportList
+      }))
+    });
+  }
+}
+
 // 获取医生数据
 export const getDoctorData = () => {
   return dispatch => {

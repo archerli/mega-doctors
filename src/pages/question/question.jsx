@@ -5,7 +5,7 @@ import { AtDivider } from 'taro-ui'
 import AV from 'leancloud-storage/dist/av-weapp-min.js'
 import { Realtime, TextMessage } from 'leancloud-realtime/dist/realtime.weapp.min.js'
 
-import { action, getPatientData } from '../../actions/creator'
+import { action, getPatientData, getPatientReportList } from '../../actions/creator'
 import { CHANGE_DOCTOR_PATIENT_TAG } from '../../constants/creator'
 
 import utils from '../../common/utils'
@@ -27,6 +27,9 @@ import './Question.scss'
   },
   getPatientData(patientId) {
     dispatch(getPatientData(patientId))
+  },
+  getPatientReportList(patientId) {
+    dispatch(getPatientReportList(patientId))
   }
 }))
 
@@ -110,6 +113,7 @@ class Question extends Component {
     }
     // 拿到患者ID获取标签和备注信息
     this.props.getPatientData(params.patientId)
+    this.props.getPatientReportList(params.patientId)
     Taro.showLoading({
       title: '加载中...',
       mask: true
@@ -342,6 +346,15 @@ class Question extends Component {
     })
   }
 
+  toReport(e) {
+    console.log(e.detail.value)
+    const { reportList } = this.props.question
+    const url = `https://raw.megahealth.cn/view#/parsemhn?objId=${reportList[e.detail.value].id}`
+    Taro.navigateTo({
+      url: `/pages/Webview/Webview?url=${encodeURIComponent(url)}`
+    })
+  }
+
   previewImage(urls, current) {
     Taro.previewImage({
       urls,
@@ -531,10 +544,11 @@ class Question extends Component {
   }
 
   render () {
-    const { tag } = this.props.question
+    const { tag, reportList } = this.props.question
     const { params } = this.$router
     const { showRemark, msgList, scrollIntoView, inputValue } = this.state
     const tagRange = ['无', '轻度', '中度', '重度']
+    const reports = reportList.map(item => item.date)
     return (
       <View className='question'>
         <View className='remark'>
@@ -557,9 +571,13 @@ class Question extends Component {
           </View>
           <View className='remark-2'></View>
           <View className='remark-3'>
-            <Picker mode='selector' range={tagRange} value={tag.gxy} onChange={this.tagChange.bind(this, 'gxy')}>
-              <View className='btn'>报告</View>
-            </Picker>
+            {
+              reportList.length
+              ? <Picker mode='selector' range={reports} onChange={this.toReport.bind(this)}>
+                <View className='btn'>报告</View>
+              </Picker>
+              : <View className='btn empty' onClick={() => Taro.showToast({ title: '没有历史报告', icon: 'none' })}>报告</View>
+            }
           </View>
         </View>
         <ScrollView

@@ -65,12 +65,16 @@
         }
       }
       .btn {
+        display: flex;
+        align-items: center;
         Image.img-m {
+          display: block;
           width: 40px;
           height: 40px;
           margin-right: 30px;
         }
         Image.img-r {
+          display: block;
           width: 34px;
           height: 42px;
         }

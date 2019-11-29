@@ -23,7 +23,7 @@ import './Webview.scss'
 class Webview extends Component {
 
   config = {
-    navigationBarTitleText: '睡眠报告',
+    navigationBarTitleText: '',
     disableScroll: true
   }
 
@@ -44,10 +44,16 @@ class Webview extends Component {
     }
   }
 
+  load() {
+    Taro.setNavigationBarTitle({
+      title: ''
+    })
+  }
+
   render () {
     const { url } = this.state;
     return (
-      <WebView src={decodeURIComponent(url)} />
+      <WebView src={decodeURIComponent(url)} onLoad={this.load.bind(this)} />
     )
   }
 }
