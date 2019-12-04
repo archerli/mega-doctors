@@ -9,85 +9,9 @@ import { action, getDoctorPatientData, getPatientReportList, swiperChange } from
 import { SWIPER_CHANGE_PATIENT } from '../../constants/creator'
 
 import PCard from '../../components/PCard/PCard'
-import QRCODE from '../../assets/qrcode.png'
-import QING from '../../assets/mild.png'
-import ZHONG from '../../assets/severe.png'
-import STAR from '../../assets/star.png'
 import EMPTY from '../../assets/empty.png'
 
 import './Patient.scss'
-
-const reply = [
-  {
-    id: 11,
-    name: '王大锤11',
-    isVip: true,
-    icon: QRCODE,
-    tag: [STAR, QING],
-    time: '2019/10/09 18:00',
-    desc: '医生你好医生你好医生你好医生你好医生你好医生你好医生你好医生你好医生你好医生你好医生你好'
-  },
-  {
-    id: 12,
-    name: '王大锤12',
-    icon: 'http://img10.360buyimg.com/jdphoto/s72x72_jfs/t5872/209/5240187906/2872/8fa98cd/595c3b2aN4155b931.png',
-    tag: [ZHONG],
-    time: '2019/10/08 18:00',
-    desc: '医生你好医生你好医生你好医生你好医生你好医生你好医生你好医生你好医生你好医生你好医生你好'
-  },
-  {
-    id: 13,
-    name: '王大锤13',
-    isVip: true,
-    icon: 'https://jdc.jd.com/img/200',
-    tag: [],
-    time: '2019/10/07 18:00',
-    desc: '医生你好医生你好医生你好医生你好医生你好医生你好医生你好医生你好医生你好医生你好医生你好'
-  },
-  {
-    id: 14,
-    name: '王大锤14',
-    icon: 'http://img10.360buyimg.com/jdphoto/s72x72_jfs/t5872/209/5240187906/2872/8fa98cd/595c3b2aN4155b931.png',
-    tag: [STAR, ZHONG],
-    time: '2019/10/06 18:00',
-    desc: '医生你好医生你好医生你好医生你好医生你好医生你好医生你好医生你好医生你好医生你好医生你好'
-  },
-  {
-    id: 15,
-    name: '王大锤15',
-    icon: 'https://jdc.jd.com/img/200',
-    tag: [QING],
-    time: '2019/10/05 18:00',
-    desc: '医生你好医生你好医生你好医生你好医生你好医生你好医生你好医生你好医生你好医生你好医生你好'
-  }
-];
-const noReply = [
-  {
-    id: 21,
-    name: '王大锤21',
-    icon: QRCODE,
-    tag: [ZHONG],
-  },
-  {
-    id: 22,
-    name: '王大锤22',
-    icon: 'http://img10.360buyimg.com/jdphoto/s72x72_jfs/t5872/209/5240187906/2872/8fa98cd/595c3b2aN4155b931.png',
-    tag: [QING],
-  },
-  {
-    id: 23,
-    name: '王大锤23',
-    isVip: true,
-    icon: 'https://jdc.jd.com/img/200',
-    tag: [],
-  },
-  {
-    id: 24,
-    name: '王大锤24',
-    icon: 'http://img10.360buyimg.com/jdphoto/s72x72_jfs/t5872/209/5240187906/2872/8fa98cd/595c3b2aN4155b931.png',
-    tag: [STAR, ZHONG],
-  }
-];
 
 @connect(({ patient }) => ({
   patient
@@ -118,11 +42,8 @@ class Patient extends Component {
   constructor() {
     super(...arguments)
     this.state = {
-      current: 0,
       moreLoading: false,
-      moreLoaded: false,
-      showPicker: false,
-      curPatientReports: []
+      moreLoaded: false
     }
   }
 
@@ -155,17 +76,11 @@ class Patient extends Component {
   }
 
   handleClick(value) {
-    // this.setState({
-    //   current: value 
-    // })
     this.props.swiperChange(SWIPER_CHANGE_PATIENT, value)
   }
 
   swiperOnChange(e) {
     // console.log(e.currentTarget.current);
-    // this.setState({
-    //   current: e.currentTarget.current
-    // })
     this.props.swiperChange(SWIPER_CHANGE_PATIENT, e.currentTarget.current)
   }
 
@@ -183,51 +98,9 @@ class Patient extends Component {
     // }, 3000)
   }
 
-  clickReportIcon(patientId) {
-    // this.setState({
-    //   showPicker: true
-    // })
-    // this.props.getPatientReportList(patientId)
-    console.log(patientId);
-    const query = new AV.Query('RingSport');
-    query.equalTo('userInfoPointer', AV.Object.createWithoutData('Patients', patientId));
-    // query.greaterThan('AHI', 0);
-    query.descending('createdAt');
-    query.find().then(res => {
-      console.log('getPatientReportsData:reports', res)
-      const reportList = []
-      res.forEach(item => {
-        reportList.push({
-          id: item.id,
-          date: utils.formatTime(item.createdAt.getTime(), 'yyyy-MM-dd')
-        })
-      })
-
-      this.setState({
-        curPatientReports: reportList
-      })
-    });
-  }
-
-  hidePicker() {
-    this.setState({
-      showPicker: false
-    })
-  }
-
-  toReport(e) {
-    console.log(e.detail.value)
-    const { curPatientReports } = this.state
-    console.log('curPatientReports-----', curPatientReports)
-    // const url = `https://raw.megahealth.cn/view#/parsemhn?objId=${curPatientReports[e.detail.value].id}`
-    // Taro.navigateTo({
-    //   url: `/pages/Webview/Webview?url=${encodeURIComponent(url)}`
-    // })
-  }
-
   render () {
     const { patient } = this.props
-    const { moreLoading, moreLoaded, curPatientReports } = this.state
+    const { moreLoading, moreLoaded } = this.state
     return (
       <View className='patient'>
         <View className='tab'>
@@ -269,7 +142,7 @@ class Patient extends Component {
                       <PCard
                         key={item.id}
                         patientId={item.id}
-                        name={item.name}
+                        name={item.name || '患者'}
                         isVip={item.isVip}
                         icon={item.icon}
                         tag={item.tag}
@@ -279,8 +152,6 @@ class Patient extends Component {
                         lastTime={item.lastTime}
                         questionId={item.latestConsultationId}
                         reportId={item.latestReportId}
-                        patientReports={curPatientReports}
-                        onPickerClick={this.clickReportIcon.bind(this, item.id)}
                       />
                     ))
                   }
@@ -317,7 +188,7 @@ class Patient extends Component {
                       <PCard
                         key={item.id}
                         patientId={item.id}
-                        name={item.name}
+                        name={item.name || '患者'}
                         isVip={item.isVip}
                         icon={item.icon}
                         tag={item.tag}
@@ -327,8 +198,6 @@ class Patient extends Component {
                         lastTime={item.lastTime}
                         questionId={item.latestConsultationId}
                         reportId={item.latestReportId}
-                        patientReports={curPatientReports}
-                        onPickerClick={this.clickReportIcon.bind(this, item.id)}
                       />
                     ))
                   }
@@ -355,7 +224,7 @@ class Patient extends Component {
                       <PCard
                         key={item.id}
                         patientId={item.id}
-                        name={item.name}
+                        name={item.name || '患者'}
                         isVip={item.isVip}
                         icon={item.icon}
                         tag={item.tag}
@@ -365,8 +234,6 @@ class Patient extends Component {
                         lastTime={item.lastTime}
                         questionId={item.latestConsultationId}
                         reportId={item.latestReportId}
-                        patientReports={curPatientReports}
-                        onPickerClick={this.clickReportIcon.bind(this, item.id)}
                       />
                     ))
                   }
@@ -393,7 +260,7 @@ class Patient extends Component {
                       <PCard
                         key={item.id}
                         patientId={item.id}
-                        name={item.name}
+                        name={item.name || '患者'}
                         isVip={item.isVip}
                         icon={item.icon}
                         tag={item.tag}
@@ -403,8 +270,6 @@ class Patient extends Component {
                         lastTime={item.lastTime}
                         questionId={item.latestConsultationId}
                         reportId={item.latestReportId}
-                        patientReports={curPatientReports}
-                        onPickerClick={this.clickReportIcon.bind(this, item.id)}
                       />
                     ))
                   }
@@ -418,20 +283,6 @@ class Patient extends Component {
             </SwiperItem>
           </Swiper>
         </View>
-        {/* {
-          this.state.showPicker &&
-          <PickerView
-            className='picker'
-            indicatorClass='picker-column'
-            onChange={this.toReport.bind(this)}
-          >
-            <PickerViewColumn>
-              { patient.curPatientReports.map(item => <View key={item.id} className='picker-column-view'>{item.date}</View>) }
-            </PickerViewColumn>
-          </PickerView>
-        }
-        { this.state.showPicker && <View className='mask' onClick={this.hidePicker.bind(this)}></View> } */}
-        {/* <AtCalendar marks={ [ { value: '2018/11/11' } ] } /> */}
       </View>
     )
   }

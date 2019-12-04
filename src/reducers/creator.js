@@ -33,6 +33,7 @@ export const question = (state = STATES.QUESTION, action) => {
     case TYPES.GET_PATIENT_REPORT_LIST:
       return {
         ...state,
+        patientId: action.data.patientId,
         reportList: action.data.reportList
       }
     case TYPES.CHANGE_DOCTOR_PATIENT_TAG:
@@ -60,11 +61,6 @@ export const patient = (state = STATES.PATIENT, action) => {
       return {
         ...state,
         current: action.data
-      }
-    case TYPES.GET_PATIENT_REPORT_LIST:
-      return {
-        ...state,
-        curPatientReports: action.data.reportList
       }
     default:
       return state
@@ -118,6 +114,21 @@ export const remark = (state = STATES.REMARK, action) => {
       return {
         ...state,
         remark: action.data
+      }
+    default:
+      return state
+  }
+}
+
+// 患者备注
+export const reportList = (state = STATES.REPORT_LIST, action) => {
+  switch (action.type) {
+    case TYPES.GET_PATIENT_REPORT_LIST:
+      return {
+        ...state,
+        isLoading: false,
+        patientId: action.data.patientId,
+        reportList: action.data.reportList
       }
     default:
       return state

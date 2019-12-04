@@ -106,14 +106,17 @@ class Question extends Component {
   componentWillMount() {
     console.log(this.$router.params)
     const { params } = this.$router
+    const { patientId } = this.props.question
     if (params && params.name) {
       Taro.setNavigationBarTitle({
         title: params.name
       })
     }
-    // 拿到患者ID获取标签和备注信息
+    // 拿到患者ID获取标签/备注信息/报告列表
     this.props.getPatientData(params.patientId)
-    this.props.getPatientReportList(params.patientId)
+    if (params.patientId !== patientId) {
+      this.props.getPatientReportList(params.patientId)
+    }
     Taro.showLoading({
       title: '加载中...',
       mask: true
@@ -548,7 +551,7 @@ class Question extends Component {
     const { params } = this.$router
     const { showRemark, msgList, scrollIntoView, inputValue } = this.state
     const tagRange = ['无', '轻度', '中度', '重度']
-    const reports = reportList.map(item => item.date)
+    const reports = reportList.map(item => `${item.date} ODI${item.ODI} 最低${item.minO2}%`)
     return (
       <View className='question'>
         <View className='remark'>

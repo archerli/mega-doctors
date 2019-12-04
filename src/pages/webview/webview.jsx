@@ -24,7 +24,8 @@ class Webview extends Component {
 
   config = {
     navigationBarTitleText: '',
-    disableScroll: true
+    disableScroll: true,
+    // navigationStyle: 'custom'
   }
 
   constructor() {

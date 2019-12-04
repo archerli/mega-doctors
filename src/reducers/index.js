@@ -7,7 +7,8 @@ import {
   consultation,
   question,
   remark,
-  setting
+  setting,
+  reportList
 } from './creator'
 
 export default combineReducers({
@@ -18,5 +19,6 @@ export default combineReducers({
   consultation,
   question,
   remark,
-  setting
+  setting,
+  reportList
 })

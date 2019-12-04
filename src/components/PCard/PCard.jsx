@@ -47,13 +47,19 @@ class PCard extends Component {
     // Taro.navigateTo({
     //   url: `/pages/Webview/Webview?url=${url}`
     // })
+    // console.log(e.detail.value)
+    // const { patientReports } = this.props
+    // console.log(patientReports)
+    // const url = `https://raw.megahealth.cn/view#/parsemhn?objId=${patientReports[e.detail.value].id}`
+    // Taro.navigateTo({
+    //   url: `/pages/Webview/Webview?url=${encodeURIComponent(url)}`
+    // })
+  }
 
-    console.log(e.detail.value)
-    const { patientReports } = this.props
-    console.log(patientReports)
-    const url = `https://raw.megahealth.cn/view#/parsemhn?objId=${patientReports[e.detail.value].id}`
+  toReportList() {
+    const { patientId, name } = this.props
     Taro.navigateTo({
-      url: `/pages/Webview/Webview?url=${encodeURIComponent(url)}`
+      url: `/pages/ReportList/ReportList?patientId=${patientId}&name=${name}`
     })
   }
 
@@ -66,12 +72,8 @@ class PCard extends Component {
       credit,
       source,
       location,
-      lastTime,
-      patientReports,
-      onPickerClick
+      lastTime
     } = this.props
-    // const { reportList } = this.state
-    const reports = patientReports && patientReports.map(item => item.date)
     return (
       <View className='card'>
         <View className='card-t'>
@@ -103,7 +105,7 @@ class PCard extends Component {
               {/* <Picker mode='selector' range={reports} onChange={this.toReport.bind(this)}>
                 <Image className='img-r' src={REPORT} onClick={onPickerClick} />
               </Picker> */}
-              <Image className='img-r' src={REPORT} />
+              <Image className='img-r' src={REPORT} onClick={this.toReportList.bind(this)} />
             </View>
           </View>
         </View>

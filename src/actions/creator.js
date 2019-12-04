@@ -58,7 +58,9 @@ export const getConsultationData = conversations => {
             }
           }
           console.log(desc)
-          const restMin = parseInt((24 * 60 * 60 * 1000 - (new Date().getTime() - time)) / 1000 / 60)
+          // const restMin = parseInt((24 * 60 * 60 * 1000 - (new Date().getTime() - time)) / 1000 / 60)
+          // for test
+          const restMin = parseInt((2 * 60 * 60 * 1000 - (new Date().getTime() - time)) / 1000 / 60)
           endHour = parseInt(restMin / 60)
           endMin = restMin % 60
           if (endHour < 0) endHour = 0
@@ -342,26 +344,67 @@ export const getPatientData = patientId => {
 }
 
 // 获取患者报告列表
-export const getPatientReportList = patientId => {
+export const getPatientReportList = (patientId, showLoading = false) => {
   return dispatch => {
+    if (showLoading) {
+      dispatch(action(TYPES.GET_PATIENT_REPORT_LIST_START, {
+        isLoading: true
+      }))
+    }
     console.log(patientId);
-    const query = new AV.Query('RingSport');
+    const query0 = new AV.Query('RingSport');
+    query0.equalTo('dataType', 0);
+    const query1 = new AV.Query('RingSport');
+    query1.equalTo('dataType', 1);
+    const query = AV.Query.or(query0, query1);
     query.equalTo('userInfoPointer', AV.Object.createWithoutData('Patients', patientId));
-    // query.greaterThan('AHI', 0);
+    query.greaterThan('duration', 0);
+    query.exists('downIndex');
     query.descending('createdAt');
+    query.limit(1000);
+    query.select([
+      'minO2',
+      'downIndex',
+      'duration'
+    ]);
+    query.count()
     query.find().then(res => {
       console.log('getPatientReportsData:reports', res)
       const reportList = []
       res.forEach(item => {
         reportList.push({
           id: item.id,
-          date: utils.formatTime(item.createdAt.getTime(), 'yyyy-MM-dd')
+          minO2: item.get('minO2') && item.get('minO2').toFixed(1),
+          ODI: item.get('downIndex') && item.get('downIndex').toFixed(1),
+          date: utils.formatTime(item.createdAt.getTime(), 'yyyy-MM-dd'),
+          duration: item.get('duration')
         })
       })
+      // 同一天多份报告取时间最长的一份
+      let _reportList = []
+      for (let i = 0; i < reportList.length; i++) {
+        if (i === 0) {
+          _reportList.push(reportList[0])
+        }
+        if (i > 0) {
+          if (reportList[i].date === reportList[i - 1].date) {
+            if (reportList[i].duration > reportList[i - 1].duration) {
+              _reportList[_reportList.length - 1] = reportList[i]
+            }
+          } else {
+            _reportList.push(reportList[i])
+          }
+        }
+      }
+      console.log('_reportList', _reportList)
       dispatch(action(TYPES.GET_PATIENT_REPORT_LIST, {
-        reportList
+        patientId,
+        reportList: _reportList
       }))
-    });
+      if (showLoading) Taro.hideLoading()
+    }, err => {
+      if (showLoading) Taro.hideLoading()
+    })
   }
 }
 

@@ -1,5 +1,5 @@
 import Taro, { Component } from '@tarojs/taro'
-import { View, ScrollView, Button, Text, Swiper, SwiperItem } from '@tarojs/components'
+import { View, ScrollView, Swiper, SwiperItem } from '@tarojs/components'
 import { connect } from '@tarojs/redux'
 
 import { AtActivityIndicator } from 'taro-ui'
@@ -289,7 +289,7 @@ class Index extends Component {
                         type='new'
                         questionId={item.id}
                         patientId={item.patientId}
-                        name={item.name}
+                        name={item.name || '患者'}
                         isVip={item.isVip}
                         icon={item.icon}
                         tag={item.tag}
@@ -337,7 +337,7 @@ class Index extends Component {
                         type='reply'
                         questionId={item.id}
                         patientId={item.patientId}
-                        name={item.name}
+                        name={item.name || '患者'}
                         isVip={item.isVip}
                         icon={item.icon}
                         tag={item.tag}
@@ -376,7 +376,7 @@ class Index extends Component {
                         type='finished'
                         questionId={item.id}
                         patientId={item.patientId}
-                        name={item.name}
+                        name={item.name || '患者'}
                         isVip={item.isVip}
                         icon={item.icon}
                         tag={item.tag}

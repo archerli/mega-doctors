@@ -14,6 +14,7 @@ export const CHANGE_DOCTOR_PATIENT_REMARK = '修改医生关联患者备注'
 
 export const GET_PATIENT_DATA = '获取患者信息'
 export const GET_PATIENT_REPORT_LIST = '获取患者报告列表'
+export const GET_PATIENT_REPORT_LIST_START = '开始获取患者报告列表'
 
 export const SWIPER_CHANGE_INDEX = '咨询列表切换Swiper'
 export const SWIPER_CHANGE_PATIENT = '患者列表切换Swiper'
