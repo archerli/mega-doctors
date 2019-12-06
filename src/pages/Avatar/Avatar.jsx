@@ -116,11 +116,14 @@ class Avatar extends Component {
       await doctor.save()
       Taro.hideLoading()
       Taro.showToast({
-        title: '上传成功'
+        title: '上传成功',
+        duration: 1500
       })
       // 上传成功后重新获取数据并返回
       this.props.getDoctorData()
-      Taro.navigateBack()
+      setTimeout(() => {
+        Taro.navigateBack()
+      }, 1500)
     } catch(e) {
       Taro.hideLoading()
       Taro.showToast({

@@ -551,7 +551,7 @@ class Question extends Component {
     const { params } = this.$router
     const { showRemark, msgList, scrollIntoView, inputValue } = this.state
     const tagRange = ['无', '轻度', '中度', '重度']
-    const reports = reportList.map(item => `${item.date} ODI${item.ODI} 最低${item.minO2}%`)
+    const reports = reportList.map(item => `${item.date} ODI ${item.ODI} 最低${item.minO2}%`)
     return (
       <View className='question'>
         <View className='remark'>

@@ -5,7 +5,9 @@ import { AtAvatar, AtList, AtListItem, AtIcon } from "taro-ui"
 
 import { getDoctorData, getConsultationNum, getDoctorPatientNumAndCredit } from '../../actions/creator'
 
-import AUTH from '../../assets/auth.png'
+import AUTH_0 from '../../assets/auth-0.png'
+import AUTH_1 from '../../assets/auth-1.png'
+import AUTH_2 from '../../assets/auth-2.png'
 import INVITE from '../../assets/invite.png'
 import SERVICE from '../../assets/service.png'
 import AG from '../../assets/ag.png'
@@ -66,6 +68,13 @@ class Mine extends Component {
   }
 
   toDoctorAuth() {
+    const { mine } = this.props
+    if (!mine.name) {
+      return Taro.showToast({
+        title: '请先完善个人资料',
+        icon: 'none'
+      })
+    }
     Taro.navigateTo({
       url: '/pages/DoctorAuth/DoctorAuth'
     })
@@ -114,8 +123,13 @@ class Mine extends Component {
             <View className='name'>
               <Text onClick={this.toMyInfo.bind(this)}>{mine.name || '请完善资料'}</Text>
               {
-                mine.authenticated === '1' &&
-                <Image src={AUTH} onClick={this.toDoctorAuth.bind(this)} />
+                mine.authenticated === '0'
+                ? <Image src={AUTH_0} onClick={this.toDoctorAuth.bind(this)} />
+                : (
+                  mine.authenticated === '1'
+                  ? <Image src={AUTH_1} onClick={this.toDoctorAuth.bind(this)} />
+                  : <Image src={AUTH_2} onClick={this.toDoctorAuth.bind(this)} />
+                )
               }
             </View>
             <View>兆观号：{mine.megaId}</View>

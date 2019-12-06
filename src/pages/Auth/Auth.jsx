@@ -62,7 +62,7 @@ class Auth extends Component {
                   const Doctor = AV.Object.extend('Doctor')
                   const doctor = new Doctor()
                   doctor.set('openid', openid)
-                  doctor.set('authenticated', '1')
+                  doctor.set('authenticated', '0')
                   doctor.save().then(d => {
                     Taro.setStorageSync('doctorid', d.id)
                   })

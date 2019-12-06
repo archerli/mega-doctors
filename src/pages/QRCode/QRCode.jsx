@@ -83,6 +83,10 @@ class QRCode extends Component {
     //     console.log(err)
     //   }
     // })
+    return Taro.showToast({
+      title: '开发中...',
+      icon: 'none'
+    })
     wx.setClipboardData({
       data: '页面未完成',
       success: function (res) {

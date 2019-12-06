@@ -365,7 +365,8 @@ export const getPatientReportList = (patientId, showLoading = false) => {
     query.select([
       'minO2',
       'downIndex',
-      'duration'
+      'duration',
+      'downTimes'
     ]);
     query.count()
     query.find().then(res => {
@@ -377,7 +378,8 @@ export const getPatientReportList = (patientId, showLoading = false) => {
           minO2: item.get('minO2') && item.get('minO2').toFixed(1),
           ODI: item.get('downIndex') && item.get('downIndex').toFixed(1),
           date: utils.formatTime(item.createdAt.getTime(), 'yyyy-MM-dd'),
-          duration: item.get('duration')
+          duration: item.get('duration'),
+          downTimes: item.get('downTimes')
         })
       })
       // 同一天多份报告取时间最长的一份

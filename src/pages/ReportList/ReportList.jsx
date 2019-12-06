@@ -75,7 +75,7 @@ class ReportList extends Component {
                   <Text>{item.date}</Text>
                 </View>
                 <View>
-                  <Text>详情</Text>
+                  <Text>{parseInt(item.duration / 3600)}小时{parseInt(item.duration / 60) % 60}分钟</Text>
                   <AtIcon value='chevron-right' size='20' color='#999999'></AtIcon>
                 </View>
               </View>
@@ -85,13 +85,17 @@ class ReportList extends Component {
                   <View>{item.ODI}</View>
                 </View>
                 <View className='item-data'>
+                  <View>氧减次数</View>
+                  <View>{item.downTimes}</View>
+                </View>
+                <View className='item-data'>
                   <View>最低血氧饱和度</View>
                   <View>{item.minO2}%</View>
                 </View>
-                <View className='item-data'>
+                {/* <View className='item-data'>
                   <View>时长</View>
                   <View>{parseInt(item.duration / 3600)}小时{parseInt(item.duration / 60) % 60}分钟</View>
-                </View>
+                </View> */}
               </View>
             </View>
           ))
