@@ -66,8 +66,10 @@
 | department | String | 所在科室 |
 | title    | String  | 职称 |
 | authenticated | String | 是否认证，0：否，1：是，2：认证中 |
-| certificate   | File    | 医师资格证 |
-| licence  | File    | 医生执业证 |
+| certificate1   | File    | 医师资格证 |
+| certificate2   | File    | 医师资格证 |
+| licence1  | File    | 医生执业证 |
+| licence2  | File    | 医生执业证 |
 | startConsultation     | Boolean | 是否开启咨询 |
 | startConsultationTime | String  | 开启咨询时间 |
 | endConsultationTime   | String  | 结束咨询时间 |

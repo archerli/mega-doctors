@@ -58,9 +58,9 @@ export const getConsultationData = conversations => {
             }
           }
           console.log(desc)
-          // const restMin = parseInt((24 * 60 * 60 * 1000 - (new Date().getTime() - time)) / 1000 / 60)
+          const restMin = parseInt((24 * 60 * 60 * 1000 - (new Date().getTime() - time)) / 1000 / 60)
           // for test
-          const restMin = parseInt((2 * 60 * 60 * 1000 - (new Date().getTime() - time)) / 1000 / 60)
+          // const restMin = parseInt((2 * 60 * 60 * 1000 - (new Date().getTime() - time)) / 1000 / 60)
           endHour = parseInt(restMin / 60)
           endMin = restMin % 60
           if (endHour < 0) endHour = 0

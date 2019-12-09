@@ -96,6 +96,7 @@ class DoctorAuth extends Component {
   }
 
   async uploadImage() {
+    const fileDomain = 'file-mhn.megahealth.cn'
     const { zg, zy } = this.state
     const doctorid = Taro.getStorageSync('doctorid')
     if (zg.length === 2 || zy.length === 2) {
@@ -108,7 +109,7 @@ class DoctorAuth extends Component {
         let _file2 = null
         let _file3 = null
         let _file4 = null
-        if (zg[0]) {
+        if (zg[0] && zg[0].indexOf(fileDomain) === -1) {
           const file1 = new AV.File(`doctor_licence_${doctorid}.jpg`, {
             blob: {
               uri: zg[0],
@@ -116,7 +117,7 @@ class DoctorAuth extends Component {
           })
           _file1 = await file1.save()
         }
-        if (zg[1]) {
+        if (zg[1] && zg[1].indexOf(fileDomain) === -1) {
           const file2 = new AV.File(`doctor_licence_${doctorid}.jpg`, {
             blob: {
               uri: zg[1],
@@ -124,7 +125,7 @@ class DoctorAuth extends Component {
           })
           _file2 = await file2.save()
         }
-        if (zy[0]) {
+        if (zy[0] && zy[0].indexOf(fileDomain) === -1) {
           const file3 = new AV.File(`doctor_licence_${doctorid}.jpg`, {
             blob: {
               uri: zy[0],
@@ -132,7 +133,7 @@ class DoctorAuth extends Component {
           })
           _file3 = await file3.save()
         }
-        if (zy[1]) {
+        if (zy[1] && zy[1].indexOf(fileDomain) === -1) {
           const file4 = new AV.File(`doctor_licence_${doctorid}.jpg`, {
             blob: {
               uri: zy[1],
@@ -179,7 +180,7 @@ class DoctorAuth extends Component {
     const { authenticated, zg, zy } = this.state
     return (
       <View className='docauth'>
-        <View className='tip-1'>认证后会有认证标识，获得更多咨询机会与收益</View>
+        <View className='tip-1'>通过认证后才能邀请患者和提供咨询哦。</View>
         <View className='tip-2'>
           <View className='tip-2-t'>上传您的资格证或执业证</View>
           <View className='tip-2-c'>* 请确保姓名、照片、编号、发证机关清晰可见。</View>
@@ -235,8 +236,8 @@ class DoctorAuth extends Component {
         <View class='btn'>
           {
             authenticated == '2'
-            ? <Button disabled>认证审核中</Button>
-            : <Button className='save' onClick={this.uploadImage.bind(this)}>{authenticated === '0' ? '提交' : '重新提交'}</Button>
+            ? <Button disabled>审核中</Button>
+            : <Button className='save' onClick={this.uploadImage.bind(this)}>{authenticated === '1' ? '更新' : '提交'}</Button>
           }
         </View>
       </View>
