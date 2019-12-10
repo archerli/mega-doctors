@@ -21,13 +21,15 @@ export const swiperChange = (type, current) => {
 }
 
 // 获取咨询列表数据
-export const getConsultationData = conversations => {
+export const getConsultationData = (conversations, consultationStatus) => {
   return dispatch => {
     console.log('action.conversations', conversations)
+    console.log('action.consultationStatus', consultationStatus)
     const doctorid = Taro.getStorageSync('doctorid')
     const query = new AV.Query('Consultation');
     query.descending('endAt');
     query.equalTo('idDoctor', AV.Object.createWithoutData('Doctor', doctorid));
+    if (consultationStatus) query.equalTo('status', consultationStatus);
     query.include('idDoctor');
     query.include('idPatient');
     query.include('idRelation');
@@ -94,6 +96,7 @@ export const getConsultationData = conversations => {
               isVip: false,
               icon: patient && patient.get('avatar') && patient.get('avatar').get('url') || '',
               tag: _tag,
+              timestamp: time,
               time: utils.formatTime(time, 'yyyy/MM/dd HH:mm'),
               desc,
               source: _source,
@@ -110,6 +113,7 @@ export const getConsultationData = conversations => {
               isVip: false,
               icon: patient && patient.get('avatar') && patient.get('avatar').get('url') || '',
               tag: _tag,
+              timestamp: time,
               time: utils.formatTime(time, 'yyyy/MM/dd HH:mm'),
               desc,
               source: _source,
@@ -136,12 +140,46 @@ export const getConsultationData = conversations => {
             break
         }
       });
-      dispatch(action(TYPES.GET_CONSULTATION_DATA, {
-        newCons,
-        replying,
-        finished
-      }))
-      Taro.hideLoading()
+
+      function sortByItem(itemName) {
+        return function (object1, object2) {
+          var value1 = object1[itemName];
+          var value2 = object2[itemName];
+          return value2 - value1
+        }
+      }
+      // 新咨询和回复中 排序
+      newCons.sort(sortByItem('timestamp'))
+      const replying1 = []
+      const replying2 = []
+      replying.forEach(item => {
+        if (item.lastMsgFrom === 'other') replying1.push(item)
+        if (item.lastMsgFrom === 'self') replying2.push(item)
+      })
+      replying1.sort(sortByItem('timestamp'))
+      replying2.sort(sortByItem('timestamp'))
+      const _replying = [...replying1, ...replying2]
+
+      if (consultationStatus === '0') {
+        dispatch(action(TYPES.GET_CONSULTATION_DATA, {
+          newCons
+        }))
+      } else if (consultationStatus === '1') {
+        dispatch(action(TYPES.GET_CONSULTATION_DATA, {
+          replying: _replying
+        }))
+      } else if (consultationStatus === '2') {
+        dispatch(action(TYPES.GET_CONSULTATION_DATA, {
+          finished
+        }))
+      } else {
+        dispatch(action(TYPES.GET_CONSULTATION_DATA, {
+          newCons,
+          replying: _replying,
+          finished
+        }))
+        Taro.hideLoading()
+      }
     }, err => {
       Taro.hideLoading()
     });

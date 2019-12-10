@@ -112,6 +112,18 @@ class Mine extends Component {
     })
   }
 
+  toService() {
+    Taro.navigateTo({
+      url: '/pages/Service/Service'
+    })
+  }
+
+  toAgreement() {
+    Taro.navigateTo({
+      url: '/pages/Agreement/Agreement'
+    })
+  }
+
   render () {
     const { mine } = this.props
     let authenticatedIcon = ''
@@ -175,6 +187,7 @@ class Mine extends Component {
               extraText=''
               arrow='right'
               thumb={SERVICE}
+              onClick={this.toService.bind(this)}
             />
           </AtList>
         </View>
@@ -184,6 +197,7 @@ class Mine extends Component {
               title='使用协议'
               arrow='right'
               thumb={AG}
+              onClick={this.toAgreement.bind(this)}
             />
             <AtListItem
               title='设置'

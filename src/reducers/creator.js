@@ -5,11 +5,15 @@ import * as STATES from './initialState'
 export const consultation = (state = STATES.CONSULTATION, action) => {
   switch (action.type) {
     case TYPES.GET_CONSULTATION_DATA:
+      // return {
+      //   ...state,
+      //   newCons: action.data.newCons,
+      //   replying: action.data.replying,
+      //   finished: action.data.finished
+      // }
       return {
         ...state,
-        newCons: action.data.newCons,
-        replying: action.data.replying,
-        finished: action.data.finished
+        ...action.data
       }
     case TYPES.SWIPER_CHANGE_INDEX:
       return {

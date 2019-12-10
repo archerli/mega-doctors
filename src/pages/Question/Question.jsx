@@ -44,6 +44,7 @@ class Question extends Component {
     super(...arguments)
     this.state = {
       isLoading: true,
+      isInvalid: false,
       isFinished: false,
       status: '',
       startTime: 0,
@@ -128,7 +129,7 @@ class Question extends Component {
     const doctorid = Taro.getStorageSync('doctorid')
     await this.getAvatar(params.patientId, doctorid)
     await this.getConsultation(params.questionId)
-    const { startTime, endTime, pAvatar, dAvatar, isFinished } = this.state
+    const { startTime, endTime, pAvatar, dAvatar, isFinished, status } = this.state
     const { question } = this.props
     console.log(startTime, endTime)
     const realtime = new Realtime({
@@ -206,27 +207,39 @@ class Question extends Component {
             const consultation = AV.Object.createWithoutData('Consultation', params.questionId)
             consultation.set('endAt', new Date().getTime())
             consultation.set('status', '2')
+            if (status === '0') consultation.set('isInvalid', true)
             consultation.set('lastMessage', msgList.length ? msgList[msgList.length - 1].content : '')
             consultation.save().then(res => {
-              const query = new AV.Query('DoctorPatientRelation');
-              query.equalTo('idDoctor', AV.Object.createWithoutData('Doctor', doctorid));
-              query.equalTo('idPatient', AV.Object.createWithoutData('Patients', params.patientId));
-              query.find().then(r => {
-                console.log(r);
-                const relationId = r[0].id
-                const credit = r[0].get('credit')
-                const relation = AV.Object.createWithoutData('DoctorPatientRelation', relationId)
-                relation.set('credit', credit + 15)
-                relation.save().then(res => {
-                  Taro.showToast({
-                    title: '本次咨询已失效',
-                    icon: 'none'
-                  })
-                  this.setState({
-                    isFinished: true
+              if (status === '0') {
+                Taro.showToast({
+                  title: '本次咨询已失效',
+                  icon: 'none'
+                })
+                this.setState({
+                  isInvalid: true,
+                  isFinished: true
+                })
+              } else {
+                const query = new AV.Query('DoctorPatientRelation');
+                query.equalTo('idDoctor', AV.Object.createWithoutData('Doctor', doctorid));
+                query.equalTo('idPatient', AV.Object.createWithoutData('Patients', params.patientId));
+                query.find().then(r => {
+                  console.log(r);
+                  const relationId = r[0].id
+                  const credit = r[0].get('credit')
+                  const relation = AV.Object.createWithoutData('DoctorPatientRelation', relationId)
+                  relation.set('credit', credit + 15)
+                  relation.save().then(res => {
+                    Taro.showToast({
+                      title: '本次咨询已结束',
+                      icon: 'none'
+                    })
+                    this.setState({
+                      isFinished: true
+                    })
                   })
                 })
-              })
+              }
             }, err => {
               console.log(err)
             })
@@ -328,6 +341,7 @@ class Question extends Component {
         const startTime = res.get('startAt')
         const endTime = res.get('endAt') || new Date().getTime()
         this.setState({
+          isInvalid: res.get('isInvalid'),
           isFinished: status === '2',
           status,
           startTime,
@@ -489,10 +503,10 @@ class Question extends Component {
   }
 
   endQuestion() {
-    const { isFinished, msgList } = this.state
+    const { isFinished, isInvalid, msgList } = this.state
     if (isFinished) {
       return Taro.showToast({
-        title: '本次咨询已结束',
+        title: isInvalid ? '本次咨询已失效' : '本次咨询已结束',
         icon: 'none'
       })
     }
@@ -549,7 +563,7 @@ class Question extends Component {
   render () {
     const { tag, reportList } = this.props.question
     const { params } = this.$router
-    const { showRemark, msgList, scrollIntoView, inputValue } = this.state
+    const { msgList, scrollIntoView, inputValue, isFinished, isInvalid } = this.state
     const tagRange = ['无', '轻度', '中度', '重度']
     const reports = reportList.map(item => `${item.date} ODI ${item.ODI} 最低${item.minO2}%`)
     return (
@@ -608,8 +622,8 @@ class Question extends Component {
             ))
           }
           {
-            this.state.isFinished &&
-            <AtDivider content='本次咨询已结束' fontColor='#E94F4F' lineColor='#E94F4F' />
+            isFinished &&
+            <AtDivider content={isInvalid ? '本次咨询已失效' : '本次咨询已结束'} fontColor='#E94F4F' lineColor='#E94F4F' />
           }
           <View style='height: 1px;'></View> {/* 下边距在 ScrollView 中不显示，使用一个 1px 的元素占位 */}
         </ScrollView>
@@ -617,7 +631,7 @@ class Question extends Component {
           <Button onClick={this.endQuestion.bind(this)}>结束</Button>
           <Input
             type='text'
-            disabled={this.state.isFinished}
+            disabled={isFinished}
             confirmHold={true}
             // adjustPosition={false}
             value={inputValue}
