@@ -26,8 +26,7 @@
     Button {
       margin: 140px 0;
       width: 360px;
-      height: 80px;
-      line-height: 80px;
+      height: 84px;
       border: 2px solid #1AAD19;
       border-radius: 10px;
       background: #ffffff;
@@ -36,7 +35,6 @@
     }
     Button.login {
       background: #1AAD19;
-      border: 1px solid #1AAD19;
       color: #ffffff;
     }
   }

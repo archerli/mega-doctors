@@ -38,7 +38,8 @@ class Service extends Component {
       inputValue: '',
       pAvatar: DEFAULT_P,
       dAvatar: DEFAULT_D,
-      msgList: []
+      msgList: [],
+      imgList: []
     }
   }
 
@@ -101,18 +102,25 @@ class Service extends Component {
         const data = result
         console.log(data)
         const msgList = []
+        const imgList = []
         data.forEach(item => {
+          const content = item.content || {}
+          const type = content._lctype // -1文本 -2图片
+          if (type === -2) {
+            imgList.push(content._lcfile && content._lcfile.url)
+          }
           msgList.push({
             timestamp: item._timestamp.getTime(),
             time: utils.formatTime(item._timestamp.getTime(), 'yyyy/MM/dd HH:mm'),
             from: item.from === doctorid ? 'self' : 'other',
             icon: item.from === doctorid ? dAvatar : pAvatar,
-            type: 'text',
-            content: item.content._lctext
+            type: type === -2 ? 'image' : 'text',
+            content: type === -2 ? content._lcfile && content._lcfile.url : content._lctext
           })
         });
         this.setState({
           msgList,
+          imgList,
           scrollIntoView: `last-${msgList.length - 1}`
         }, () => {
           Taro.hideLoading()
@@ -120,17 +128,23 @@ class Service extends Component {
           conversation.on('message', message => {
             console.log('接收到新消息')
             console.log(message)
-            if (message.content && message.content._lctext) {
-              const { msgList } = this.state
+            const content = message.content || {}
+            const type = content._lctype // -1文本 -2图片
+            if (type === -1 || type === -2) {
+              const { msgList, imgList } = this.state
+              if (type === -2) {
+                imgList.push(content._lcfile && content._lcfile.url)
+              }
               msgList.push({
                 time: utils.formatTime(message._timestamp.getTime(), 'yyyy/MM/dd HH:mm'),
                 from: message.from === doctorid ? 'self' : 'other',
                 icon: message.from === doctorid ? dAvatar : pAvatar,
-                type: 'text',
-                content: message.content._lctext
+                type: type === -2 ? 'image' : 'text',
+                content: type === -2 ? content._lcfile && content._lcfile.url : content._lctext
               })
               this.setState({
                 msgList,
+                imgList,
                 scrollIntoView: `last-${msgList.length - 1}`
               })
             }
@@ -234,11 +248,19 @@ class Service extends Component {
     });
   }
 
+  previewImage(urls, current) {
+    Taro.previewImage({
+      urls,
+      current
+    })
+  }
+
   render () {
     const { params } = this.$router
-    const { msgList, scrollIntoView, inputValue } = this.state
+    const { msgList, imgList, scrollIntoView, inputValue } = this.state
     return (
       <View className='service'>
+        <View className='msg-title'>周一至周五 9:30~18:30 在线，其他时间请留言</View>
         <ScrollView
           className='msg'
           scrollY
@@ -247,7 +269,6 @@ class Service extends Component {
           scrollIntoView={scrollIntoView}
         >
           <View style='height: 1px;'></View> {/* 上边距在 ScrollView 不满一屏时滚动，使用一个 1px 的元素占位 */}
-          <View className='msg-title'>周一~周五 9:30~18:30 在线，其他时间请留言</View>
           {
             msgList.map((item, index) => (
               <MsgItem
@@ -259,7 +280,7 @@ class Service extends Component {
                 icon={item.icon}
                 type={item.type}
                 content={item.content}
-                previewImage={item.previewImage || (() => {})}
+                previewImage={this.previewImage.bind(this, imgList, item.content)}
               />
             ))
           }
@@ -271,7 +292,7 @@ class Service extends Component {
             confirmHold={true}
             // adjustPosition={false}
             value={inputValue}
-            placeholder=''
+            placeholder='在此输入您的问题'
             confirmType='send'
             onInput={this.inputMsg.bind(this)}
             onConfirm={this.sendMsg.bind(this)}

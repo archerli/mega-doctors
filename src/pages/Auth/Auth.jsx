@@ -113,6 +113,20 @@ class Auth extends Component {
     }
   }
 
+  toAgreement1() {
+    const url = 'https://megahealth.cn/mega-doctor-ag/DoctorAgreements.html'
+    Taro.navigateTo({
+      url: `/pages/Webview/Webview?url=${encodeURIComponent(url)}`
+    })
+  }
+
+  toAgreement2() {
+    const url = 'https://megahealth.cn/mega-doctor-ag/PrivacyPrivacy.html'
+    Taro.navigateTo({
+      url: `/pages/Webview/Webview?url=${encodeURIComponent(url)}`
+    })
+  }
+
   render () {
     return (
       <View className='auth'>
@@ -129,9 +143,9 @@ class Auth extends Component {
         </View>
         <View className='ag'>
           登录视为您同意《
-          <Text>用户协议</Text>
+          <Text onClick={this.toAgreement1.bind(this)}>用户协议</Text>
           》和《
-          <Text>隐私条款</Text>
+          <Text onClick={this.toAgreement2.bind(this)}>隐私条款</Text>
           》
         </View>
       </View>

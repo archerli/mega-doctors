@@ -53,7 +53,9 @@ export const getConsultationData = (conversations, consultationStatus) => {
           for (let i = 0; i < conversations.length; i++) {
             const c = conversations[i]
             if (c.members.indexOf(patientId) > -1) {
-              desc = c.lastMessage && c.lastMessage.content && c.lastMessage.content._lctext || ''
+              const type = c.lastMessage && c.lastMessage.content && c.lastMessage.content._lctype
+              if (type === -1) desc = c.lastMessage && c.lastMessage.content && c.lastMessage.content._lctext || ''
+              if (type === -2) desc = '[图片]'
               from = c.lastMessage && c.lastMessage.from
               time = c._lastMessageAt.getTime()
               break
