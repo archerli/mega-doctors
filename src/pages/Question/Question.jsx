@@ -159,19 +159,28 @@ class Question extends Component {
         });
         this.setState({
           msgList,
-          imgList,
-          scrollIntoView: `last-${msgList.length - 1}`
+          imgList
         }, () => {
-          Taro.hideLoading()
+          setTimeout(() => {
+            Taro.hideLoading()
+            this.setState({
+              scrollIntoView: `last-${msgList.length - 1}`
+            })
+          }, 300)
 
           const restTime = 24 * 60 * 60 * 1000 - (new Date().getTime() - msgList[msgList.length - 1].timestamp)
           //////////
           if (!isFinished && restTime <= 0) {
+            let lastMessage = ''
+            if (msgList.length) {
+              const last = msgList[msgList.length - 1]
+              lastMessage = last.type === 'image' ? '[图片]' : last.content
+            }
             const consultation = AV.Object.createWithoutData('Consultation', params.questionId)
             consultation.set('endAt', new Date().getTime())
             consultation.set('status', '2')
             if (status === '0') consultation.set('isInvalid', true)
-            consultation.set('lastMessage', msgList.length ? msgList[msgList.length - 1].content : '')
+            consultation.set('lastMessage', lastMessage)
             consultation.save().then(res => {
               if (status === '0') {
                 Taro.showToast({
@@ -380,11 +389,16 @@ class Question extends Component {
     // const { isFinished, msgList } = this.state
     // if (!isFinished && (24 * 60 * 60 * 1000 - (new Date().getTime() - msgList[msgList.length - 1].timestamp)) <= 0) {
     //   const { params } = this.$router
+    //   let lastMessage = ''
+    //   if (msgList.length) {
+    //     const last = msgList[msgList.length - 1]
+    //     lastMessage = last.type === 'image' ? '[图片]' : last.content
+    //   }
     //   const doctorid = Taro.getStorageSync('doctorid')
     //   const consultation = AV.Object.createWithoutData('Consultation', params.questionId)
     //   consultation.set('endAt', new Date().getTime())
     //   consultation.set('status', '2')
-    //   consultation.set('lastMessage', msgList.length ? msgList[msgList.length - 1].content : '')
+    //   consultation.set('lastMessage', lastMessage)
     //   consultation.save().then(res => {
     //     const query = new AV.Query('DoctorPatientRelation');
     //     query.equalTo('idDoctor', AV.Object.createWithoutData('Doctor', doctorid));
@@ -490,10 +504,15 @@ class Question extends Component {
           })
           console.log('confirm')
           const { params } = this.$router
+          let lastMessage = ''
+          if (msgList.length) {
+            const last = msgList[msgList.length - 1]
+            lastMessage = last.type === 'image' ? '[图片]' : last.content
+          }
           const consultation = AV.Object.createWithoutData('Consultation', params.questionId)
           consultation.set('endAt', new Date().getTime())
           consultation.set('status', '2')
-          consultation.set('lastMessage', msgList.length ? msgList[msgList.length - 1].content : '')
+          consultation.set('lastMessage', lastMessage)
           consultation.save().then(res => {
             const doctorid = Taro.getStorageSync('doctorid')
             const query = new AV.Query('DoctorPatientRelation');

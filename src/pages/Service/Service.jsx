@@ -47,6 +47,10 @@ class Service extends Component {
     this.setState({
       dAvatar: this.props.mine.avatar
     })
+    Taro.showLoading({
+      title: '加载中...',
+      mask: true
+    })
   }
 
   async componentDidMount() {
@@ -120,10 +124,14 @@ class Service extends Component {
         });
         this.setState({
           msgList,
-          imgList,
-          scrollIntoView: `last-${msgList.length - 1}`
+          imgList
         }, () => {
-          Taro.hideLoading()
+          setTimeout(() => {
+            Taro.hideLoading()
+            this.setState({
+              scrollIntoView: `last-${msgList.length - 1}`
+            })
+          }, 300)
           // 房间接受消息
           conversation.on('message', message => {
             console.log('接收到新消息')
