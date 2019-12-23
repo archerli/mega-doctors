@@ -55,6 +55,7 @@ class Question extends Component {
       inputValue: '',
       pAvatar: DEFAULT_P,
       dAvatar: DEFAULT_D,
+      doctorName: '',
       msgList: [],
       imgList: []
     }
@@ -296,7 +297,8 @@ class Question extends Component {
       doctor.get(doctorId).then(res => {
         console.log('doctor', res)
         this.setState({
-          dAvatar: res.get('avatar') && res.get('avatar').get('url') || DEFAULT_D
+          dAvatar: res.get('avatar') && res.get('avatar').get('url') || DEFAULT_D,
+          doctorName: res.get('name')
         }, () => {
           resolve()
         })
@@ -426,7 +428,10 @@ class Question extends Component {
     //////////
 
     // 发送消息
-    const { dAvatar } = this.state
+    const { dAvatar, doctorName } = this.state
+    const { question } = this.props
+    console.log(doctorName)
+    console.log(question.phone)
     this.conversation.send(new TextMessage(value)).then(message => {
       console.log('消息发送成功');
       const { status, msgList } = this.state
@@ -434,7 +439,22 @@ class Question extends Component {
         const { params } = this.$router
         const consultation = AV.Object.createWithoutData('Consultation', params.questionId)
         consultation.set('status', '1')
-        consultation.save()
+        consultation.save().then(res => {
+          this.setState({
+            status: '1'
+          })
+        })
+
+        AV.Cloud.requestSmsCode({
+          mobilePhoneNumber: question.phone,
+          template: '医生回复新咨询通知',
+          sign: '兆观科技',
+          name: '兆观科技',
+          doctorName
+        }).then(() => {
+          console.log('send message success!');
+        });
+
       }
       msgList.push({
         time: utils.formatTime(new Date().getTime(), 'yyyy/MM/dd HH:mm'),

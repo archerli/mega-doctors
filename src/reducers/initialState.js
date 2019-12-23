@@ -12,6 +12,7 @@ export const CONSULTATION = {
 export const QUESTION = {
   relationId: null,
   tag: {"osahs":"0","cobp":"0","gxb":"0","tnb":"0","gxy":"0"},
+  phone: '',
   patientId: null,
   reportList: []
 }

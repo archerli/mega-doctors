@@ -32,7 +32,8 @@ export const question = (state = STATES.QUESTION, action) => {
       return {
         ...state,
         relationId: action.data.relationId,
-        tag: action.data.tag
+        tag: action.data.tag,
+        phone: action.data.phone
       }
     case TYPES.GET_PATIENT_REPORT_LIST:
       return {
