@@ -177,7 +177,7 @@ class Index extends Component {
     const haveTappedIndexTab = Taro.getStorageSync('haveTappedIndexTab')
     if (haveTappedIndexTab) {
       console.log('componentDidShow')
-      this.getData()
+      if (this.client) this.getData()
     }
   }
 

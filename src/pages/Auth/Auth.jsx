@@ -36,50 +36,66 @@ class Auth extends Component {
         url: '../Index/Index'
       })
     }
+    wx.cloud.init()
   }
 
-  login() {
-    Taro.login({
-      success(res) {
-        if (res.code) {
-          Taro.request({
-            url: 'https://wxapi.zangtengfei.com/onLogin',
-            data: {
-              code: res.code
-            },
-            success(res) {
-              console.log(res.data)
-              const openid = res.data.openid
-              Taro.setStorageSync('openid', openid)
-              // 查询医生用户，已有
-              var query = new AV.Query('Doctor')
-              query.equalTo('openid', openid)
-              query.find().then(res => {
-                console.log(res)
-                if (res.length) {
-                  Taro.setStorageSync('doctorid', res[0].id)
-                } else {
-                  const Doctor = AV.Object.extend('Doctor')
-                  const doctor = new Doctor()
-                  doctor.set('openid', openid)
-                  doctor.set('authenticated', '0')
-                  doctor.save().then(d => {
-                    Taro.setStorageSync('doctorid', d.id)
-                  })
-                }
-              })
-            }
-          })
-        } else {
-          console.log('登录失败！' + res.errMsg)
+  login(phoneNumber) {
+    return new Promise((resolve, reject) => {
+      Taro.login({
+        success(res) {
+          if (res.code) {
+            Taro.request({
+              url: 'https://wxapi.zangtengfei.com/onLogin',
+              data: {
+                code: res.code
+              },
+              success(res) {
+                console.log(res.data)
+                const openid = res.data.openid
+                Taro.setStorageSync('openid', openid)
+                // 查询医生用户，已有
+                var query = new AV.Query('Doctor')
+                query.equalTo('openid', openid)
+                query.find().then(res => {
+                  console.log(res)
+                  if (res.length) {
+                    Taro.setStorageSync('doctorid', res[0].id)
+                    resolve()
+                  } else {
+                    const Doctor = AV.Object.extend('Doctor')
+                    const doctor = new Doctor()
+                    doctor.set('openid', openid)
+                    doctor.set('authenticated', '0')
+                    if (phoneNumber) doctor.set('phone', phoneNumber)
+                    doctor.save().then(d => {
+                      Taro.setStorageSync('doctorid', d.id)
+                      resolve()
+                    }, err => {
+                      reject(err)
+                    })
+                  }
+                }, err => {
+                  reject(err)
+                })
+              },
+              fail(err) {
+                reject(err)
+              }
+            })
+          } else {
+            console.log('登录失败！' + res.errMsg)
+            reject(res)
+          }
+        },
+        fail(err) {
+          reject(err)
         }
-      }
+      })
     })
   }
 
   getUserInfo(e) {
     if (e.detail.errMsg === 'getUserInfo:ok') {
-      this.login();
       Taro.setStorageSync('userInfo', e.detail.userInfo)
       this.setState({
         haveUserInfo: true
@@ -94,22 +110,42 @@ class Auth extends Component {
     }
   }
 
-  getPhoneNumber(e) {
-    if (e.detail.errMsg === 'getPhoneNumber:ok') {
-      Taro.setStorageSync('havePhoneNumber', true)
-      Taro.reLaunch({
-        url: '../Index/Index'
+  async getPhoneNumber(e) {
+    Taro.showLoading({
+      title: '登录中...',
+      mask: true
+    })
+    try {
+      if (e.detail.errMsg === 'getPhoneNumber:ok') {
+        const cloudID = e.detail.cloudID
+        const res = await wx.cloud.callFunction({
+          name: 'login',
+          data: {
+            phoneData: wx.cloud.CloudID(cloudID)
+          }
+        })
+        const phoneData = res.result.event && res.result.event.phoneData
+        const phoneNumber = phoneData && phoneData.data && phoneData.data.phoneNumber
+        console.log(phoneNumber);
+        Taro.setStorageSync('havePhoneNumber', true)
+        await this.login(phoneNumber)
+        Taro.hideLoading()
+        Taro.reLaunch({
+          url: '../Index/Index'
+        })
+      } else {
+        await this.login()
+        Taro.hideLoading()
+        Taro.reLaunch({
+          url: '../Index/Index'
+        })
+      }
+    } catch(e) {
+      Taro.hideLoading()
+      Taro.showToast({
+        title: '登录失败，请重试',
+        icon: 'none'
       })
-    } else {
-      Taro.reLaunch({
-        url: '../Index/Index'
-      })
-      // Taro.showModal({
-      //   title: '提示',
-      //   content: '微信登录需要获取您的手机号，请点击授权',
-      //   showCancel: false,
-      //   confirmColor: '#1AAD19'
-      // });
     }
   }
 
