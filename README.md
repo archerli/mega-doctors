@@ -61,7 +61,7 @@
 | name     | String  | 姓名 |
 | gender   | String  | 性别 |
 | phone    | String  | 联系电话 |
-| icon     | File    | 头像 |
+| avatar | File    | 头像 |
 | hospital | String  | 所在医院 |
 | department | String | 所在科室 |
 | title    | String  | 职称 |
