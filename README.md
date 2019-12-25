@@ -78,6 +78,14 @@
 | phoneConsultingPrice | number | 电话咨询价格 |
 | isNormalConsultingOpen | boolean | 是否开启图文咨询 |
 | isPhoneConsultingOpen | boolean | 是否开启电话咨询 |
+| type | string | 类型 |
+| isHomePageShow | boolean | 是否推荐首页展示 |
+
+type：
+
+- 空：常规医生
+- 1：预约就诊
+- 2：快速提问
 
 ### Consultation
 
