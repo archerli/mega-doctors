@@ -71,6 +71,11 @@
 | startConsultation     | Boolean | 是否开启咨询 |
 | startConsultationTime | String  | 开启咨询时间 |
 | endConsultationTime   | String  | 结束咨询时间 |
+| description | string | 医生简介 |
+| normalConsultingPrice | number | 普通咨询价格 |
+| phoneConsultingPrice | number | 电话咨询价格 |
+| isNormalConsultingOpen | boolean | 是否开启图文咨询 |
+| isPhoneConsultingOpen | boolean | 是否开启电话咨询 |
 
 ### Consultation
 
@@ -121,9 +126,11 @@ type:
 | block | Boolean | 是否屏蔽 |
 | group | Array | 分组 |
 | credit | String | 贡献值 |
-<!-- | latestConsultationTime | String | 最近咨询时间 | -->
+| showFollowedDoctorCard | Boolean | 是否弹出最近关注的一位医生信息 |
 | latestConsultationId | String | 最近一次咨询的 id |
 | latestReportId | String | 最近一份报告的 id |
+
+<!-- | latestConsultationTime | String | 最近咨询时间 | -->
 
 group:
 
