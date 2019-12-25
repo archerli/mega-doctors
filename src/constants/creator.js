@@ -3,6 +3,7 @@ export const GET_CONSULTATION_NUM = '获取咨询列表数量'
 
 export const GET_DOCTOR_DATA = '获取医生信息'
 export const CHANGE_DOCTOR_NAME = '修改医生姓名'
+export const CHANGE_DOCTOR_AVATAR = '修改医生头像'
 export const CHANGE_DOCTOR_DATA = '修改医生信息'
 export const CHANGE_DOCTOR_SETTING = '修改医生设置'
 

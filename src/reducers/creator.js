@@ -5,11 +5,15 @@ import * as STATES from './initialState'
 export const consultation = (state = STATES.CONSULTATION, action) => {
   switch (action.type) {
     case TYPES.GET_CONSULTATION_DATA:
+      // return {
+      //   ...state,
+      //   newCons: action.data.newCons,
+      //   replying: action.data.replying,
+      //   finished: action.data.finished
+      // }
       return {
         ...state,
-        newCons: action.data.newCons,
-        replying: action.data.replying,
-        finished: action.data.finished
+        ...action.data
       }
     case TYPES.SWIPER_CHANGE_INDEX:
       return {
@@ -28,7 +32,8 @@ export const question = (state = STATES.QUESTION, action) => {
       return {
         ...state,
         relationId: action.data.relationId,
-        tag: action.data.tag
+        tag: action.data.tag,
+        phone: action.data.phone
       }
     case TYPES.GET_PATIENT_REPORT_LIST:
       return {
@@ -149,7 +154,12 @@ export const mine = (state = STATES.MINE, action) => {
     case TYPES.CHANGE_DOCTOR_NAME:
       return {
         ...state,
-        ...action.data
+        name: action.data.name
+      }
+    case TYPES.CHANGE_DOCTOR_AVATAR:
+      return {
+        ...state,
+        avatar: action.data.avatar
       }
     case TYPES.GET_CONSULTATION_NUM:
       return {
@@ -185,6 +195,11 @@ export const myInfo = (state = STATES.MY_INFO, action) => {
       return {
         ...state,
         ...action.data
+      }
+    case TYPES.CHANGE_DOCTOR_AVATAR:
+      return {
+        ...state,
+        avatar: action.data.avatar
       }
     default:
       return state

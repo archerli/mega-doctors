@@ -21,13 +21,15 @@ export const swiperChange = (type, current) => {
 }
 
 // 获取咨询列表数据
-export const getConsultationData = conversations => {
+export const getConsultationData = (conversations, consultationStatus) => {
   return dispatch => {
     console.log('action.conversations', conversations)
+    console.log('action.consultationStatus', consultationStatus)
     const doctorid = Taro.getStorageSync('doctorid')
     const query = new AV.Query('Consultation');
     query.descending('endAt');
     query.equalTo('idDoctor', AV.Object.createWithoutData('Doctor', doctorid));
+    if (consultationStatus) query.equalTo('status', consultationStatus);
     query.include('idDoctor');
     query.include('idPatient');
     query.include('idRelation');
@@ -51,16 +53,18 @@ export const getConsultationData = conversations => {
           for (let i = 0; i < conversations.length; i++) {
             const c = conversations[i]
             if (c.members.indexOf(patientId) > -1) {
-              desc = c.lastMessage && c.lastMessage.content && c.lastMessage.content._lctext || ''
+              const type = c.lastMessage && c.lastMessage.content && c.lastMessage.content._lctype
+              if (type === -1) desc = c.lastMessage && c.lastMessage.content && c.lastMessage.content._lctext || ''
+              if (type === -2) desc = '[图片]'
               from = c.lastMessage && c.lastMessage.from
               time = c._lastMessageAt.getTime()
               break
             }
           }
           console.log(desc)
-          // const restMin = parseInt((24 * 60 * 60 * 1000 - (new Date().getTime() - time)) / 1000 / 60)
+          const restMin = parseInt((24 * 60 * 60 * 1000 - (new Date().getTime() - time)) / 1000 / 60)
           // for test
-          const restMin = parseInt((2 * 60 * 60 * 1000 - (new Date().getTime() - time)) / 1000 / 60)
+          // const restMin = parseInt((2 * 60 * 60 * 1000 - (new Date().getTime() - time)) / 1000 / 60)
           endHour = parseInt(restMin / 60)
           endMin = restMin % 60
           if (endHour < 0) endHour = 0
@@ -94,6 +98,7 @@ export const getConsultationData = conversations => {
               isVip: false,
               icon: patient && patient.get('avatar') && patient.get('avatar').get('url') || '',
               tag: _tag,
+              timestamp: time,
               time: utils.formatTime(time, 'yyyy/MM/dd HH:mm'),
               desc,
               source: _source,
@@ -110,6 +115,7 @@ export const getConsultationData = conversations => {
               isVip: false,
               icon: patient && patient.get('avatar') && patient.get('avatar').get('url') || '',
               tag: _tag,
+              timestamp: time,
               time: utils.formatTime(time, 'yyyy/MM/dd HH:mm'),
               desc,
               source: _source,
@@ -136,12 +142,46 @@ export const getConsultationData = conversations => {
             break
         }
       });
-      dispatch(action(TYPES.GET_CONSULTATION_DATA, {
-        newCons,
-        replying,
-        finished
-      }))
-      Taro.hideLoading()
+
+      function sortByItem(itemName) {
+        return function (object1, object2) {
+          var value1 = object1[itemName];
+          var value2 = object2[itemName];
+          return value2 - value1
+        }
+      }
+      // 新咨询和回复中 排序
+      newCons.sort(sortByItem('timestamp'))
+      const replying1 = []
+      const replying2 = []
+      replying.forEach(item => {
+        if (item.lastMsgFrom === 'other') replying1.push(item)
+        if (item.lastMsgFrom === 'self') replying2.push(item)
+      })
+      replying1.sort(sortByItem('timestamp'))
+      replying2.sort(sortByItem('timestamp'))
+      const _replying = [...replying1, ...replying2]
+
+      if (consultationStatus === '0') {
+        dispatch(action(TYPES.GET_CONSULTATION_DATA, {
+          newCons
+        }))
+      } else if (consultationStatus === '1') {
+        dispatch(action(TYPES.GET_CONSULTATION_DATA, {
+          replying: _replying
+        }))
+      } else if (consultationStatus === '2') {
+        dispatch(action(TYPES.GET_CONSULTATION_DATA, {
+          finished
+        }))
+      } else {
+        dispatch(action(TYPES.GET_CONSULTATION_DATA, {
+          newCons,
+          replying: _replying,
+          finished
+        }))
+        Taro.hideLoading()
+      }
     }, err => {
       Taro.hideLoading()
     });
@@ -365,7 +405,8 @@ export const getPatientReportList = (patientId, showLoading = false) => {
     query.select([
       'minO2',
       'downIndex',
-      'duration'
+      'duration',
+      'downTimes'
     ]);
     query.count()
     query.find().then(res => {
@@ -377,7 +418,8 @@ export const getPatientReportList = (patientId, showLoading = false) => {
           minO2: item.get('minO2') && item.get('minO2').toFixed(1),
           ODI: item.get('downIndex') && item.get('downIndex').toFixed(1),
           date: utils.formatTime(item.createdAt.getTime(), 'yyyy-MM-dd'),
-          duration: item.get('duration')
+          duration: item.get('duration'),
+          downTimes: item.get('downTimes')
         })
       })
       // 同一天多份报告取时间最长的一份

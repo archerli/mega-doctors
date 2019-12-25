@@ -49,7 +49,9 @@ class App extends Component {
       'pages/QRCode/QRCode',
       'pages/Auth/Auth',
       'pages/Setting/Setting',
-      'pages/ReportList/ReportList'
+      'pages/ReportList/ReportList',
+      'pages/Service/Service',
+      'pages/Agreement/Agreement'
     ],
     window: {
       backgroundTextStyle: 'light',

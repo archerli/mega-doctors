@@ -4,13 +4,17 @@ import { connect } from '@tarojs/redux'
 import AV from 'leancloud-storage/dist/av-weapp-min.js'
 import WeCropper from '../../common/we-cropper.min.js'
 
-import { getDoctorData } from '../../actions/creator'
+import { action, getDoctorData } from '../../actions/creator'
+import { CHANGE_DOCTOR_AVATAR } from '../../constants/creator'
 
 import './Avatar.scss'
 
 @connect(({}) => ({
 
 }), (dispatch) => ({
+  action(type, data) {
+    dispatch(action(type, data))
+  },
   getDoctorData() {
     dispatch(getDoctorData())
   }
@@ -113,14 +117,21 @@ class Avatar extends Component {
       const _file = await file.save()
       const doctor = AV.Object.createWithoutData('Doctor', doctorid)
       doctor.set('avatar', _file)
-      await doctor.save()
+      const avatar = await doctor.save()
+      console.log('avatar', avatar.get('avatar') && avatar.get('avatar').get('url'))
       Taro.hideLoading()
       Taro.showToast({
-        title: '上传成功'
+        title: '上传成功',
+        duration: 1500
       })
       // 上传成功后重新获取数据并返回
-      this.props.getDoctorData()
-      Taro.navigateBack()
+      // this.props.getDoctorData()
+      this.props.action(CHANGE_DOCTOR_AVATAR, {
+        avatar: avatar.get('avatar') && avatar.get('avatar').get('url')
+      })
+      setTimeout(() => {
+        Taro.navigateBack()
+      }, 1500)
     } catch(e) {
       Taro.hideLoading()
       Taro.showToast({

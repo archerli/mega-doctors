@@ -65,9 +65,11 @@
 | hospital | String  | 所在医院 |
 | department | String | 所在科室 |
 | title    | String  | 职称 |
-| authenticated | String | 是否认证，0：否，1：是，2：认证中 |
-| certificate   | File    | 医师资格证 |
-| licence  | File    | 医生执业证 |
+| authenticated | String | 是否认证，0：否，1：是，2：认证中，3：未通过 |
+| certificate1   | File    | 医师资格证 |
+| certificate2   | File    | 医师资格证 |
+| licence1  | File    | 医生执业证 |
+| licence2  | File    | 医生执业证 |
 | startConsultation     | Boolean | 是否开启咨询 |
 | startConsultationTime | String  | 开启咨询时间 |
 | endConsultationTime   | String  | 结束咨询时间 |
@@ -86,6 +88,7 @@
 | idPatient | Pointer | 关联患者     |
 | idRelation | Pointer | 关联医患关系 |
 | status   | String  | 咨询状态 |
+| isInvalid | Boolean | 咨询是否失效 |
 | idDialog | Pointer | 对话列表（IM系统，关联单次会话ID） |
 | latestReportId | String | 最近一份报告id |
 

@@ -38,24 +38,34 @@
   .licence-img {
     background: #FFFFFF;
     padding: 30px 40px;
-    position: relative;
+    display: flex;
+    View.img {
+      position: relative;
+      margin-right: 40px;
+      View.preview {
+        position: absolute;
+        left: 0;
+        bottom: 0;
+        width: 120px;
+        height: 30px;
+        background: rgba(0, 0, 0, 0.6);
+        font-size: 20px;
+        color: #ffffff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      View.icon {
+        position: absolute;
+        right: 0;
+        top: 0;
+        transform: translate(50%, -50%)
+      }
+    }
     Image {
       display: block;
       width: 120px;
       height: 120px;
-    }
-    View {
-      position: absolute;
-      left: 40px;
-      bottom: 30px;
-      width: 120px;
-      height: 30px;
-      background: rgba(0, 0, 0, 0.6);
-      font-size: 20px;
-      color: #ffffff;
-      display: flex;
-      align-items: center;
-      justify-content: center;
     }
   }
   .btn {

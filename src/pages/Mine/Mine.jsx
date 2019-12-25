@@ -1,11 +1,14 @@
 import Taro, { Component } from '@tarojs/taro'
-import { View, Button, Text } from '@tarojs/components'
+import { View, Button, Text, Switch } from '@tarojs/components'
 import { connect } from '@tarojs/redux'
 import { AtAvatar, AtList, AtListItem, AtIcon } from "taro-ui"
 
 import { getDoctorData, getConsultationNum, getDoctorPatientNumAndCredit } from '../../actions/creator'
 
-import AUTH from '../../assets/auth.png'
+import AUTH_0 from '../../assets/auth-0.png'
+import AUTH_1 from '../../assets/auth-1.png'
+import AUTH_2 from '../../assets/auth-2.png'
+import AUTH_3 from '../../assets/auth-3.png'
 import INVITE from '../../assets/invite.png'
 import SERVICE from '../../assets/service.png'
 import AG from '../../assets/ag.png'
@@ -66,6 +69,13 @@ class Mine extends Component {
   }
 
   toDoctorAuth() {
+    const { mine } = this.props
+    if (!mine.name) {
+      return Taro.showToast({
+        title: '请先完善个人资料',
+        icon: 'none'
+      })
+    }
     Taro.navigateTo({
       url: '/pages/DoctorAuth/DoctorAuth'
     })
@@ -102,8 +112,37 @@ class Mine extends Component {
     })
   }
 
+  toService() {
+    Taro.navigateTo({
+      url: '/pages/Service/Service'
+    })
+  }
+
+  toAgreement() {
+    Taro.navigateTo({
+      url: '/pages/Agreement/Agreement'
+    })
+  }
+
   render () {
     const { mine } = this.props
+    let authenticatedIcon = ''
+    switch(mine.authenticated) {
+      case '0':
+        authenticatedIcon = AUTH_0
+        break
+      case '1':
+        authenticatedIcon = AUTH_1
+        break
+      case '2':
+        authenticatedIcon = AUTH_2
+        break
+      case '3':
+        authenticatedIcon = AUTH_3
+        break
+      default:
+        break
+    }
     return (
       <View className='mine'>
         <View className='info'>
@@ -113,10 +152,7 @@ class Mine extends Component {
           <View className='info-2'>
             <View className='name'>
               <Text onClick={this.toMyInfo.bind(this)}>{mine.name || '请完善资料'}</Text>
-              {
-                mine.authenticated === '1' &&
-                <Image src={AUTH} onClick={this.toDoctorAuth.bind(this)} />
-              }
+              <Image src={authenticatedIcon} onClick={this.toDoctorAuth.bind(this)} />
             </View>
             <View>兆观号：{mine.megaId}</View>
           </View>
@@ -151,6 +187,7 @@ class Mine extends Component {
               extraText=''
               arrow='right'
               thumb={SERVICE}
+              onClick={this.toService.bind(this)}
             />
           </AtList>
         </View>
@@ -160,6 +197,7 @@ class Mine extends Component {
               title='使用协议'
               arrow='right'
               thumb={AG}
+              onClick={this.toAgreement.bind(this)}
             />
             <AtListItem
               title='设置'

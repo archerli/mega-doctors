@@ -44,6 +44,7 @@ class Question extends Component {
     super(...arguments)
     this.state = {
       isLoading: true,
+      isInvalid: false,
       isFinished: false,
       status: '',
       startTime: 0,
@@ -54,52 +55,9 @@ class Question extends Component {
       inputValue: '',
       pAvatar: DEFAULT_P,
       dAvatar: DEFAULT_D,
-      msgList: [
-        // {
-        //   time: '2018/10/23 18:00',
-        //   from: 'other',
-        //   icon: QING,
-        //   type: 'text',
-        //   content: '张医生您好张医生您好张医生您好张医生您好张医生您好张医生您好张医生您好张医生您好'
-        // },
-        // {
-        //   time: '2018/10/23 18:10',
-        //   from: 'other',
-        //   icon: QING,
-        //   type: 'text',
-        //   content: '张医生您好'
-        // },
-        // {
-        //   time: '2018/10/23 18:20',
-        //   from: 'other',
-        //   icon: QING,
-        //   type: 'image',
-        //   content: 'http://megahealth.cn/asset/home/01.jpg',
-        //   previewImage: this.previewImage.bind(this, ['http://megahealth.cn/asset/home/01.jpg', 'http://megahealth.cn/asset/ring/pic_02.jpg'], 'http://megahealth.cn/asset/home/01.jpg')
-        // },
-        // {
-        //   time: '2018/10/23 18:20',
-        //   from: 'other',
-        //   icon: QING,
-        //   type: 'image',
-        //   content: 'http://megahealth.cn/asset/ring/pic_02.jpg',
-        //   previewImage: this.previewImage.bind(this, ['http://megahealth.cn/asset/home/01.jpg', 'http://megahealth.cn/asset/ring/pic_02.jpg'], 'http://megahealth.cn/asset/ring/pic_02.jpg')
-        // },
-        // {
-        //   time: '2018/10/23 18:30',
-        //   from: 'other',
-        //   icon: QING,
-        //   type: 'link',
-        //   content: 'https%3A%2F%2Fyl-dev.megahealth.cn%2F%23%2Fhome%2Freport%2F5db0cd8fba39c80071bb5c02%3Ftype%3DnoLogo'
-        // },
-        // {
-        //   time: '2018/10/23 19:00',
-        //   from: 'self',
-        //   icon: CLOCK,
-        //   type: 'text',
-        //   content: '好的'
-        // }
-      ]
+      doctorName: '',
+      msgList: [],
+      imgList: []
     }
   }
 
@@ -128,7 +86,7 @@ class Question extends Component {
     const doctorid = Taro.getStorageSync('doctorid')
     await this.getAvatar(params.patientId, doctorid)
     await this.getConsultation(params.questionId)
-    const { startTime, endTime, pAvatar, dAvatar, isFinished } = this.state
+    const { startTime, endTime, pAvatar, dAvatar, isFinished, status } = this.state
     const { question } = this.props
     console.log(startTime, endTime)
     const realtime = new Realtime({
@@ -184,49 +142,77 @@ class Question extends Component {
         const data = result
         console.log(data)
         const msgList = []
+        const imgList = []
         data.forEach(item => {
+          const content = item.content || {}
+          const type = content._lctype // -1文本 -2图片
+          if (type === -2) {
+            imgList.push(content._lcfile && content._lcfile.url)
+          }
           msgList.push({
             timestamp: item._timestamp.getTime(),
             time: utils.formatTime(item._timestamp.getTime(), 'yyyy/MM/dd HH:mm'),
             from: item.from === doctorid ? 'self' : 'other',
             icon: item.from === doctorid ? dAvatar : pAvatar,
-            type: 'text',
-            content: item.content._lctext
+            type: type === -2 ? 'image' : 'text',
+            content: type === -2 ? content._lcfile && content._lcfile.url : content._lctext
           })
         });
         this.setState({
           msgList,
-          scrollIntoView: `last-${msgList.length - 1}`
+          imgList
         }, () => {
-          Taro.hideLoading()
+          setTimeout(() => {
+            Taro.hideLoading()
+            this.setState({
+              scrollIntoView: `last-${msgList.length - 1}`
+            })
+          }, 300)
 
           const restTime = 24 * 60 * 60 * 1000 - (new Date().getTime() - msgList[msgList.length - 1].timestamp)
           //////////
           if (!isFinished && restTime <= 0) {
+            let lastMessage = ''
+            if (msgList.length) {
+              const last = msgList[msgList.length - 1]
+              lastMessage = last.type === 'image' ? '[图片]' : last.content
+            }
             const consultation = AV.Object.createWithoutData('Consultation', params.questionId)
             consultation.set('endAt', new Date().getTime())
             consultation.set('status', '2')
-            consultation.set('lastMessage', msgList.length ? msgList[msgList.length - 1].content : '')
+            if (status === '0') consultation.set('isInvalid', true)
+            consultation.set('lastMessage', lastMessage)
             consultation.save().then(res => {
-              const query = new AV.Query('DoctorPatientRelation');
-              query.equalTo('idDoctor', AV.Object.createWithoutData('Doctor', doctorid));
-              query.equalTo('idPatient', AV.Object.createWithoutData('Patients', params.patientId));
-              query.find().then(r => {
-                console.log(r);
-                const relationId = r[0].id
-                const credit = r[0].get('credit')
-                const relation = AV.Object.createWithoutData('DoctorPatientRelation', relationId)
-                relation.set('credit', credit + 15)
-                relation.save().then(res => {
-                  Taro.showToast({
-                    title: '本次咨询已失效',
-                    icon: 'none'
-                  })
-                  this.setState({
-                    isFinished: true
+              if (status === '0') {
+                Taro.showToast({
+                  title: '本次咨询已失效',
+                  icon: 'none'
+                })
+                this.setState({
+                  isInvalid: true,
+                  isFinished: true
+                })
+              } else {
+                const query = new AV.Query('DoctorPatientRelation');
+                query.equalTo('idDoctor', AV.Object.createWithoutData('Doctor', doctorid));
+                query.equalTo('idPatient', AV.Object.createWithoutData('Patients', params.patientId));
+                query.find().then(r => {
+                  console.log(r);
+                  const relationId = r[0].id
+                  const credit = r[0].get('credit')
+                  const relation = AV.Object.createWithoutData('DoctorPatientRelation', relationId)
+                  relation.set('credit', credit + 15)
+                  relation.save().then(res => {
+                    Taro.showToast({
+                      title: '本次咨询已结束',
+                      icon: 'none'
+                    })
+                    this.setState({
+                      isFinished: true
+                    })
                   })
                 })
-              })
+              }
             }, err => {
               console.log(err)
             })
@@ -238,17 +224,23 @@ class Question extends Component {
             conversation.on('message', message => {
               console.log('接收到新消息')
               console.log(message)
-              if (message.content && message.content._lctext) {
-                const { msgList } = this.state
+              const content = message.content || {}
+              const type = content._lctype // -1文本 -2图片
+              if (type === -1 || type === -2) {
+                const { msgList, imgList } = this.state
+                if (type === -2) {
+                  imgList.push(content._lcfile && content._lcfile.url)
+                }
                 msgList.push({
                   time: utils.formatTime(message._timestamp.getTime(), 'yyyy/MM/dd HH:mm'),
                   from: message.from === doctorid ? 'self' : 'other',
                   icon: message.from === doctorid ? dAvatar : pAvatar,
-                  type: 'text',
-                  content: message.content._lctext
+                  type: type === -2 ? 'image' : 'text',
+                  content: type === -2 ? content._lcfile && content._lcfile.url : content._lctext
                 })
                 this.setState({
                   msgList,
+                  imgList,
                   scrollIntoView: `last-${msgList.length - 1}`
                 })
               }
@@ -305,7 +297,8 @@ class Question extends Component {
       doctor.get(doctorId).then(res => {
         console.log('doctor', res)
         this.setState({
-          dAvatar: res.get('avatar') && res.get('avatar').get('url') || DEFAULT_D
+          dAvatar: res.get('avatar') && res.get('avatar').get('url') || DEFAULT_D,
+          doctorName: res.get('name')
         }, () => {
           resolve()
         })
@@ -328,6 +321,7 @@ class Question extends Component {
         const startTime = res.get('startAt')
         const endTime = res.get('endAt') || new Date().getTime()
         this.setState({
+          isInvalid: res.get('isInvalid'),
           isFinished: status === '2',
           status,
           startTime,
@@ -397,11 +391,16 @@ class Question extends Component {
     // const { isFinished, msgList } = this.state
     // if (!isFinished && (24 * 60 * 60 * 1000 - (new Date().getTime() - msgList[msgList.length - 1].timestamp)) <= 0) {
     //   const { params } = this.$router
+    //   let lastMessage = ''
+    //   if (msgList.length) {
+    //     const last = msgList[msgList.length - 1]
+    //     lastMessage = last.type === 'image' ? '[图片]' : last.content
+    //   }
     //   const doctorid = Taro.getStorageSync('doctorid')
     //   const consultation = AV.Object.createWithoutData('Consultation', params.questionId)
     //   consultation.set('endAt', new Date().getTime())
     //   consultation.set('status', '2')
-    //   consultation.set('lastMessage', msgList.length ? msgList[msgList.length - 1].content : '')
+    //   consultation.set('lastMessage', lastMessage)
     //   consultation.save().then(res => {
     //     const query = new AV.Query('DoctorPatientRelation');
     //     query.equalTo('idDoctor', AV.Object.createWithoutData('Doctor', doctorid));
@@ -429,7 +428,10 @@ class Question extends Component {
     //////////
 
     // 发送消息
-    const { dAvatar } = this.state
+    const { dAvatar, doctorName } = this.state
+    const { question } = this.props
+    console.log(doctorName)
+    console.log(question.phone)
     this.conversation.send(new TextMessage(value)).then(message => {
       console.log('消息发送成功');
       const { status, msgList } = this.state
@@ -437,7 +439,22 @@ class Question extends Component {
         const { params } = this.$router
         const consultation = AV.Object.createWithoutData('Consultation', params.questionId)
         consultation.set('status', '1')
-        consultation.save()
+        consultation.save().then(res => {
+          this.setState({
+            status: '1'
+          })
+        })
+
+        AV.Cloud.requestSmsCode({
+          mobilePhoneNumber: question.phone,
+          template: '医生回复新咨询通知',
+          sign: '兆观科技',
+          name: '兆观科技',
+          doctorName
+        }).then(() => {
+          console.log('send message success!');
+        });
+
       }
       msgList.push({
         time: utils.formatTime(new Date().getTime(), 'yyyy/MM/dd HH:mm'),
@@ -489,10 +506,10 @@ class Question extends Component {
   }
 
   endQuestion() {
-    const { isFinished, msgList } = this.state
+    const { isFinished, isInvalid, msgList } = this.state
     if (isFinished) {
       return Taro.showToast({
-        title: '本次咨询已结束',
+        title: isInvalid ? '本次咨询已失效' : '本次咨询已结束',
         icon: 'none'
       })
     }
@@ -507,10 +524,15 @@ class Question extends Component {
           })
           console.log('confirm')
           const { params } = this.$router
+          let lastMessage = ''
+          if (msgList.length) {
+            const last = msgList[msgList.length - 1]
+            lastMessage = last.type === 'image' ? '[图片]' : last.content
+          }
           const consultation = AV.Object.createWithoutData('Consultation', params.questionId)
           consultation.set('endAt', new Date().getTime())
           consultation.set('status', '2')
-          consultation.set('lastMessage', msgList.length ? msgList[msgList.length - 1].content : '')
+          consultation.set('lastMessage', lastMessage)
           consultation.save().then(res => {
             const doctorid = Taro.getStorageSync('doctorid')
             const query = new AV.Query('DoctorPatientRelation');
@@ -549,9 +571,9 @@ class Question extends Component {
   render () {
     const { tag, reportList } = this.props.question
     const { params } = this.$router
-    const { showRemark, msgList, scrollIntoView, inputValue } = this.state
+    const { msgList, imgList, scrollIntoView, inputValue, isFinished, isInvalid } = this.state
     const tagRange = ['无', '轻度', '中度', '重度']
-    const reports = reportList.map(item => `${item.date} ODI${item.ODI} 最低${item.minO2}%`)
+    const reports = reportList.map(item => `${item.date} ODI ${item.ODI} 最低${item.minO2}%`)
     return (
       <View className='question'>
         <View className='remark'>
@@ -603,13 +625,13 @@ class Question extends Component {
                 icon={item.icon}
                 type={item.type}
                 content={item.content}
-                previewImage={item.previewImage || (() => {})}
+                previewImage={this.previewImage.bind(this, imgList, item.content)}
               />
             ))
           }
           {
-            this.state.isFinished &&
-            <AtDivider content='本次咨询已结束' fontColor='#E94F4F' lineColor='#E94F4F' />
+            isFinished &&
+            <AtDivider content={isInvalid ? '本次咨询已失效' : '本次咨询已结束'} fontColor='#E94F4F' lineColor='#E94F4F' />
           }
           <View style='height: 1px;'></View> {/* 下边距在 ScrollView 中不显示，使用一个 1px 的元素占位 */}
         </ScrollView>
@@ -617,7 +639,7 @@ class Question extends Component {
           <Button onClick={this.endQuestion.bind(this)}>结束</Button>
           <Input
             type='text'
-            disabled={this.state.isFinished}
+            disabled={isFinished}
             confirmHold={true}
             // adjustPosition={false}
             value={inputValue}

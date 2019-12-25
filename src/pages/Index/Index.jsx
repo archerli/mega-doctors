@@ -103,8 +103,8 @@ const noReply = [
 @connect(({ consultation }) => ({
   consultation
 }), (dispatch) => ({
-  getConsultationData(conversations) {
-    dispatch(getConsultationData(conversations))
+  getConsultationData(conversations, consultationStatus) {
+    dispatch(getConsultationData(conversations, consultationStatus))
   },
   swiperChange(type, current) {
     dispatch(swiperChange(type, current))
@@ -163,8 +163,10 @@ class Index extends Component {
         this.getData()
         this.client.on('message', message => {
           console.log('new message', message)
+          const { current } = this.props.consultation
+          this.getData(`${current}`)
         })
-      }, 300)
+      }, 500)
     } catch(e) {
       Taro.hideLoading()
     }
@@ -175,7 +177,7 @@ class Index extends Component {
     const haveTappedIndexTab = Taro.getStorageSync('haveTappedIndexTab')
     if (haveTappedIndexTab) {
       console.log('componentDidShow')
-      this.getData()
+      if (this.client) this.getData()
     }
   }
 
@@ -204,13 +206,13 @@ class Index extends Component {
     }, 800);
   }
 
-  getData() {
+  getData(consultationStatus = null) {
     const query = this.client.getQuery()
     query.withLastMessagesRefreshed(true);
     query.find().then(conversations => {
       // conversations 就是想要的结果
       console.log('conversations', conversations)
-      this.props.getConsultationData(conversations)
+      this.props.getConsultationData(conversations, consultationStatus)
     }).catch(err => {
       console.log(err)
       Taro.hideLoading()
@@ -222,6 +224,7 @@ class Index extends Component {
   }
 
   swiperOnChange(e) {
+    this.getData(`${e.currentTarget.current}`)
     this.props.swiperChange(SWIPER_CHANGE_INDEX, e.currentTarget.current)
   }
 
@@ -242,6 +245,17 @@ class Index extends Component {
   render () {
     const { consultation } = this.props
     const { moreLoading, moreLoaded } = this.state;
+
+    const replying = consultation.replying || []
+    let haveReplying = false
+    for (let i = 0; i < replying.length; i++) {
+      const item = replying[i]
+      if (item.lastMsgFrom === 'other') {
+        haveReplying = true
+        break
+      }
+    }
+
     return (
       <View className='index'>
         <View className='tab'>
@@ -257,7 +271,7 @@ class Index extends Component {
             onClick={this.handleClick.bind(this, 1)}
           >
             回复中
-            { consultation.replying && consultation.replying.length && <View className='dot'></View> }
+            { consultation.replying && consultation.replying.length && haveReplying && <View className='dot'></View> }
           </View>
           <View
             className={consultation.current === 2 ? 'selected' : ''}
@@ -355,7 +369,7 @@ class Index extends Component {
                 </ScrollView>
                 : consultation.replying && <View className='content-empty'>
                   <Image src={EMPTY} />
-                  <View>您在新咨询的有效期内的回复会在此显示</View>
+                  <View>新咨询被回复后将移到这里</View>
                 </View>
               }
             </SwiperItem>
