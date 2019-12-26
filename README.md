@@ -63,6 +63,8 @@
 | phone    | String  | 联系电话 |
 | avatar | File    | 头像 |
 | hospital | String  | 所在医院 |
+| hospitalLevel | string | 0-9，三特到一丙 |
+| skill | string | 擅长 |
 | department | String | 所在科室 |
 | title    | String  | 职称 |
 | authenticated | String | 是否认证，0：否，1：是，2：认证中，3：未通过 |
@@ -86,6 +88,19 @@ type：
 - 空：常规医生
 - 1：预约就诊
 - 2：快速提问
+
+hospitalLevel：
+
+- 0：三级特等
+- 1：三级甲等
+- 2：三级乙等
+- 3：三级丙等
+- 4：二级甲等
+- 5：二级乙等
+- 6：二级丙等
+- 7：一级甲等
+- 8：一级乙等
+- 9：一级丙等
 
 ### Consultation
 
