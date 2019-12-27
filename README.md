@@ -114,12 +114,18 @@ hospitalLevel：
 | isInvalid | Boolean | 咨询是否失效 |
 | idDialog | Pointer | 对话列表（IM系统，关联单次会话ID） |
 | latestReportId | String | 最近一份报告id |
+| type | string | 咨询类型 |
 
 status:
 
 - 0：新咨询
 - 1：回复中
 - 2：已结束
+
+type(咨询类型):
+
+- 0：图文资讯
+- 1：电话咨询
 
 对话列表：
 
