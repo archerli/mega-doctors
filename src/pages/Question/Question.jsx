@@ -136,11 +136,14 @@ class Question extends Component {
       conversation.queryMessages({
         startTime,
         endTime,
+        limit: 1000
       })
       .then(result => {
+        console.log('startTime:', utils.formatTime(startTime, 'yyyy/MM/dd HH:mm'))
+        console.log('endTime:', utils.formatTime(endTime, 'yyyy/MM/dd HH:mm'))
         // const data = result.value;
         const data = result
-        console.log(data)
+        console.log('conversation:', data)
         const msgList = []
         const imgList = []
         data.forEach(item => {
@@ -167,59 +170,77 @@ class Question extends Component {
             this.setState({
               scrollIntoView: `last-${msgList.length - 1}`
             })
-          }, 300)
+          }, 500)
 
-          const restTime = 24 * 60 * 60 * 1000 - (new Date().getTime() - msgList[msgList.length - 1].timestamp)
+          // const restTime = 24 * 60 * 60 * 1000 - (new Date().getTime() - msgList[msgList.length - 1].timestamp)
+          const restTime = 24 * 60 * 60 * 1000 - (new Date().getTime() - startTime)
           //////////
-          if (!isFinished && restTime <= 0) {
-            let lastMessage = ''
-            if (msgList.length) {
-              const last = msgList[msgList.length - 1]
-              lastMessage = last.type === 'image' ? '[图片]' : last.content
-            }
+          // if (!isFinished && restTime <= 0) {
+          //   let lastMessage = ''
+          //   if (msgList.length) {
+          //     const last = msgList[msgList.length - 1]
+          //     lastMessage = last.type === 'image' ? '[图片]' : last.content
+          //   }
+          //   const consultation = AV.Object.createWithoutData('Consultation', params.questionId)
+          //   consultation.set('endAt', new Date().getTime())
+          //   consultation.set('status', '2')
+          //   if (status === '0') consultation.set('isInvalid', true)
+          //   consultation.set('lastMessage', lastMessage)
+          //   consultation.save().then(res => {
+          //     if (status === '0') {
+          //       Taro.showToast({
+          //         title: '本次咨询已失效',
+          //         icon: 'none'
+          //       })
+          //       this.setState({
+          //         isInvalid: true,
+          //         isFinished: true
+          //       })
+          //     } else {
+          //       const query = new AV.Query('DoctorPatientRelation');
+          //       query.equalTo('idDoctor', AV.Object.createWithoutData('Doctor', doctorid));
+          //       query.equalTo('idPatient', AV.Object.createWithoutData('Patients', params.patientId));
+          //       query.find().then(r => {
+          //         console.log(r);
+          //         const relationId = r[0].id
+          //         const credit = r[0].get('credit')
+          //         const relation = AV.Object.createWithoutData('DoctorPatientRelation', relationId)
+          //         relation.set('credit', credit + 15)
+          //         relation.save().then(res => {
+          //           Taro.showToast({
+          //             title: '本次咨询已结束',
+          //             icon: 'none'
+          //           })
+          //           this.setState({
+          //             isFinished: true
+          //           })
+          //         })
+          //       })
+          //     }
+          //   }, err => {
+          //     console.log(err)
+          //   })
+          // }
+          //////////
+          // 2019/12/24 修改：回复中的咨询不再自动结束，新咨询从创建开始倒计时 24 小时
+          if (status === '0' && restTime <= 0) {
             const consultation = AV.Object.createWithoutData('Consultation', params.questionId)
             consultation.set('endAt', new Date().getTime())
             consultation.set('status', '2')
-            if (status === '0') consultation.set('isInvalid', true)
-            consultation.set('lastMessage', lastMessage)
+            consultation.set('isInvalid', true)
+            consultation.set('lastMessage', '[咨询已失效]')
             consultation.save().then(res => {
-              if (status === '0') {
-                Taro.showToast({
-                  title: '本次咨询已失效',
-                  icon: 'none'
-                })
-                this.setState({
-                  isInvalid: true,
-                  isFinished: true
-                })
-              } else {
-                const query = new AV.Query('DoctorPatientRelation');
-                query.equalTo('idDoctor', AV.Object.createWithoutData('Doctor', doctorid));
-                query.equalTo('idPatient', AV.Object.createWithoutData('Patients', params.patientId));
-                query.find().then(r => {
-                  console.log(r);
-                  const relationId = r[0].id
-                  const credit = r[0].get('credit')
-                  const relation = AV.Object.createWithoutData('DoctorPatientRelation', relationId)
-                  relation.set('credit', credit + 15)
-                  relation.save().then(res => {
-                    Taro.showToast({
-                      title: '本次咨询已结束',
-                      icon: 'none'
-                    })
-                    this.setState({
-                      isFinished: true
-                    })
-                  })
-                })
-              }
-            }, err => {
-              console.log(err)
+              Taro.hideLoading()
+              Taro.showToast({
+                title: '本次咨询已失效',
+                icon: 'none'
+              })
+              this.setState({
+                isInvalid: true,
+                isFinished: true
+              })
             })
-          }
-          //////////
-
-          if (!isFinished && restTime > 0) {
+          } else if (!isFinished) {
             // 房间接受消息
             conversation.on('message', message => {
               console.log('接收到新消息')

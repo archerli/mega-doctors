@@ -7,8 +7,8 @@ import { AtActivityIndicator } from 'taro-ui'
 import AV from 'leancloud-storage/dist/av-weapp-min.js'
 import { Realtime, TextMessage } from 'leancloud-realtime/dist/realtime.weapp.min.js'
 
-import { swiperChange, getConsultationData } from '../../actions/creator'
-import { SWIPER_CHANGE_INDEX } from '../../constants/creator'
+import { action, swiperChange, getConsultationData } from '../../actions/creator'
+import { SWIPER_CHANGE_INDEX, HAVE_NEW_SERVICE_MESSAGE } from '../../constants/creator'
 import utils from '../../common/utils'
 
 import QCard from '../../components/QCard/QCard'
@@ -103,6 +103,9 @@ const noReply = [
 @connect(({ consultation }) => ({
   consultation
 }), (dispatch) => ({
+  action(type, data) {
+    dispatch(action(type, data))
+  },
   getConsultationData(conversations, consultationStatus) {
     dispatch(getConsultationData(conversations, consultationStatus))
   },
@@ -163,8 +166,10 @@ class Index extends Component {
         this.getData()
         this.client.on('message', message => {
           console.log('new message', message)
-          const { current } = this.props.consultation
-          this.getData(`${current}`)
+          if (message.content && message.content._lctype !== -100) {
+            const { current } = this.props.consultation
+            this.getData(`${current}`)
+          }
         })
       }, 500)
     } catch(e) {
@@ -212,6 +217,19 @@ class Index extends Component {
     query.find().then(conversations => {
       // conversations 就是想要的结果
       console.log('conversations', conversations)
+
+      for (let i = 0; i < conversations.length; i++) {
+        const c = conversations[i]
+        if (c.members.indexOf('5e01b7641358aa5c19c7135f') > -1) {
+          const lastServiceMessage = Taro.getStorageSync('lastServiceMessage')
+          const lastMessage = c.lastMessage && c.lastMessage.id
+          this.props.action(HAVE_NEW_SERVICE_MESSAGE, {
+            haveNewServiceMessage: lastMessage && lastMessage !== lastServiceMessage
+          })
+          break
+        }
+      }
+
       this.props.getConsultationData(conversations, consultationStatus)
     }).catch(err => {
       console.log(err)
@@ -399,6 +417,7 @@ class Index extends Component {
                         source={item.source}
                         location={item.location}
                         reportId={item.reportId}
+                        credit={item.credit}
                       />
                     ))
                   }

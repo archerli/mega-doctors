@@ -187,6 +187,7 @@ class Mine extends Component {
               extraText=''
               arrow='right'
               thumb={SERVICE}
+              extraText={mine.haveNewServiceMessage ? '●' : ''}
               onClick={this.toService.bind(this)}
             />
           </AtList>

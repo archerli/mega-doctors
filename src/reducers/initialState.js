@@ -65,7 +65,8 @@ export const MINE = {
   authenticated: 0,
   consultationNum: 0,
   patientNum: 0,
-  credit: 0
+  credit: 0,
+  haveNewServiceMessage: false
 }
 
 // 个人信息
