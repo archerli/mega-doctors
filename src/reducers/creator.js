@@ -172,6 +172,11 @@ export const mine = (state = STATES.MINE, action) => {
         patientNum: action.data.patientNum,
         credit: action.data.credit
       }
+    case TYPES.HAVE_NEW_SERVICE_MESSAGE:
+      return {
+        ...state,
+        haveNewServiceMessage: action.data.haveNewServiceMessage
+      }
     default:
       return state
   }

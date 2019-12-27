@@ -5,8 +5,8 @@ import { AtDivider } from 'taro-ui'
 import AV from 'leancloud-storage/dist/av-weapp-min.js'
 import { Realtime, TextMessage } from 'leancloud-realtime/dist/realtime.weapp.min.js'
 
-import { action, getPatientData, getPatientReportList } from '../../actions/creator'
-import { CHANGE_DOCTOR_PATIENT_TAG } from '../../constants/creator'
+import { action } from '../../actions/creator'
+import { HAVE_NEW_SERVICE_MESSAGE } from '../../constants/creator'
 
 import utils from '../../common/utils'
 import MsgItem from '../../components/MsgItem/MsgItem'
@@ -78,7 +78,7 @@ class Service extends Component {
         // 创建与 Jerry 之间的对话
         return this.client.createConversation({ // client 是一个 IMClient 实例
           // 指定对话的成员除了当前用户 Tom（SDK 会默认把当前用户当做对话成员）之外，还有 Jerry
-          members: ['5de8b498dd3c13007fcff000'],
+          members: ['5e01b7641358aa5c19c7135f'],
           // 对话名称
           name: 'Tom & Jerry',
           unique: true
@@ -100,16 +100,24 @@ class Service extends Component {
 
       // this.messageIterator
       // .next()
-      conversation.queryMessages()
+      conversation.queryMessages({
+        limit: 1000
+      })
       .then(result => {
         // const data = result.value;
         const data = result
         console.log(data)
         const msgList = []
         const imgList = []
-        data.forEach(item => {
+        data.forEach((item, index) => {
           const content = item.content || {}
           const type = content._lctype // -1文本 -2图片
+          if (index + 1 === data.length) {
+            Taro.setStorageSync('lastServiceMessage', item.id)
+            this.props.action(HAVE_NEW_SERVICE_MESSAGE, {
+              haveNewServiceMessage: false
+            })
+          }
           if (type === -2) {
             imgList.push(content._lcfile && content._lcfile.url)
           }
@@ -131,7 +139,7 @@ class Service extends Component {
             this.setState({
               scrollIntoView: `last-${msgList.length - 1}`
             })
-          }, 300)
+          }, 500)
           // 房间接受消息
           conversation.on('message', message => {
             console.log('接收到新消息')

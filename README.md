@@ -61,7 +61,7 @@
 | name     | String  | 姓名 |
 | gender   | String  | 性别 |
 | phone    | String  | 联系电话 |
-| avatar | File    | 头像 |
+| avatar   | File    | 头像 |
 | hospital | String  | 所在医院 |
 | hospitalLevel | string | 0-9，三特到一丙 |
 | skill | string | 擅长 |

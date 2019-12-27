@@ -20,3 +20,4 @@ export const GET_PATIENT_REPORT_LIST_START = '开始获取患者报告列表'
 export const SWIPER_CHANGE_INDEX = '咨询列表切换Swiper'
 export const SWIPER_CHANGE_PATIENT = '患者列表切换Swiper'
 
+export const HAVE_NEW_SERVICE_MESSAGE = '有新的客服消息'

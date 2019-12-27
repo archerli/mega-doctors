@@ -62,7 +62,9 @@ export const getConsultationData = (conversations, consultationStatus) => {
             }
           }
           console.log(desc)
-          const restMin = parseInt((24 * 60 * 60 * 1000 - (new Date().getTime() - time)) / 1000 / 60)
+          // const restMin = parseInt((24 * 60 * 60 * 1000 - (new Date().getTime() - time)) / 1000 / 60)
+          const startAt = item.get('startAt')
+          const restMin = parseInt((24 * 60 * 60 * 1000 - (new Date().getTime() - startAt)) / 1000 / 60)
           // for test
           // const restMin = parseInt((2 * 60 * 60 * 1000 - (new Date().getTime() - time)) / 1000 / 60)
           endHour = parseInt(restMin / 60)
@@ -121,7 +123,7 @@ export const getConsultationData = (conversations, consultationStatus) => {
               source: _source,
               location: patient && patient.get('location'),
               reportId: item.get('latestReportId') || '',
-              endTime: endHour <= 0 ? `${endMin}分` : `${endHour}小时${endMin}分`,
+              // endTime: endHour <= 0 ? `${endMin}分` : `${endHour}小时${endMin}分`,
               lastMsgFrom: from === doctorid ? 'self' : 'other'
             })
             break
@@ -137,7 +139,8 @@ export const getConsultationData = (conversations, consultationStatus) => {
               desc: item.get('lastMessage'),
               source: _source,
               location: patient && patient.get('location'),
-              reportId: item.get('latestReportId') || ''
+              reportId: item.get('latestReportId') || '',
+              credit: item.get('isInvalid') ? 0 : 15
             })
             break
         }

@@ -30,7 +30,7 @@ class QCard extends Component {
   }
 
   createCardT3 () {
-    const { type, endTime, reportId, lastMsgFrom } = this.props
+    const { type, endTime, reportId, lastMsgFrom, credit } = this.props
     switch (type) {
       case 'new': {
         return (
@@ -49,10 +49,10 @@ class QCard extends Component {
       case 'reply': {
         return (
           <View className='card-t-3' onClick={this.toQuestion.bind(this)}>
-            <View className='msg-1'>
+            {/* <View className='msg-1'>
               <Image src={CLOCK} />
               <Text>{endTime}后结束</Text>
-            </View>
+            </View> */}
             <View className='msg-2'>
               { reportId && <Image src={REPORT} /> }
               <View className='btn'>{lastMsgFrom === 'self' ? '继续回复' : '去回复'}</View>
@@ -65,7 +65,7 @@ class QCard extends Component {
           <View className='card-t-3' onClick={this.toQuestion.bind(this)}>
             <View className='msg-1'>
               <Image src={JIFEN} />
-              <Text style='color: #FFB503;'>贡献值：{'15'}</Text>
+              <Text style='color: #FFB503;'>贡献值：{credit}</Text>
             </View>
             <View className='msg-2'>
               { reportId && <Image src={REPORT} /> }
