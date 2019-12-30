@@ -154,11 +154,11 @@ type:
 | tag      | Array   | 标签 |
 | remark   | String | 备注 |
 | source | String | 用户来源 |
-| follow | Boolean | 是否关注 |
-| block | Boolean | 是否屏蔽 |
+| follow | Boolean | 是否是医生特别关注的患者( vip patient ) |
+| block | Boolean | 该患者是否被医生屏蔽 |
 | group | Array | 分组 |
 | credit | String | 贡献值 |
-| showFollowedDoctorCard | Boolean | 是否弹出最近关注的一位医生信息 |
+| showFollowedDoctorCard | Boolean | 患者登录app时，是否弹出患者最近关注的一位医生信息 |
 | latestConsultationId | String | 最近一次咨询的 id |
 | latestReportId | String | 最近一份报告的 id |
 
