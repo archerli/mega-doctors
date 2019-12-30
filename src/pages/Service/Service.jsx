@@ -147,6 +147,7 @@ class Service extends Component {
             const content = message.content || {}
             const type = content._lctype // -1文本 -2图片
             if (type === -1 || type === -2) {
+              Taro.setStorageSync('lastServiceMessage', message.id)
               const { msgList, imgList } = this.state
               if (type === -2) {
                 imgList.push(content._lcfile && content._lcfile.url)
