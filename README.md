@@ -80,6 +80,7 @@
 | phoneConsultingPrice | number | 电话咨询价格 |
 | isNormalConsultingOpen | boolean | 是否开启图文咨询 |
 | isPhoneConsultingOpen | boolean | 是否开启电话咨询 |
+| commissionPercent | number  | 抽佣系数 |
 | type | string | 类型 |
 | isHomePageShow | boolean | 是否推荐首页展示 |
 
