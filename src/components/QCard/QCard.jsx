@@ -65,7 +65,7 @@ class QCard extends Component {
           <View className='card-t-3' onClick={this.toQuestion.bind(this)}>
             <View className='msg-1'>
               <Image src={JIFEN} />
-              <Text style='color: #FFB503;'>贡献值：{credit}</Text>
+              <Text style='color: #FFB503;'>积分：{credit}</Text>
             </View>
             <View className='msg-2'>
               { reportId && <Image src={REPORT} /> }

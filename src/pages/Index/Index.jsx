@@ -218,13 +218,20 @@ class Index extends Component {
       // conversations 就是想要的结果
       console.log('conversations', conversations)
 
+      const doctorid = Taro.getStorageSync('doctorid')
       for (let i = 0; i < conversations.length; i++) {
         const c = conversations[i]
         if (c.members.indexOf('5e01b7641358aa5c19c7135f') > -1) {
           const lastServiceMessage = Taro.getStorageSync('lastServiceMessage')
-          const lastMessage = c.lastMessage && c.lastMessage.id
+          const lastMessage = c.lastMessage || {}
+          const lastMessageId = lastMessage.id
+          const lastMessageFrom = lastMessage.from
           this.props.action(HAVE_NEW_SERVICE_MESSAGE, {
-            haveNewServiceMessage: lastMessage && lastMessage !== lastServiceMessage
+            haveNewServiceMessage:
+              lastMessageId
+              && lastMessageId !== lastServiceMessage
+              && lastMessageFrom
+              && lastMessageFrom !== doctorid
           })
           break
         }
