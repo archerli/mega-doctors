@@ -174,6 +174,7 @@ group:
 source：
 
 - 0：扫码
+- 1：线上
 
 ## 服务接口
 
@@ -183,6 +184,13 @@ source：
 
 - 提供客户端调用的咨询创建接口，简化客户端请求。
 - 获取医生咨询时段配置信息，判断是否可以推送通知。 
+- 流程
+  - 传入医生和患者id、咨询类型（图文、电话）、用户来源（扫码、线上等）
+  - 获取医生咨询时段配置信息，判断是否可以给医生推送新用户咨询通知
+  - 获取relationId，如不存在relation，则新建后返回（扫码方式先有relation后有会话，线上模式可能无relation）
+  - 查询当前医生和患者是否有未关闭会话，如果没有则新建，并带上关系id（新建会话补充字段包括idDoctor\idPatient\idRelation\status\startAt\type）
+  - 拿到咨询id，设置relation的curConsultation
+  - 返回创建结果
 
 **请求URL：** 
 
@@ -213,10 +221,12 @@ X-LC-Prod: 0
 
  **请求体参数说明** 
 
-| parameter | 类型   | describtion  |
-| :-------- | :----- | ------------ |
-| doctorId  | string | 医生objectId |
-| patientId | string | 患者objectId |
+| parameter | 类型   | describtion        |
+| :-------- | :----- | ------------------ |
+| doctorId  | string | 医生objectId       |
+| patientId | string | 患者objectId       |
+| type      | string | 咨询类型（非必填） |
+| source    | string | 用户来源           |
 
  **返回**
 
