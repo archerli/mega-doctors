@@ -150,7 +150,7 @@ class Auth extends Component {
   }
 
   toAgreement1() {
-    const url = 'https://megahealth.cn/mega-doctor-ag/DoctorAgreements.html'
+    const url = 'https://megahealth.cn/mega-doctor-ag/DoctorCooperationAgreement.html'
     Taro.navigateTo({
       url: `/pages/Webview/Webview?url=${encodeURIComponent(url)}`
     })
@@ -179,9 +179,9 @@ class Auth extends Component {
         </View>
         <View className='ag'>
           登录视为您同意《
-          <Text onClick={this.toAgreement1.bind(this)}>用户协议</Text>
+          <Text onClick={this.toAgreement1.bind(this)}>医生合作协议</Text>
           》和《
-          <Text onClick={this.toAgreement2.bind(this)}>隐私条款</Text>
+          <Text onClick={this.toAgreement2.bind(this)}>兆观隐私协议</Text>
           》
         </View>
       </View>

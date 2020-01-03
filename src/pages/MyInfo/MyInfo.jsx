@@ -70,6 +70,16 @@ class MyInfo extends Component {
   handleChange2(key, e) {
     console.log(key)
     console.log(e)
+    if (key === 'name') {
+      const _value = e.detail.value.replace(/[^\x00-\xff]/g, '**');
+      console.log(_value)
+      if (_value.length > 20) {
+        return Taro.showToast({
+          title: '姓名限制10个汉字或20个字母、数字',
+          icon: 'none'
+        })
+      }
+    }
     this.props.action(CHANGE_DOCTOR_DATA, {
       [key]: e.detail.value,
       isOpened: false,
@@ -82,6 +92,16 @@ class MyInfo extends Component {
     console.log(e)
     const value = e.detail.value
     console.log(value[key])
+    if (key === 'name') {
+      const _value = value.name.replace(/[^\x00-\xff]/g, '**');
+      console.log(_value)
+      if (_value.length > 20) {
+        return Taro.showToast({
+          title: '姓名限制10个汉字或20个字母、数字',
+          icon: 'none'
+        })
+      }
+    }                                                               
     this.props.action(CHANGE_DOCTOR_DATA, {
       [key]: value[key],
       isOpened: false,
@@ -244,7 +264,8 @@ class MyInfo extends Component {
                 <Input
                   name='name'
                   className='edit'
-                  placeholder='姓名'
+                  placeholder='姓名限制10个汉字或20个字母、数字'
+                  maxLength='20'
                   value={myInfo.name}
                   adjustPosition={false}
                   focus

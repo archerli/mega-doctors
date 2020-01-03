@@ -46,6 +46,7 @@ class Question extends Component {
       isLoading: true,
       isInvalid: false,
       isFinished: false,
+      type: '',
       status: '',
       startTime: 0,
       endTime: 0,
@@ -56,6 +57,9 @@ class Question extends Component {
       pAvatar: DEFAULT_P,
       dAvatar: DEFAULT_D,
       doctorName: '',
+      commissionPercent: 0,
+      normalConsultingPrice: 0,
+      phoneConsultingPrice: 0,
       msgList: [],
       imgList: []
     }
@@ -319,7 +323,10 @@ class Question extends Component {
         console.log('doctor', res)
         this.setState({
           dAvatar: res.get('avatar') && res.get('avatar').get('url') || DEFAULT_D,
-          doctorName: res.get('name')
+          doctorName: res.get('name'),
+          commissionPercent: res.get('commissionPercent'),
+          normalConsultingPrice: res.get('normalConsultingPrice') || 0,
+          phoneConsultingPrice: res.get('phoneConsultingPrice') || 0
         }, () => {
           resolve()
         })
@@ -338,12 +345,14 @@ class Question extends Component {
       consultation.get(id).then(res => {
         console.log('consultation', res)
         console.log('consultation', res.get('status'))
+        const type = res.get('type')
         const status = res.get('status')
         const startTime = res.get('startAt')
         const endTime = res.get('endAt') || new Date().getTime()
         this.setState({
           isInvalid: res.get('isInvalid'),
           isFinished: status === '2',
+          type,
           status,
           startTime,
           endTime
@@ -468,7 +477,7 @@ class Question extends Component {
 
         AV.Cloud.requestSmsCode({
           mobilePhoneNumber: question.phone,
-          template: '医生回复新咨询通知',
+          template: '医生首次回复通知',
           sign: '兆观科技',
           name: '兆观科技',
           doctorName
@@ -527,13 +536,25 @@ class Question extends Component {
   }
 
   endQuestion() {
-    const { isFinished, isInvalid, msgList } = this.state
+    const {
+      isFinished,
+      isInvalid,
+      msgList,
+      type,
+      normalConsultingPrice,
+      phoneConsultingPrice,
+      commissionPercent
+    } = this.state
     if (isFinished) {
       return Taro.showToast({
         title: isInvalid ? '本次咨询已失效' : '本次咨询已结束',
         icon: 'none'
       })
     }
+    console.log('type:', type);
+    console.log('normalConsultingPrice:', normalConsultingPrice);
+    console.log('phoneConsultingPrice:', phoneConsultingPrice);
+    console.log('commissionPercent:', commissionPercent);
     Taro.showModal({
       title: '提示',
       content: '结束后不能继续发送消息，确定结束吗？',
@@ -550,10 +571,12 @@ class Question extends Component {
             const last = msgList[msgList.length - 1]
             lastMessage = last.type === 'image' ? '[图片]' : last.content
           }
+          const creditEarned = ((type === '0' ? normalConsultingPrice : phoneConsultingPrice) * (1 - commissionPercent)).toFixed(0)
           const consultation = AV.Object.createWithoutData('Consultation', params.questionId)
           consultation.set('endAt', new Date().getTime())
           consultation.set('status', '2')
           consultation.set('lastMessage', lastMessage)
+          consultation.set('credit', creditEarned)
           consultation.save().then(res => {
             const doctorid = Taro.getStorageSync('doctorid')
             const query = new AV.Query('DoctorPatientRelation');
@@ -564,7 +587,7 @@ class Question extends Component {
               const relationId = r[0].id
               const credit = r[0].get('credit')
               const relation = AV.Object.createWithoutData('DoctorPatientRelation', relationId)
-              relation.set('credit', credit + 15)
+              relation.set('credit', credit + Number(creditEarned))
               relation.save().then(res => {
                 Taro.hideLoading()
                 Taro.showToast({

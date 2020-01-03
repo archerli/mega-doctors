@@ -98,7 +98,7 @@ class PCard extends Component {
           <View className='card-t-3'>
             <View className='msg'>
               <Image src={JIFEN} />
-              <Text style='color: #FFB503;'>贡献值：{credit}</Text>
+              <Text style='color: #FFB503;'>积分：{credit}</Text>
             </View>
             <View className='btn'>
               <Image className='img-m' src={MSG} onClick={this.toQuestion.bind(this)} />

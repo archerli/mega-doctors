@@ -140,7 +140,7 @@ export const getConsultationData = (conversations, consultationStatus) => {
               source: _source,
               location: patient && patient.get('location'),
               reportId: item.get('latestReportId') || '',
-              credit: item.get('isInvalid') ? 0 : 15
+              credit: item.get('credit')
             })
             break
         }
@@ -243,6 +243,9 @@ export const getDoctorPatientData = () => {
           let _source = ''
           if (source === '0') {
             _source = '扫码'
+          }
+          if (source === '1') {
+            _source = '线上'
           }
           // 患者标签
           const _tag = []

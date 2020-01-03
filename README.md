@@ -114,7 +114,10 @@ hospitalLevel：
 | status   | String  | 咨询状态 |
 | isInvalid | Boolean | 咨询是否失效 |
 | idDialog | Pointer | 对话列表（IM系统，关联单次会话ID） |
-| latestReportId | String | 最近一份报告id |
+| startAt | Number | 咨询开始时间 |
+| endAt | Number | 咨询结束时间 |
+| lastMessage | String | 单次咨询最后一条消息（已结束状态） |
+| credit | String | 单次咨询所得积分 |
 | type | string | 咨询类型 |
 
 status:
@@ -158,7 +161,7 @@ type:
 | follow | Boolean | 是否是医生特别关注的患者( vip patient ) |
 | block | Boolean | 该患者是否被医生屏蔽 |
 | group | Array | 分组 |
-| credit | String | 贡献值 |
+| credit | String | 一个患者对一个医生的总积分 |
 | showFollowedDoctorCard | Boolean | 患者登录app时，是否弹出患者最近关注的一位医生信息 |
 | latestConsultationId | String | 最近一次咨询的 id |
 | latestReportId | String | 最近一份报告的 id |

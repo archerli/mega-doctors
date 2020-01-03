@@ -32,10 +32,23 @@ class Agreement extends Component {
 
   constructor() {
     super(...arguments)
+    this.state = {
+      showAgreement3: false
+    }
+  }
+
+  componentWillMount() {
+    const { params } = this.$router
+    console.log(params)
+    if (params.authenticated === '1') {
+      this.setState({
+        showAgreement3: true
+      })
+    }
   }
 
   toAgreement1() {
-    const url = 'https://megahealth.cn/mega-doctor-ag/DoctorAgreements.html'
+    const url = 'https://megahealth.cn/mega-doctor-ag/DoctorCooperationAgreement.html'
     Taro.navigateTo({
       url: `/pages/Webview/Webview?url=${encodeURIComponent(url)}`
     })
@@ -48,23 +61,39 @@ class Agreement extends Component {
     })
   }
 
+  toAgreement3() {
+    const url = 'https://megahealth.cn/mega-doctor-ag/DoctorFeeSettlement.html'
+    Taro.navigateTo({
+      url: `/pages/Webview/Webview?url=${encodeURIComponent(url)}`
+    })
+  }
+
   render () {
     return (
       <View className='agreement'>
         <View className='list'>
           <AtList>
             <AtListItem
-              title='兆观医生协议'
+              title='医生合作协议'
               arrow='right'
               thumb={AG}
               onClick={this.toAgreement1.bind(this)}
             />
             <AtListItem
-              title='兆观隐私政策'
+              title='兆观隐私协议'
               arrow='right'
               thumb={AG}
               onClick={this.toAgreement2.bind(this)}
             />
+            {
+              this.state.showAgreement3 &&
+              <AtListItem
+                title='医生结算协议'
+                arrow='right'
+                thumb={AG}
+                onClick={this.toAgreement3.bind(this)}
+              />
+            }
           </AtList>
         </View>
       </View>

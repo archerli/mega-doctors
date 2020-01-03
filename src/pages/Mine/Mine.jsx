@@ -119,8 +119,9 @@ class Mine extends Component {
   }
 
   toAgreement() {
+    const { mine } = this.props
     Taro.navigateTo({
-      url: '/pages/Agreement/Agreement'
+      url: `/pages/Agreement/Agreement?authenticated=${mine.authenticated}`
     })
   }
 
