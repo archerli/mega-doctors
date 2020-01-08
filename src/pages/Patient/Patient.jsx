@@ -48,10 +48,13 @@ class Patient extends Component {
   }
 
   componentDidMount() {
-    this.props.getDoctorPatientData()
-    const haveTappedPatientTab = Taro.getStorageSync('haveTappedPatientTab')
-    if (!haveTappedPatientTab) {
-      Taro.setStorageSync('haveTappedPatientTab', true)
+    const userInfo = Taro.getStorageSync('userInfo')
+    if (userInfo) {
+      this.props.getDoctorPatientData()
+      const haveTappedPatientTab = Taro.getStorageSync('haveTappedPatientTab')
+      if (!haveTappedPatientTab) {
+        Taro.setStorageSync('haveTappedPatientTab', true)
+      }
     }
   }
 

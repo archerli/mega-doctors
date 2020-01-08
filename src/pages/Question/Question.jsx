@@ -376,9 +376,10 @@ class Question extends Component {
   toReport(e) {
     console.log(e.detail.value)
     const { reportList } = this.props.question
+    const { params } = this.$router
     const url = `https://raw.megahealth.cn/view#/parsemhn?objId=${reportList[e.detail.value].id}`
     Taro.navigateTo({
-      url: `/pages/Webview/Webview?url=${encodeURIComponent(url)}`
+      url: `/pages/Webview/Webview?url=${encodeURIComponent(url)}&name=${params.name}`
     })
   }
 
@@ -595,6 +596,9 @@ class Question extends Component {
                 })
                 this.setState({
                   isFinished: true
+                })
+                this.conversation.send(new TextMessage(`${params.questionId}**end**`)).then(message => {
+
                 })
               })
             })

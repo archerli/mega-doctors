@@ -55,8 +55,9 @@ class ReportList extends Component {
 
   toReport(reportId) {
     const url = `https://raw.megahealth.cn/view#/parsemhn?objId=${reportId}`
+    const { params } = this.$router
     Taro.navigateTo({
-      url: `/pages/Webview/Webview?url=${encodeURIComponent(url)}`
+      url: `/pages/Webview/Webview?url=${encodeURIComponent(url)}&name=${params.name}`
     })
   }
 

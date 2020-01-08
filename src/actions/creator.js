@@ -496,9 +496,9 @@ export const getDoctorData = () => {
         Taro.removeStorageSync('userInfo')
         Taro.removeStorageSync('openid')
         Taro.removeStorageSync('doctorid')
-        Taro.reLaunch({
-          url: '../Auth/Auth'
-        })
+        // Taro.reLaunch({
+        //   url: '../Auth/Auth'
+        // })
       }
     }, err => {
       console.log(err)

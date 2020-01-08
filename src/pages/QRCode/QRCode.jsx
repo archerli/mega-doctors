@@ -39,8 +39,8 @@ class QRCode extends Component {
   }
 
   componentDidMount() {
-    const doctorid = Taro.getStorageSync('doctorid')
-    const imgData = QR.drawImg(`http://megahealth.cn/followdoctor/index.html?id=${doctorid}`, {
+    const { params } = this.$router
+    const imgData = QR.drawImg(`http://megahealth.cn/followdoctor/index.html?id=${params.doctorid}`, {
       typeNumber: 4, // 码点大小 1-40，数字越大，码点越小，二维码会显得越密集
       errorCorrectLevel: 'M', // 纠错等级 H等级最高(30%) 简单来说，就是二维码被覆盖了多少仍然能被识别出来
       size: 500
@@ -54,6 +54,16 @@ class QRCode extends Component {
         }
       }
     })
+  }
+
+  onShareAppMessage() {
+    const { params } = this.$router
+    return {
+      title: '请患者用微信扫一扫或截图',
+      path: `/pages/QRCode/QRCode?doctorid=${params.doctorid}`,
+      success: function () { },
+      fail: function () { }
+    }
   }
 
   save() {

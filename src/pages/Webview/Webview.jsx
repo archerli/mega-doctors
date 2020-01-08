@@ -36,12 +36,24 @@ class Webview extends Component {
   }
 
   componentWillMount () {
-    console.log(this.$router.params)
-    const params = this.$router.params;
+    const { params } = this.$router
+    console.log(params.url)
     if (params && params.url) {
       this.setState({
-        url: this.$router.params.url
+        url: params.url
       })
+    }
+  }
+
+  onShareAppMessage() {
+    const { params } = this.$router
+    console.log(params.url)
+    const url = params.url
+    return {
+      title: params.name ? `查看用户${params.name}的睡眠报告` : '',
+      path: `/pages/Webview/Webview?url=${url.indexOf('?') > -1 ? encodeURIComponent(url) : url}&name=${params.name || ''}`,
+      success: function () { },
+      fail: function () { }
     }
   }
 

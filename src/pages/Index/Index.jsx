@@ -8,7 +8,7 @@ import AV from 'leancloud-storage/dist/av-weapp-min.js'
 import { Realtime, TextMessage } from 'leancloud-realtime/dist/realtime.weapp.min.js'
 
 import { action, swiperChange, getConsultationData } from '../../actions/creator'
-import { SWIPER_CHANGE_INDEX, HAVE_NEW_SERVICE_MESSAGE } from '../../constants/creator'
+import { GET_CONSULTATION_DATA, SWIPER_CHANGE_INDEX, HAVE_NEW_SERVICE_MESSAGE } from '../../constants/creator'
 import utils from '../../common/utils'
 
 import QCard from '../../components/QCard/QCard'
@@ -140,40 +140,42 @@ class Index extends Component {
 
   async componentDidMount() {
     const userInfo = Taro.getStorageSync('userInfo')
-    const havePhoneNumber = Taro.getStorageSync('havePhoneNumber')
     console.log(userInfo)
-    console.log(havePhoneNumber)
     if (!userInfo) {
-      Taro.reLaunch({
-        url: '../Auth/Auth'
-      })
-    }
-    const haveTappedIndexTab = Taro.getStorageSync('haveTappedIndexTab')
-    if (!haveTappedIndexTab) {
-      Taro.setStorageSync('haveTappedIndexTab', true)
-    }
-
-    const doctorid = Taro.getStorageSync('doctorid')
-    const realtime = new Realtime({
-      appId: 'f82OcAshk5Q1J993fGLJ4bbs-gzGzoHsz',
-      appKey: 'O9COJzi78yYXCWVWMkLqlpp8',
-      server: 'api-mhn.megahealth.cn',
-      plugins: AV.TypedMessagesPlugin // 注册富媒体消息插件
-    });
-    try {
-      this.client = await realtime.createIMClient(doctorid)
-      setTimeout(() => {
-        this.getData()
-        this.client.on('message', message => {
-          console.log('new message', message)
-          if (message.content && message.content._lctype !== -100) {
-            const { current } = this.props.consultation
-            this.getData(`${current}`)
-          }
-        })
-      }, 500)
-    } catch(e) {
       Taro.hideLoading()
+      this.props.action(GET_CONSULTATION_DATA, {
+        newCons: [],
+        replying: [],
+        finished: []
+      })
+    } else {
+      const haveTappedIndexTab = Taro.getStorageSync('haveTappedIndexTab')
+      if (!haveTappedIndexTab) {
+        Taro.setStorageSync('haveTappedIndexTab', true)
+      }
+
+      const doctorid = Taro.getStorageSync('doctorid')
+      const realtime = new Realtime({
+        appId: 'f82OcAshk5Q1J993fGLJ4bbs-gzGzoHsz',
+        appKey: 'O9COJzi78yYXCWVWMkLqlpp8',
+        server: 'api-mhn.megahealth.cn',
+        plugins: AV.TypedMessagesPlugin // 注册富媒体消息插件
+      });
+      try {
+        this.client = await realtime.createIMClient(doctorid)
+        setTimeout(() => {
+          this.getData()
+          this.client.on('message', message => {
+            console.log('new message', message)
+            if (message.content && message.content._lctype !== -100) {
+              const { current } = this.props.consultation
+              this.getData(`${current}`)
+            }
+          })
+        }, 500)
+      } catch(e) {
+        Taro.hideLoading()
+      }
     }
   }
 
@@ -188,7 +190,7 @@ class Index extends Component {
 
   componentWillUnmount() {
     console.log('componentWillUnmount')
-    this.client.close()
+    if (this.client) this.client.close()
   }
 
   // 切换tab时刷新页面
@@ -212,36 +214,39 @@ class Index extends Component {
   }
 
   getData(consultationStatus = null) {
-    const query = this.client.getQuery()
-    query.withLastMessagesRefreshed(true);
-    query.find().then(conversations => {
-      // conversations 就是想要的结果
-      console.log('conversations', conversations)
+    const userInfo = Taro.getStorageSync('userInfo')
+    if (userInfo) {
+      const query = this.client.getQuery()
+      query.withLastMessagesRefreshed(true);
+      query.find().then(conversations => {
+        // conversations 就是想要的结果
+        console.log('conversations', conversations)
 
-      const doctorid = Taro.getStorageSync('doctorid')
-      for (let i = 0; i < conversations.length; i++) {
-        const c = conversations[i]
-        if (c.members.indexOf('5e01b7641358aa5c19c7135f') > -1) {
-          const lastServiceMessage = Taro.getStorageSync('lastServiceMessage')
-          const lastMessage = c.lastMessage || {}
-          const lastMessageId = lastMessage.id
-          const lastMessageFrom = lastMessage.from
-          this.props.action(HAVE_NEW_SERVICE_MESSAGE, {
-            haveNewServiceMessage:
-              lastMessageId
-              && lastMessageId !== lastServiceMessage
-              && lastMessageFrom
-              && lastMessageFrom !== doctorid
-          })
-          break
+        const doctorid = Taro.getStorageSync('doctorid')
+        for (let i = 0; i < conversations.length; i++) {
+          const c = conversations[i]
+          if (c.members.indexOf('5e01b7641358aa5c19c7135f') > -1) {
+            const lastServiceMessage = Taro.getStorageSync('lastServiceMessage')
+            const lastMessage = c.lastMessage || {}
+            const lastMessageId = lastMessage.id
+            const lastMessageFrom = lastMessage.from
+            this.props.action(HAVE_NEW_SERVICE_MESSAGE, {
+              haveNewServiceMessage:
+                lastMessageId
+                && lastMessageId !== lastServiceMessage
+                && lastMessageFrom
+                && lastMessageFrom !== doctorid
+            })
+            break
+          }
         }
-      }
 
-      this.props.getConsultationData(conversations, consultationStatus)
-    }).catch(err => {
-      console.log(err)
-      Taro.hideLoading()
-    });
+        this.props.getConsultationData(conversations, consultationStatus)
+      }).catch(err => {
+        console.log(err)
+        Taro.hideLoading()
+      });
+    }
   }
 
   handleClick(value) {
