@@ -3,7 +3,8 @@ import { View, ScrollView, Text, Input, Button, Picker } from '@tarojs/component
 import { connect } from '@tarojs/redux'
 import { AtDivider } from 'taro-ui'
 import AV from 'leancloud-storage/dist/av-weapp-min.js'
-import { Realtime, TextMessage } from 'leancloud-realtime/dist/realtime.weapp.min.js'
+import { Realtime, TextMessage, TypedMessage, messageType, messageField } from 'leancloud-realtime/dist/realtime.weapp.min.js'
+import inherit from 'inherit'
 
 import { action, getPatientData, getPatientReportList } from '../../actions/creator'
 import { CHANGE_DOCTOR_PATIENT_TAG } from '../../constants/creator'
@@ -99,6 +100,11 @@ class Question extends Component {
       server: 'api-mhn.megahealth.cn',
       plugins: AV.TypedMessagesPlugin // 注册富媒体消息插件
     });
+
+    this.ConsultationChangedMessage = inherit(TextMessage);
+    messageType(1)(this.ConsultationChangedMessage);
+    realtime.register(this.ConsultationChangedMessage);
+
     // Tom 用自己的名字作为 clientId 来登录即时通讯服务
     realtime.createIMClient(doctorid)
     .then(client => {
@@ -156,14 +162,16 @@ class Question extends Component {
           if (type === -2) {
             imgList.push(content._lcfile && content._lcfile.url)
           }
-          msgList.push({
-            timestamp: item._timestamp.getTime(),
-            time: utils.formatTime(item._timestamp.getTime(), 'yyyy/MM/dd HH:mm'),
-            from: item.from === doctorid ? 'self' : 'other',
-            icon: item.from === doctorid ? dAvatar : pAvatar,
-            type: type === -2 ? 'image' : 'text',
-            content: type === -2 ? content._lcfile && content._lcfile.url : content._lctext
-          })
+          if (type === -1 || type === -2) {
+            msgList.push({
+              timestamp: item._timestamp.getTime(),
+              time: utils.formatTime(item._timestamp.getTime(), 'yyyy/MM/dd HH:mm'),
+              from: item.from === doctorid ? 'self' : 'other',
+              icon: item.from === doctorid ? dAvatar : pAvatar,
+              type: type === -2 ? 'image' : 'text',
+              content: type === -2 ? content._lcfile && content._lcfile.url : content._lctext
+            })
+          }
         });
         this.setState({
           msgList,
@@ -476,6 +484,10 @@ class Question extends Component {
           })
         })
 
+        const _message = new this.ConsultationChangedMessage('');
+        _message.setAttributes({ consultationId: params.questionId, consultationStatus: '1' });
+        this.conversation.send(_message)
+
         AV.Cloud.requestSmsCode({
           mobilePhoneNumber: question.phone,
           template: '医生首次回复通知',
@@ -597,9 +609,11 @@ class Question extends Component {
                 this.setState({
                   isFinished: true
                 })
-                this.conversation.send(new TextMessage(`${params.questionId}**end**`)).then(message => {
 
-                })
+                const _message = new this.ConsultationChangedMessage('');
+                _message.setAttributes({ consultationId: params.questionId, consultationStatus: '2' });
+                this.conversation.send(_message)
+
               })
             })
           }, err => {
