@@ -32,9 +32,9 @@ class Auth extends Component {
         haveUserInfo: true
       })
     } else if (userInfo && havePhoneNumber) {
-      Taro.reLaunch({
-        url: '../Index/Index'
-      })
+      // Taro.reLaunch({
+      //   url: '../Index/Index'
+      // })
     }
     wx.cloud.init()
   }
@@ -45,7 +45,7 @@ class Auth extends Component {
         success(res) {
           if (res.code) {
             Taro.request({
-              url: 'https://wxapi.zangtengfei.com/onLogin',
+              url: 'https://wxapi.megahealth.cn/onLogin',
               data: {
                 code: res.code
               },

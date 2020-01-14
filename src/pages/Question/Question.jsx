@@ -482,21 +482,24 @@ class Question extends Component {
           this.setState({
             status: '1'
           })
+
+          const _message = new this.ConsultationChangedMessage(value);
+          _message.setAttributes({ consultationId: params.questionId, consultationStatus: '1' });
+          this.conversation.send(_message)
+
+          AV.Cloud.requestSmsCode({
+            mobilePhoneNumber: question.phone,
+            template: '医生首次回复通知',
+            sign: '兆观科技',
+            name: '兆观科技',
+            doctorName
+          }).then(() => {
+            console.log('send message success!');
+          });
+
+        }, err => {
+
         })
-
-        const _message = new this.ConsultationChangedMessage('');
-        _message.setAttributes({ consultationId: params.questionId, consultationStatus: '1' });
-        this.conversation.send(_message)
-
-        AV.Cloud.requestSmsCode({
-          mobilePhoneNumber: question.phone,
-          template: '医生首次回复通知',
-          sign: '兆观科技',
-          name: '兆观科技',
-          doctorName
-        }).then(() => {
-          console.log('send message success!');
-        });
 
       }
       msgList.push({

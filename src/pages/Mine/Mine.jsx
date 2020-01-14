@@ -42,15 +42,15 @@ class Mine extends Component {
   constructor () {
     super(...arguments)
     this.state = {
-      haveUserInfo: true
+      haveDoctorId: true
     }
   }
 
   componentDidMount() {
-    const userInfo = Taro.getStorageSync('userInfo')
-    if (!userInfo) {
+    const doctorid = Taro.getStorageSync('doctorid')
+    if (!doctorid) {
       this.setState({
-        haveUserInfo: false
+        haveDoctorId: false
       })
     } else {
       this.props.getDoctorData()
@@ -94,8 +94,8 @@ class Mine extends Component {
   }
 
   toMyInfo() {
-    const userInfo = Taro.getStorageSync('userInfo')
-    if (!userInfo) {
+    const doctorid = Taro.getStorageSync('doctorid')
+    if (!doctorid) {
       return Taro.showToast({
         title: '请先登录',
         icon: 'none'
@@ -108,8 +108,8 @@ class Mine extends Component {
 
   toQRCode() {
     const { mine } = this.props
-    const userInfo = Taro.getStorageSync('userInfo')
-    if (!userInfo) {
+    const doctorid = Taro.getStorageSync('doctorid')
+    if (!doctorid) {
       return Taro.showToast({
         title: '请先登录',
         icon: 'none'
@@ -127,15 +127,14 @@ class Mine extends Component {
         icon: 'none'
       })
     }
-    const doctorid = Taro.getStorageSync('doctorid')
     Taro.navigateTo({
       url: `/pages/QRCode/QRCode?doctorid=${doctorid}`
     })
   }
 
   toSetting() {
-    const userInfo = Taro.getStorageSync('userInfo')
-    if (!userInfo) {
+    const doctorid = Taro.getStorageSync('doctorid')
+    if (!doctorid) {
       return Taro.showToast({
         title: '请先登录',
         icon: 'none'
@@ -147,8 +146,8 @@ class Mine extends Component {
   }
 
   toService() {
-    const userInfo = Taro.getStorageSync('userInfo')
-    if (!userInfo) {
+    const doctorid = Taro.getStorageSync('doctorid')
+    if (!doctorid) {
       return Taro.showToast({
         title: '请先登录',
         icon: 'none'
@@ -168,7 +167,7 @@ class Mine extends Component {
 
   render () {
     const { mine } = this.props
-    const { haveUserInfo } = this.state
+    const { haveDoctorId } = this.state
     let authenticatedIcon = ''
     switch(mine.authenticated) {
       case '0':
@@ -193,7 +192,7 @@ class Mine extends Component {
             <AtAvatar circle image={mine.avatar || AVATAR_D}></AtAvatar>
           </View>
           {
-            haveUserInfo
+            haveDoctorId
             ? <View className='info-2'>
               <View className='name'>
                 <Text onClick={this.toMyInfo.bind(this)}>{mine.name || '请完善资料'}</Text>
@@ -208,7 +207,7 @@ class Mine extends Component {
             </View>
           }
           {
-            haveUserInfo &&
+            haveDoctorId &&
             <View className='info-3' onClick={this.toMyInfo.bind(this)}>
               <AtIcon value='chevron-right' size='28' color='#999999'></AtIcon>
             </View>
@@ -262,6 +261,7 @@ class Mine extends Component {
             />
           </AtList>
         </View>
+        <View className='version'>版本号 1.1.5</View>
       </View>
     )
   }

@@ -50,15 +50,17 @@ export const getConsultationData = (conversations, consultationStatus) => {
         let endHour = 0
         let endMin = 0
         if (status === '0' || status === '1') {
-          for (let i = 0; i < conversations.length; i++) {
-            const c = conversations[i]
-            if (c.members.indexOf(patientId) > -1) {
-              const type = c.lastMessage && c.lastMessage.content && c.lastMessage.content._lctype
-              if (type === -1) desc = c.lastMessage && c.lastMessage.content && c.lastMessage.content._lctext || ''
-              if (type === -2) desc = '[图片]'
-              from = c.lastMessage && c.lastMessage.from
-              time = c._lastMessageAt.getTime()
-              break
+          if (conversations) {
+            for (let i = 0; i < conversations.length; i++) {
+              const c = conversations[i]
+              if (c.members.indexOf(patientId) > -1) {
+                const type = c.lastMessage && c.lastMessage.content && c.lastMessage.content._lctype
+                if (type === -1 || type === 1) desc = c.lastMessage && c.lastMessage.content && c.lastMessage.content._lctext || ''
+                if (type === -2) desc = '[图片]'
+                from = c.lastMessage && c.lastMessage.from || ''
+                time = c._lastMessageAt && c._lastMessageAt.getTime() || ''
+                break
+              }
             }
           }
           console.log(desc)

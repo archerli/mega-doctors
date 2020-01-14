@@ -139,9 +139,9 @@ class Index extends Component {
   }
 
   async componentDidMount() {
-    const userInfo = Taro.getStorageSync('userInfo')
-    console.log(userInfo)
-    if (!userInfo) {
+    const doctorid = Taro.getStorageSync('doctorid')
+    console.log(doctorid)
+    if (!doctorid) {
       Taro.hideLoading()
       this.props.action(GET_CONSULTATION_DATA, {
         newCons: [],
@@ -154,14 +154,14 @@ class Index extends Component {
         Taro.setStorageSync('haveTappedIndexTab', true)
       }
 
-      const doctorid = Taro.getStorageSync('doctorid')
-      const realtime = new Realtime({
-        appId: 'f82OcAshk5Q1J993fGLJ4bbs-gzGzoHsz',
-        appKey: 'O9COJzi78yYXCWVWMkLqlpp8',
-        server: 'api-mhn.megahealth.cn',
-        plugins: AV.TypedMessagesPlugin // 注册富媒体消息插件
-      });
+      // const doctorid = Taro.getStorageSync('doctorid')
       try {
+        const realtime = new Realtime({
+          appId: 'f82OcAshk5Q1J993fGLJ4bbs-gzGzoHsz',
+          appKey: 'O9COJzi78yYXCWVWMkLqlpp8',
+          server: 'api-mhn.megahealth.cn',
+          plugins: AV.TypedMessagesPlugin // 注册富媒体消息插件
+        });
         this.client = await realtime.createIMClient(doctorid)
         setTimeout(() => {
           this.getData()
@@ -174,6 +174,8 @@ class Index extends Component {
           })
         }, 500)
       } catch(e) {
+        const { current } = this.props.consultation
+        this.props.getConsultationData(null, `${current}`)
         Taro.hideLoading()
       }
     }
@@ -214,38 +216,42 @@ class Index extends Component {
   }
 
   getData(consultationStatus = null) {
-    const userInfo = Taro.getStorageSync('userInfo')
-    if (userInfo) {
-      const query = this.client.getQuery()
-      query.withLastMessagesRefreshed(true);
-      query.find().then(conversations => {
-        // conversations 就是想要的结果
-        console.log('conversations', conversations)
+    const doctorid = Taro.getStorageSync('doctorid')
+    if (doctorid) {
+      if (this.client) {
+        const query = this.client.getQuery()
+        query.withLastMessagesRefreshed(true);
+        query.find().then(conversations => {
+          // conversations 就是想要的结果
+          console.log('conversations', conversations)
 
-        const doctorid = Taro.getStorageSync('doctorid')
-        for (let i = 0; i < conversations.length; i++) {
-          const c = conversations[i]
-          if (c.members.indexOf('5e01b7641358aa5c19c7135f') > -1) {
-            const lastServiceMessage = Taro.getStorageSync('lastServiceMessage')
-            const lastMessage = c.lastMessage || {}
-            const lastMessageId = lastMessage.id
-            const lastMessageFrom = lastMessage.from
-            this.props.action(HAVE_NEW_SERVICE_MESSAGE, {
-              haveNewServiceMessage:
-                lastMessageId
-                && lastMessageId !== lastServiceMessage
-                && lastMessageFrom
-                && lastMessageFrom !== doctorid
-            })
-            break
+          // const doctorid = Taro.getStorageSync('doctorid')
+          for (let i = 0; i < conversations.length; i++) {
+            const c = conversations[i]
+            if (c.members.indexOf('5e01b7641358aa5c19c7135f') > -1) {
+              const lastServiceMessage = Taro.getStorageSync('lastServiceMessage')
+              const lastMessage = c.lastMessage || {}
+              const lastMessageId = lastMessage.id
+              const lastMessageFrom = lastMessage.from
+              this.props.action(HAVE_NEW_SERVICE_MESSAGE, {
+                haveNewServiceMessage:
+                  lastMessageId
+                  && lastMessageId !== lastServiceMessage
+                  && lastMessageFrom
+                  && lastMessageFrom !== doctorid
+              })
+              break
+            }
           }
-        }
 
-        this.props.getConsultationData(conversations, consultationStatus)
-      }).catch(err => {
-        console.log(err)
-        Taro.hideLoading()
-      });
+          this.props.getConsultationData(conversations, consultationStatus)
+        }).catch(err => {
+          console.log(err)
+          Taro.hideLoading()
+        });
+      } else {
+        this.props.getConsultationData(null, consultationStatus)
+      }
     }
   }
 
@@ -478,53 +484,6 @@ class Index extends Component {
       </View>
     )
   }
-  // render() {
-  //   const tabList = [{ title: '未回复' }, { title: '已回复' }]
-  //   return (
-  //     <View className='index'>
-  //       <AtTabs current={this.state.current} tabList={tabList} onClick={this.handleClick.bind(this)} style="overflow: auto;">
-  //         <AtTabsPane current={this.state.current} index={0}>
-  //           <View className="content-l">
-  //             {
-  //               noReply.map(item => (
-  //                 <QCard
-  //                   key={item.id}
-  //                   type='reply'
-  //                   name={item.name}
-  //                   isVip={item.isVip}
-  //                   icon={item.icon}
-  //                   tag={item.tag}
-  //                   time={item.time}
-  //                   desc={item.desc}
-  //                   toQuestion={this.toQuestion.bind(this, item.id)}
-  //                 />
-  //               ))
-  //             }
-  //           </View>
-  //         </AtTabsPane>
-  //         <AtTabsPane current={this.state.current} index={1}>
-  //           <View className="content-l">
-  //             {
-  //               noReply.map(item => (
-  //                 <QCard
-  //                   key={item.id}
-  //                   type='reply'
-  //                   name={item.name}
-  //                   isVip={item.isVip}
-  //                   icon={item.icon}
-  //                   tag={item.tag}
-  //                   time={item.time}
-  //                   desc={item.desc}
-  //                   toQuestion={this.toQuestion.bind(this, item.id)}
-  //                 />
-  //               ))
-  //             }
-  //           </View>
-  //         </AtTabsPane>
-  //       </AtTabs>
-  //     </View>
-  //   )
-  // }
 }
 
 export default Index

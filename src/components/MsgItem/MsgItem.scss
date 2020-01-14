@@ -23,6 +23,7 @@
       flex: 1;
       display: flex;
       .text {
+        word-break: break-all;
         padding: 20px 30px;
         background: #FFFFFF;
         border-radius: 8px;

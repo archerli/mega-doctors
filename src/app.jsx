@@ -91,6 +91,40 @@ class App extends Component {
     Taro.setStorageSync('haveTappedIndexTab', false)
     Taro.setStorageSync('haveTappedPatientTab', false)
     Taro.setStorageSync('haveTappedMineTab', false)
+
+    // 版本更新
+    setTimeout(() => {
+      const updateManager = wx.getUpdateManager();
+      updateManager.onCheckForUpdate(res => {
+        // 请求完新版本信息的回调
+        console.log(res.hasUpdate);
+      })
+
+      updateManager.onUpdateReady(() => {
+        Taro.showModal({
+          title: '升级提示',
+          content: '新版本已经准备好了，现在就体验吧',
+          showCancel: false,
+          confirmText: '开始升级',
+          success: res => {
+            if (res.confirm) {
+              // 新的版本已经下载好，调用 applyUpdate 应用新版本并重启
+              updateManager.applyUpdate();
+            }
+          }
+        });
+      })
+
+      updateManager.onUpdateFailed(() => {
+        // 新的版本下载失败
+        Taro.showModal({
+          title: '升级提示',
+          content: '新版本升级失败',
+          showCancel: false
+        })
+      })
+    }, 6000);
+
   }
 
   componentDidShow () {

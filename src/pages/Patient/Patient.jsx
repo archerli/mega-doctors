@@ -48,8 +48,8 @@ class Patient extends Component {
   }
 
   componentDidMount() {
-    const userInfo = Taro.getStorageSync('userInfo')
-    if (userInfo) {
+    const doctorid = Taro.getStorageSync('doctorid')
+    if (doctorid) {
       this.props.getDoctorPatientData()
       const haveTappedPatientTab = Taro.getStorageSync('haveTappedPatientTab')
       if (!haveTappedPatientTab) {
@@ -110,19 +110,19 @@ class Patient extends Component {
           <View
             className={patient.current === 0 ? 'selected' : ''}
             onClick={this.handleClick.bind(this, 0)}
-          >VIP患者</View>
+          >VIP</View>
           <View
             className={patient.current === 1 ? 'selected' : ''}
             onClick={this.handleClick.bind(this, 1)}
-          >付费过</View>
+          >付费</View>
           <View
             className={patient.current === 2 ? 'selected' : ''}
             onClick={this.handleClick.bind(this, 2)}
-          >关注的</View>
+          >关注</View>
           <View
             className={patient.current === 3 ? 'selected' : ''}
             onClick={this.handleClick.bind(this, 3)}
-          >普通的</View>
+          >普通</View>
         </View>
         <View className='content'>
           <Swiper
