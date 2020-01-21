@@ -4,6 +4,7 @@ import { connect } from '@tarojs/redux'
 import { AtAvatar, AtList, AtListItem, AtIcon } from "taro-ui"
 
 import { getDoctorData, getConsultationNum, getDoctorPatientNumAndCredit } from '../../actions/creator'
+import log from '../../common/log'
 
 import AUTH_0 from '../../assets/auth-0.png'
 import AUTH_1 from '../../assets/auth-1.png'
@@ -47,6 +48,7 @@ class Mine extends Component {
   }
 
   componentDidMount() {
+    log.info('Mine page init')
     const doctorid = Taro.getStorageSync('doctorid')
     if (!doctorid) {
       this.setState({
@@ -68,6 +70,7 @@ class Mine extends Component {
     console.log('onTabItemTap')
     const haveTappedMineTab = Taro.getStorageSync('haveTappedMineTab')
     if (haveTappedMineTab) {
+      log.info('Mine page onTabItemTap')
       this.props.getDoctorData()
       this.props.getConsultationNum()
       this.props.getDoctorPatientNumAndCredit()
@@ -96,9 +99,8 @@ class Mine extends Component {
   toMyInfo() {
     const doctorid = Taro.getStorageSync('doctorid')
     if (!doctorid) {
-      return Taro.showToast({
-        title: '请先登录',
-        icon: 'none'
+      return Taro.navigateTo({
+        url: '/pages/Auth/Auth'
       })
     }
     Taro.navigateTo({
@@ -196,22 +198,19 @@ class Mine extends Component {
             ? <View className='info-2'>
               <View className='name'>
                 <Text onClick={this.toMyInfo.bind(this)}>{mine.name || '请完善资料'}</Text>
-                <Image src={authenticatedIcon} onClick={this.toDoctorAuth.bind(this)} />
+                { mine.name && <Image src={authenticatedIcon} onClick={this.toDoctorAuth.bind(this)} /> }
               </View>
               <View>兆观号：{mine.megaId}</View>
             </View>
             : <View className='info-2'>
-              <View className='name'>
+              <View className='name login'>
                 <Text onClick={this.toAuth.bind(this)}>点击登录账户</Text>
               </View>
             </View>
           }
-          {
-            haveDoctorId &&
-            <View className='info-3' onClick={this.toMyInfo.bind(this)}>
-              <AtIcon value='chevron-right' size='28' color='#999999'></AtIcon>
-            </View>
-          }
+          <View className='info-3' onClick={this.toMyInfo.bind(this)}>
+            <AtIcon value='chevron-right' size='28' color='#999999'></AtIcon>
+          </View>
         </View>
         <View className='data'>
           <View>
@@ -237,9 +236,9 @@ class Mine extends Component {
             />
             <AtListItem
               title='我的兆观助手'
-              extraText=''
               arrow='right'
               thumb={SERVICE}
+              // extraText='●'
               extraText={mine.haveNewServiceMessage ? '●' : ''}
               onClick={this.toService.bind(this)}
             />
@@ -257,11 +256,12 @@ class Mine extends Component {
               title='设置'
               arrow='right'
               thumb={SETTING}
+              extraText={mine.name && mine.authenticated === '1' && !Taro.getStorageSync('haveViewedSetting') ? '别忘了开启咨询和通知 ●' : ''}
               onClick={this.toSetting.bind(this)}
             />
           </AtList>
         </View>
-        <View className='version'>版本号 1.1.5</View>
+        <View className='version'>版本号 1.1.6</View>
       </View>
     )
   }

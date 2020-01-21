@@ -165,6 +165,8 @@ class MyInfo extends Component {
     doctor.set('department', myInfo.department);
     doctor.set('title', myInfo.title);
     doctor.set('phone', myInfo.phone);
+    if (myInfo.skill) doctor.set('skill', myInfo.skill);
+    if (myInfo.description) doctor.set('description', myInfo.description);
     doctor.save().then(res => {
       Taro.showToast({
         title: '保存成功'
@@ -175,7 +177,7 @@ class MyInfo extends Component {
       })
     }, err => {
       Taro.showToast({
-        title: '保存失败，请重试',
+        title: '保存失败，请稍后再试',
         icon: 'none'
       })
     });
@@ -243,6 +245,21 @@ class MyInfo extends Component {
               />
             </Picker>
           </AtList>
+          <View className='title'>医生主页展示</View>
+          <AtList>
+            <AtListItem
+              title='擅长病症'
+              extraText={myInfo.skill}
+              arrow='right'
+              onClick={this.edit.bind(this, 'skill')}
+            />
+            <AtListItem
+              title='个人介绍'
+              extraText={myInfo.description}
+              arrow='right'
+              onClick={this.edit.bind(this, 'description')}
+            />
+          </AtList>
           <View className='tip'>以上内容将展示给患者，请确保准确专业</View>
           <AtList>
             <AtListItem
@@ -308,6 +325,32 @@ class MyInfo extends Component {
                   maxLength='11'
                   focus
                   onConfirm={this.handleChange2.bind(this, 'phone')}
+                />
+              }
+              {
+                myInfo.isOpened && myInfo.inputName === 'skill' &&
+                <Textarea
+                  name='skill'
+                  className='edit-area'
+                  placeholder='请输入您的擅长病症，将展示在 APP 中您的主页'
+                  value={myInfo.skill}
+                  maxlength={500}
+                  focus
+                  showConfirmBar={false}
+                  onConfirm={this.handleChange2.bind(this, 'skill')}
+                />
+              }
+              {
+                myInfo.isOpened && myInfo.inputName === 'description' &&
+                <Textarea
+                  name='description'
+                  className='edit-area'
+                  placeholder='请输入您的个人介绍，将展示在 APP 中您的主页'
+                  value={myInfo.description}
+                  maxlength={500}
+                  focus
+                  showConfirmBar={false}
+                  onConfirm={this.handleChange2.bind(this, 'description')}
                 />
               }
               <Button className='confirm' form-type='submit'>完成</Button>

@@ -78,6 +78,8 @@ export const MY_INFO = {
   department: '',
   title: '',
   phone: '',
+  skill: '',
+  description: '',
   // 弹出层相关
   isOpened: false,
   inputName: ''
@@ -87,5 +89,9 @@ export const MY_INFO = {
 export const SETTING = {
   startConsultation: true,
   startConsultationTime: '',
-  endConsultationTime: ''
+  endConsultationTime: '',
+  normalConsultingPrice: 10,
+  phoneConsultingPrice: 10,
+  isNormalConsultingOpen: false,
+  isPhoneConsultingOpen: false
 }

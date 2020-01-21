@@ -194,7 +194,9 @@ export const myInfo = (state = STATES.MY_INFO, action) => {
         hospital: action.data.hospital,
         department: action.data.department,
         title: action.data.title,
-        phone: action.data.phone
+        phone: action.data.phone,
+        skill: action.data.skill,
+        description: action.data.description
       }
     case TYPES.CHANGE_DOCTOR_DATA:
       return {
@@ -219,7 +221,11 @@ export const setting = (state = STATES.SETTING, action) => {
         ...state,
         startConsultation: action.data.startConsultation,
         startConsultationTime: action.data.startConsultationTime,
-        endConsultationTime: action.data.endConsultationTime
+        endConsultationTime: action.data.endConsultationTime,
+        normalConsultingPrice: action.data.normalConsultingPrice,
+        phoneConsultingPrice: action.data.phoneConsultingPrice,
+        isNormalConsultingOpen: action.data.isNormalConsultingOpen,
+        isPhoneConsultingOpen: action.data.isPhoneConsultingOpen
       }
     case TYPES.CHANGE_DOCTOR_SETTING:
       return {

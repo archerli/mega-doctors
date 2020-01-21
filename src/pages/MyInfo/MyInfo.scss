@@ -7,14 +7,19 @@
   .icon {
     padding: 20px 0;
   }
+  .title {
+    padding: 18px 30px;
+    font-size: 28px;
+    color: #666666;
+  }
   .tip {
-    padding: 20px 0;
+    padding: 18px 0;
     text-align: center;
     font-size: 28px;
     color: #666666;
   }
   .btn {
-    padding: 90px 30px 40px;
+    padding: 40px 30px;
     Button.save {
       height: 88px;
       line-height: 88px;
@@ -45,6 +50,14 @@
         border: 2px solid #ececec;
         border-radius: 10px;
         height: 80px;
+      }
+      .edit-area {
+        flex: 1;
+        padding: 12px 20px;
+        margin-right: 20px;
+        border: 2px solid #ececec;
+        border-radius: 10px;
+        height: 200px;
       }
       .confirm {
         height: 80px;

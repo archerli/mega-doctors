@@ -3,6 +3,8 @@ import { View, Button, Text } from '@tarojs/components'
 import { connect } from '@tarojs/redux'
 import AV from 'leancloud-storage/dist/av-weapp-min.js'
 
+import log from '../../common/log'
+
 import LOGO from '../../assets/mega-logo.png'
 
 import './Auth.scss'
@@ -23,6 +25,7 @@ class Auth extends Component {
   }
 
   componentDidMount() {
+    log.info('Auth page init')
     const userInfo = Taro.getStorageSync('userInfo')
     const havePhoneNumber = Taro.getStorageSync('havePhoneNumber')
     console.log(userInfo)
@@ -71,23 +74,28 @@ class Auth extends Component {
                       Taro.setStorageSync('doctorid', d.id)
                       resolve()
                     }, err => {
+                      log.error(err)
                       reject(err)
                     })
                   }
                 }, err => {
+                  log.error(err)
                   reject(err)
                 })
               },
               fail(err) {
+                log.error(err)
                 reject(err)
               }
             })
           } else {
             console.log('登录失败！' + res.errMsg)
+            log.error(res)
             reject(res)
           }
         },
         fail(err) {
+          log.error(err)
           reject(err)
         }
       })

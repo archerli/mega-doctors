@@ -2,6 +2,7 @@ import Taro from '@tarojs/taro'
 import AV from 'leancloud-storage/dist/av-weapp-min.js'
 import * as TYPES from '../constants/creator'
 import utils from '../common/utils'
+import log from '../common/log'
 
 import STAR from '../assets/star.png'
 import MILD from '../assets/mild.png'
@@ -34,6 +35,7 @@ export const getConsultationData = (conversations, consultationStatus) => {
     query.include('idPatient');
     query.include('idRelation');
     query.find().then(res => {
+      log.info(`getConsultationData success: total ${res.length} consultations`)
       console.log(res)
       const newCons = []
       const replying = []
@@ -188,6 +190,8 @@ export const getConsultationData = (conversations, consultationStatus) => {
         Taro.hideLoading()
       }
     }, err => {
+      log.error('getConsultationData failed')
+      log.error(err)
       Taro.hideLoading()
     });
   }
@@ -202,6 +206,7 @@ export const getDoctorPatientData = () => {
     query.include('idDoctor');
     query.include('idPatient');
     query.find().then(res => {
+      log.info(`getDoctorPatientData success: total ${res.length} relations`)
       console.log('DoctorPatientRelation', res)
       // const patientIdList = []
 
@@ -353,6 +358,9 @@ export const getDoctorPatientData = () => {
       })
       //////////
 
+    }, err => {
+      log.error('getDoctorPatientData failed')
+      log.error(err)
     });
   }
 }
@@ -477,6 +485,7 @@ export const getDoctorData = () => {
     //   })
     // })
     query.find().then(res => {
+      log.info('getDoctorData success')
       console.log(res)
       if (res.length) {
         const r = res[0]
@@ -490,9 +499,15 @@ export const getDoctorData = () => {
           department: r.get('department'),
           title: r.get('title'),
           phone: r.get('phone'),
+          skill: r.get('skill'),
+          description: r.get('description'),
           startConsultation: r.get('startConsultation'),
           startConsultationTime: r.get('startConsultationTime'),
-          endConsultationTime: r.get('endConsultationTime')
+          endConsultationTime: r.get('endConsultationTime'),
+          normalConsultingPrice: r.get('normalConsultingPrice'),
+          phoneConsultingPrice: r.get('phoneConsultingPrice'),
+          isNormalConsultingOpen: r.get('isNormalConsultingOpen'),
+          isPhoneConsultingOpen: r.get('isPhoneConsultingOpen')
         }))
       } else {
         Taro.removeStorageSync('userInfo')
@@ -503,6 +518,8 @@ export const getDoctorData = () => {
         // })
       }
     }, err => {
+      log.error('getDoctorData failed')
+      log.error(err)
       console.log(err)
     })
   }

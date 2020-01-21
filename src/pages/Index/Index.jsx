@@ -10,6 +10,7 @@ import { Realtime, TextMessage } from 'leancloud-realtime/dist/realtime.weapp.mi
 import { action, swiperChange, getConsultationData } from '../../actions/creator'
 import { GET_CONSULTATION_DATA, SWIPER_CHANGE_INDEX, HAVE_NEW_SERVICE_MESSAGE } from '../../constants/creator'
 import utils from '../../common/utils'
+import log from '../../common/log'
 
 import QCard from '../../components/QCard/QCard'
 import QRCODE from '../../assets/qrcode.png'
@@ -139,16 +140,25 @@ class Index extends Component {
   }
 
   async componentDidMount() {
+    log.info('Index page init')
     const doctorid = Taro.getStorageSync('doctorid')
     console.log(doctorid)
     if (!doctorid) {
       Taro.hideLoading()
+      Taro.setTabBarItem({
+        index: 2,
+        text: '登录'
+      })
       this.props.action(GET_CONSULTATION_DATA, {
         newCons: [],
         replying: [],
         finished: []
       })
     } else {
+      Taro.setTabBarItem({
+        index: 2,
+        text: '我的'
+      })
       const haveTappedIndexTab = Taro.getStorageSync('haveTappedIndexTab')
       if (!haveTappedIndexTab) {
         Taro.setStorageSync('haveTappedIndexTab', true)
@@ -185,6 +195,7 @@ class Index extends Component {
   componentDidShow () {
     const haveTappedIndexTab = Taro.getStorageSync('haveTappedIndexTab')
     if (haveTappedIndexTab) {
+      log.info('Index page componentDidShow')
       console.log('componentDidShow')
       if (this.client) this.getData()
     }
@@ -209,6 +220,7 @@ class Index extends Component {
     Taro.showNavigationBarLoading() //在标题栏中显示加载
     setTimeout(() => {
       // complete
+      log.info('Index page onPullDownRefresh')
       this.getData()
       Taro.hideNavigationBarLoading() //完成停止加载
       Taro.stopPullDownRefresh() //停止下拉刷新
@@ -260,6 +272,7 @@ class Index extends Component {
   }
 
   swiperOnChange(e) {
+    log.info('Index page swiperOnChange')
     this.getData(`${e.currentTarget.current}`)
     this.props.swiperChange(SWIPER_CHANGE_INDEX, e.currentTarget.current)
   }

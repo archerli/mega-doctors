@@ -7,6 +7,7 @@ import { AtActivityIndicator, AtCalendar } from 'taro-ui'
 
 import { action, getDoctorPatientData, getPatientReportList, swiperChange } from '../../actions/creator'
 import { SWIPER_CHANGE_PATIENT } from '../../constants/creator'
+import log from '../../common/log'
 
 import PCard from '../../components/PCard/PCard'
 import EMPTY from '../../assets/empty.png'
@@ -48,6 +49,7 @@ class Patient extends Component {
   }
 
   componentDidMount() {
+    log.info('Patient page init')
     const doctorid = Taro.getStorageSync('doctorid')
     if (doctorid) {
       this.props.getDoctorPatientData()
@@ -63,6 +65,7 @@ class Patient extends Component {
     console.log('onTabItemTap')
     const haveTappedPatientTab = Taro.getStorageSync('haveTappedPatientTab')
     if (haveTappedPatientTab) {
+      log.info('Patient page onTabItemTap')
       this.props.getDoctorPatientData()
     }
   }
@@ -72,6 +75,7 @@ class Patient extends Component {
     Taro.showNavigationBarLoading() //在标题栏中显示加载
     setTimeout(() => {
       // complete
+      log.info('Patient page onPullDownRefresh')
       this.props.getDoctorPatientData()
       Taro.hideNavigationBarLoading() //完成停止加载
       Taro.stopPullDownRefresh() //停止下拉刷新

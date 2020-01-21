@@ -33,6 +33,9 @@
           margin-left: 24px;
         }
       }
+      View.name.login {
+        font-size: 40px;
+      }
     }
     .info-3 {
       display: flex;
@@ -68,6 +71,9 @@
     .at-list__item--thumb .item-thumb {
       width: 40px;
       height: 40px;
+    }
+    .at-list__item-extra {
+      max-width: 420px;
     }
     .at-list__item .item-extra__info {
       padding-right: 40px;

@@ -4,11 +4,16 @@
   height: 100%;
   overflow: auto;
   background-color: #ececec;
+  .group {
+    font-size: 30px;
+    color: #666666;
+    padding: 0 30px;
+  }
   .title {
-    padding: 20px 0;
+    margin: 20px 0;
   }
   .btn {
-    padding: 40px 30px;
+    margin: 40px 30px;
     View {
       font-size: 28px;
       color: #666666;
